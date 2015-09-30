@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace Audit
 {
-    public partial class Form2 : Form
+    public partial class ImageShower : Form
     {
-        public Form2()
+        public ImageShower()
         {
             InitializeComponent();
             this.pictureBox1.Image = Image.FromFile("d:\\gh.jpg");

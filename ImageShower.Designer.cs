@@ -1,6 +1,6 @@
 ﻿namespace Audit
 {
-    partial class Form2
+    partial class ImageShower
     {
         /// <summary>
         /// Required designer variable.

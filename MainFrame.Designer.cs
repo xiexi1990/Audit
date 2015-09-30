@@ -1,6 +1,6 @@
 ﻿namespace Audit
 {
-    partial class Form1
+    partial class MainFrame
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFrame));
             this.richTextBox_Time = new System.Windows.Forms.RichTextBox();
             this.richTextBox_Log = new System.Windows.Forms.RichTextBox();
             this.button_TimeGood = new System.Windows.Forms.Button();
@@ -58,6 +58,7 @@
             this.label_Time = new System.Windows.Forms.Label();
             this.label_Log = new System.Windows.Forms.Label();
             this.label_Graph = new System.Windows.Forms.Label();
+            this.label_Status = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
             this.SuspendLayout();
             // 
@@ -218,6 +219,7 @@
             this.button_Input.TabIndex = 5;
             this.button_Input.Text = "按指定规则生成事件集";
             this.button_Input.UseVisualStyleBackColor = true;
+            this.button_Input.Click += new System.EventHandler(this.button_Input_Click);
             // 
             // richTextBox_Group
             // 
@@ -332,11 +334,21 @@
             this.label_Graph.TabIndex = 7;
             this.label_Graph.Text = "图件标注\r\n审核意见";
             // 
+            // label_Status
+            // 
+            this.label_Status.AutoSize = true;
+            this.label_Status.Location = new System.Drawing.Point(149, 587);
+            this.label_Status.Name = "label_Status";
+            this.label_Status.Size = new System.Drawing.Size(77, 12);
+            this.label_Status.TabIndex = 8;
+            this.label_Status.Text = "label_Status";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(940, 587);
+            this.ClientSize = new System.Drawing.Size(940, 608);
+            this.Controls.Add(this.label_Status);
             this.Controls.Add(this.label_Graph);
             this.Controls.Add(this.label_Log);
             this.Controls.Add(this.label_Time);
@@ -407,6 +419,7 @@
         private System.Windows.Forms.Label label_Time;
         private System.Windows.Forms.Label label_Log;
         private System.Windows.Forms.Label label_Graph;
+        private System.Windows.Forms.Label label_Status;
     }
 }
 

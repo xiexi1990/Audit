@@ -12,15 +12,17 @@ namespace Audit
 {
     public delegate void singleValueChanging(int new_value);
 
-    public partial class Form1 : Form
+    public partial class MainFrame : Form
     {
         public ValueBox vb = new ValueBox();
         private Button[] score_group_buttons = new Button[2], 
             score_time_buttons = new Button[2], 
             score_graph_buttons = new Button[3], 
             score_log_buttons = new Button[3];
-        private Control[] ctrl_list = new Control[29];
-        public Form1()
+        private Control[] ctrl_list = new Control[30];
+        private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = yj; password = xie51");
+        public DataTable dt_units;
+        public MainFrame()
         {
             InitializeComponent();
             vb.SetDelegate(OnScoreGroupChanging, OnScoreTimeChanging, OnScoreGraphChanging, OnScoreLogChanging);
@@ -35,16 +37,17 @@ namespace Audit
             score_log_buttons[1] = this.button_LogMiddle;
             score_log_buttons[2] = this.button_LogBad;
 
-            if (true)
+            if (false)
             {
                 this.richTextBox_GroupCheck.Text = "对事件分类的审核意见";
                 this.richTextBox_TimeCheck.Text = "对起止时间的审核意见";
                 this.richTextBox_LogCheck.Text = "对事件记录的审核意见";
                 this.richTextBox_GraphCheck.Text = "对图件的审核意见";
             }
-
             this.FillCtrlList();
             this.Form1_Resize(null, null);
+
+
         }
         private void OnScoreGroupChanging(int new_value)
         {
@@ -167,15 +170,15 @@ namespace Audit
 
         private void pictureBox1_DoubleClick(object sender, EventArgs e)
         {
-            Form2 f2 = new Form2();
+            ImageShower f2 = new ImageShower();
             f2.Show();
         }
         public Rectangle[] GetResizeRectList(Point lefttop, Size siz)
         {
             double[] v = new double[10] { 0.02, 0.2, 0.22, 0.27, 0.28, 0.42, 0.43, 0.48, 0.5, 0.98 };
-            double[] h = new double[14] { 0.02, 0.07, 0.09, 0.19, 0.21, 0.26, 0.28, 0.38, 0.4, 0.6, 0.62, 0.83, 0.84, 0.94 };
+            double[] h = new double[15] { 0.02, 0.07, 0.09, 0.19, 0.21, 0.26, 0.28, 0.38, 0.4, 0.58, 0.6, 0.78, 0.79, 0.9, 0.96 };
             
-            Rectangle[] rl = new Rectangle[29];
+            Rectangle[] rl = new Rectangle[30];
             RectHelper rh = new RectHelper();
             rh.lefttop = lefttop;
             rh.siz = siz;
@@ -231,6 +234,7 @@ namespace Audit
             rl[26] = rh.GetRectByProp(rh.GetRectByProp(v[8], h[12], v[9], h[13]),1/6.0,0,2/3.0,1);
             rl[27] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[8], h[12], v[9], h[13]), 0,0,0.9/6.0,1), sizlabel, RectHelper._ALIGNRIGHT);
             rl[28] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[8], h[12], v[9], h[13]), 0, 0, 0.9 / 6.0, 1), sizhlp, RectHelper._ALIGNRIGHT|RectHelper._ALIGNBOTTOM);
+            rl[29] = rh.GetAlignRect(rh.GetRectByProp(v[0], h[13], v[9], h[14]), sizlabel, RectHelper._ALIGNLEFT|RectHelper._ALIGNTOP);
 
             return rl;
         }
@@ -266,11 +270,18 @@ namespace Audit
             ctrl_list[26] = richTextBox_GraphCheck;
             ctrl_list[27] = label_Graph;
             ctrl_list[28] = button_GraphCheckHelp;
+            ctrl_list[29] = label_Status;
         }
 
         private void richTextBox_GroupCheck_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button_Input_Click(object sender, EventArgs e)
+        {
+            Rule rl = new Rule();
+            rl.ShowDialog();
         }
     }
 }
