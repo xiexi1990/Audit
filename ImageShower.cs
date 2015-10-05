@@ -12,10 +12,12 @@ namespace Audit
 {
     public partial class ImageShower : Form
     {
-        public ImageShower()
+        public ImageShower(Image image)
         {
             InitializeComponent();
-            this.pictureBox1.Image = Image.FromFile("d:\\gh.jpg");
+            if (image == null)
+                return;
+            this.pictureBox1.Image = image;
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Name = "pictureBox1";
 

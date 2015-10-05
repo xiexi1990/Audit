@@ -1,4 +1,5 @@
-﻿using System;
+﻿#define LOGTEST1
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
+using System.Threading;
 
 namespace Audit
 {
@@ -14,14 +17,22 @@ namespace Audit
 
     public partial class MainFrame : Form
     {
+        delegate void InitDtLogsCallback();
+        delegate void SetDtCallback(DataTable dt);
+        delegate void RefreshStatusCallback(string s);
         public ValueBox vb = new ValueBox();
         private Button[] score_group_buttons = new Button[2], 
             score_time_buttons = new Button[2], 
             score_graph_buttons = new Button[3], 
             score_log_buttons = new Button[3];
-        private Control[] ctrl_list = new Control[30];
-        private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = yj; password = xie51");
-        public DataTable dt_units;
+        private Control[] ctrl_list = new Control[31];
+        private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
+        public DataTable dt_units, dt_logs;
+        private object locker_dt_logs = new object();
+        private int cur_log = -1;
+        private bool log_shown = false;
+        
+        public object[,] UNIT_NUM = { { "IGP", 10 }, { "IGL", 10 }, { "ICD", 10 }, { "BJ", 15 }, { "TJ", 20 }, { "HE", 20 }, { "SX", 20 }, { "NM", 15 }, { "IES", 10 }, { "DPC", 0 }, { "LN", 20 }, { "JL", 15 }, { "HL", 15 }, { "SH", 15 }, { "JS", 15 }, { "ZJ", 15 }, { "AH", 15 }, { "FJ", 20 }, { "JX", 15 }, { "SD", 20 }, { "HA", 15 }, { "HB", 15 }, { "HN", 15 }, { "GD", 15 }, { "GX", 15 }, { "HI", 10 }, { "SC", 20 }, { "YN", 20 }, { "XZ", 10 }, { "CQ", 15 }, { "SN", 20 }, { "GS", 20 }, { "QH", 15 }, { "NX", 20 }, { "XJ", 20 } };
         public MainFrame()
         {
             InitializeComponent();
@@ -47,8 +58,99 @@ namespace Audit
             this.FillCtrlList();
             this.Form1_Resize(null, null);
 
-
         }
+        ~MainFrame()
+        {
+            this.orahlper.oracon.Close();
+        }
+        public void InitDtLogs()
+        {
+            this.RefreshStatus("正在初始化事件表……");
+            SqlGenerator sg = new SqlGenerator();
+#if LOGTEST
+            DataTable dt = this.orahlper.GetDataTable(sg.GenExtractionSql(1, "HB", 2014, 1, 1, false));
+#else
+            DataTable dt = this.orahlper.GetDataTable(sg.GenExtractionSql(0, "HB", 2014, 1, 1, false)).Clone();
+#endif       
+            DataColumn dc_rowid = new DataColumn("ROWID", typeof(int));
+            dc_rowid.AutoIncrement = false;
+            dc_rowid.AutoIncrementSeed = 1;
+            dt.Columns.Add(dc_rowid);
+            dt.Columns["ROWID"].SetOrdinal(0);
+#if LOGTEST
+            dt.Rows[0]["ROWID"] = 1;
+#endif
+            dt.Columns.Add("SCORE_GROUP", typeof(int));
+            dt.Columns.Add("SCORE_TIME", typeof(int));
+            dt.Columns.Add("SCORE_LOG", typeof(int));
+            dt.Columns.Add("SCORE_GRAPH", typeof(int));
+            dt.Columns.Add("COMMENTS_GROUP", typeof(string));
+            dt.Columns.Add("COMMENTS_TIME", typeof(string));
+            dt.Columns.Add("COMMENTS_LOG", typeof(string));
+            dt.Columns.Add("COMMENTS_GRAPH", typeof(string));
+            this.Invoke(new SetDtCallback((_dt) =>
+            {
+                lock (locker_dt_logs)
+                {
+                    this.dt_logs = _dt;
+                    this.dataGridView_Logs.DataSource = this.dt_logs;
+                }
+                foreach (DataGridViewColumn c in dataGridView_Logs.Columns)
+                {
+                    if (c.Name == "ROWID" || c.Name == "UNITNAME" || c.Name == "STATIONNAME" || c.Name == "INSTRCODE" || c.Name == "INSTRNAME" || c.Name == "AB_TYPE_NAME" || c.Name == "SCIENCE" || c.Name == "START_DATE" || c.Name == "END_DATE")
+                    {
+                        c.Width = 50;
+                        continue;
+                    }
+                    c.Visible = false;
+                }
+                dataGridView_Logs.Columns["ROWID"].HeaderText = "序号";
+#if LOGTEST
+                this.ShowLog(1);
+#endif
+            }
+            ), new object[] { dt });
+            this.RefreshStatus("初始化事件表完成");
+        }
+        public void RefreshStatus(string s)
+        {
+            if (this.richTextBox_Status.InvokeRequired)
+                this.Invoke(new RefreshStatusCallback(RefreshStatus), new object[] { s });
+            else
+            {
+                if (this.richTextBox_Status.Text.Length == 0)
+                    this.richTextBox_Status.Text = s;
+                else
+                {
+                    this.richTextBox_Status.Text += "\n" + s;
+                }
+                this.richTextBox_Status.SelectionStart = this.richTextBox_Status.Text.Length;
+                this.richTextBox_Status.SelectionLength = 0;
+                this.richTextBox_Status.Focus();
+            }
+        }
+
+        public void ReloadDtUnits()
+        {
+            this.RefreshStatus("正在加载省局列表……");
+            DataTable dt = orahlper.GetDataTable("select unit_code, unitname from qzdata.qz_abnormity_units where unit_code != 'CEN'");
+            dt.Columns.Add("NUM");
+            foreach (DataRow r in dt.Rows)
+            {
+                r["NUM"] = 0;
+                for (int i = 0; i < UNIT_NUM.GetLength(0); i++)
+                {
+                    if (r["unit_code"].ToString() == UNIT_NUM[i, 0].ToString())
+                    {
+                        r["NUM"] = UNIT_NUM[i, 1];
+                        break;
+                    }
+                }
+            }
+            this.Invoke(new SetDtCallback((_dt) => this.dt_units = _dt), new object[]{dt});
+            this.RefreshStatus("加载省局列表完成");
+        }
+
         private void OnScoreGroupChanging(int new_value)
         {
             if (vb.score_group >= 0 && vb.score_group <= 1)
@@ -56,7 +158,8 @@ namespace Audit
                 score_group_buttons[vb.score_group].BackColor = SystemColors.Control;
                 score_group_buttons[vb.score_group].UseVisualStyleBackColor = true;
             }
-            score_group_buttons[new_value].BackColor = Color.PaleVioletRed;   
+            if (new_value >= 0 && new_value <= 1)
+                score_group_buttons[new_value].BackColor = Color.PaleVioletRed;
         }
         private void OnScoreTimeChanging(int new_value)
         {
@@ -65,7 +168,8 @@ namespace Audit
                 score_time_buttons[vb.score_time].BackColor = SystemColors.Control;
                 score_time_buttons[vb.score_time].UseVisualStyleBackColor = true;
             }
-            score_time_buttons[new_value].BackColor = Color.PaleVioletRed;
+            if (new_value >= 0 && new_value <= 1)
+                score_time_buttons[new_value].BackColor = Color.PaleVioletRed;
         }
         private void OnScoreGraphChanging(int new_value)
         {
@@ -74,7 +178,8 @@ namespace Audit
                 score_graph_buttons[vb.score_graph].BackColor = SystemColors.Control;
                 score_graph_buttons[vb.score_graph].UseVisualStyleBackColor = true;
             }
-            score_graph_buttons[new_value].BackColor = Color.PaleVioletRed;   
+            if (new_value >= 0 && new_value <= 2)
+                score_graph_buttons[new_value].BackColor = Color.PaleVioletRed;
         }
         private void OnScoreLogChanging(int new_value)
         {
@@ -83,196 +188,41 @@ namespace Audit
                 score_log_buttons[vb.score_log].BackColor = SystemColors.Control;
                 score_log_buttons[vb.score_log].UseVisualStyleBackColor = true;
             }
-            score_log_buttons[new_value].BackColor = Color.PaleVioletRed;
+            if (new_value >= 0 && new_value <= 2)
+                score_log_buttons[new_value].BackColor = Color.PaleVioletRed;
         }
 
 
         private void button9_Click(object sender, EventArgs e)
         {
-
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
-
         }
 
         private void richTextBox1_TextChanged(object sender, EventArgs e)
         {
-
         }
 
-        private void button_TimeGood_Click(object sender, EventArgs e)
-        {
-            vb.score_time = 0;
-        }
+        private void button_TimeGood_Click(object sender, EventArgs e) { vb.score_time = 0; }
+        private void button_TimeBad_Click(object sender, EventArgs e) { vb.score_time = 1; }
+        private void button_GraphGood_Click(object sender, EventArgs e) { vb.score_graph = 0; }
+        private void button_GraphMiddle_Click(object sender, EventArgs e) { vb.score_graph = 1; }
+        private void button_GraphBad_Click(object sender, EventArgs e) { vb.score_graph = 2; }
+        private void button_LogGood_Click(object sender, EventArgs e) { vb.score_log = 0; }
+        private void button_LogMiddle_Click(object sender, EventArgs e) { vb.score_log = 1; }
+        private void button_LogBad_Click(object sender, EventArgs e) { vb.score_log = 2; }
+        private void button_GroupGood_Click(object sender, EventArgs e) { vb.score_group = 0; }
+        private void button_GroupBad_Click(object sender, EventArgs e) { vb.score_group = 1; }
 
-        private void button_TimeBad_Click(object sender, EventArgs e)
-        {
-            vb.score_time = 1;
-        }
-
-        private void button_GraphGood_Click(object sender, EventArgs e)
-        {
-            vb.score_graph = 0;
-        }
-
-        private void button_GraphMiddle_Click(object sender, EventArgs e)
-        {
-            vb.score_graph = 1;
-        }
-
-        private void button_GraphBad_Click(object sender, EventArgs e)
-        {
-            vb.score_graph = 2;
-        }
-
-        private void button_LogGood_Click(object sender, EventArgs e)
-        {
-            vb.score_log = 0;
-        }
-
-        private void button_LogMiddle_Click(object sender, EventArgs e)
-        {
-            vb.score_log = 1;
-        }
-
-        private void button_LogBad_Click(object sender, EventArgs e)
-        {
-            vb.score_log = 2;
-        }
-
-        private void button_GroupGood_Click(object sender, EventArgs e)
-        {
-            vb.score_group = 0;
-        }
-
-        private void button_GroupBad_Click(object sender, EventArgs e)
-        {
-            vb.score_group = 1;
-        }
-
-        private void Form1_Resize(object sender, EventArgs e)
-        {
-           
-            Rectangle[] rlist = this.GetResizeRectList(new Point(0,0), this.Size);
-            for (int i = 0; i < this.ctrl_list.GetLength(0); i++)
-            {
-                this.ctrl_list[i].Location = rlist[i].Location;
-                this.ctrl_list[i].Size = rlist[i].Size;
-            }
-        }
-
-        private void Form1_SizeChanged(object sender, EventArgs e)
-        {
-            
-        }
 
         private void pictureBox1_DoubleClick(object sender, EventArgs e)
         {
-            ImageShower f2 = new ImageShower();
+            ImageShower f2 = new ImageShower(this.pictureBox_Graph.Image);
             f2.Show();
         }
-        public Rectangle[] GetResizeRectList(Point lefttop, Size siz)
-        {
-            double[] v = new double[10] { 0.02, 0.2, 0.22, 0.27, 0.28, 0.42, 0.43, 0.48, 0.5, 0.98 };
-            double[] h = new double[15] { 0.02, 0.07, 0.09, 0.19, 0.21, 0.26, 0.28, 0.38, 0.4, 0.58, 0.6, 0.78, 0.79, 0.9, 0.96 };
-            
-            Rectangle[] rl = new Rectangle[30];
-            RectHelper rh = new RectHelper();
-            rh.lefttop = lefttop;
-            rh.siz = siz;
-            Size sizbtn = rh.GetRectByProp(v[2], h[2], v[3], h[3]).Size;
-            Size sizlabel = new Size(50, 20);
-            Size sizhlp = new Size(20, 20);
-            Size sizsysbtn = rh.GetRectByProp(rh.GetRectByProp(v[2], h[2], v[7], h[3]), 0, 0, 0.4, 0.7).Size;
-
-            rl[0] = rh.GetRectByProp(v[0], h[0], v[1], h[1]);
-            rl[1] = rh.GetRectByProp(v[0], h[2], v[1], h[11]);
-            rl[2] = rh.GetCenterRect(rh.GetRectByProp(v[0], h[12], v[1], h[13]),sizsysbtn);
-            
-           
-
-            rl[3] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[0], v[3], h[3]), sizbtn, RectHelper._ALIGNTOP);
-            rl[4] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[2], v[3], h[3]), sizlabel, RectHelper._ALIGNRIGHT);
-
-            rl[5] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[4], v[3], h[7]), sizbtn, RectHelper._ALIGNTOP);
-            rl[6] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[6], v[3], h[7]), sizlabel, RectHelper._ALIGNRIGHT);
-
-            rl[7] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[8], v[3], h[11]), sizbtn, RectHelper._ALIGNCENTER);
-            rl[8] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[10], v[3], h[11]), sizlabel, RectHelper._ALIGNRIGHT);
-
-            
-            rl[9] = rh.GetRectByProp(v[4], h[0], v[5], h[1]);
-            rl[10] = rh.GetRectByProp(v[4], h[2], v[5], h[3]);
-            rl[11] = rh.GetRectByProp(v[4], h[4], v[5], h[5]);
-            rl[12] = rh.GetRectByProp(v[4], h[6], v[5], h[7]);
-            rl[13] = rh.GetRectByProp(v[4], h[8], v[5], h[9]);
-            rl[14] = rh.GetRectByProp(v[4], h[10], v[5], h[11]);
-
-
-            rl[15] = rh.GetAlignRect(rh.GetRectByProp(v[6], h[0], v[7], h[3]), sizbtn, RectHelper._ALIGNTOP);
-            rl[16] = rh.GetAlignRect(rh.GetRectByProp(v[6], h[4], v[7], h[7]), sizbtn, RectHelper._ALIGNTOP);
-
-            rl[17] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[6], h[8], v[7], h[11]), 0, 0, 1, 0.45),sizbtn, RectHelper._ALIGNBOTTOM);
-            rl[18] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[6], h[8], v[7], h[11]), 0, 0.55, 1, 1), sizbtn, RectHelper._ALIGNTOP);
-   
-            rl[19] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[10], v[3], h[11]),sizhlp, RectHelper._ALIGNBOTTOM|RectHelper._ALIGNRIGHT);
-
-            rl[20] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[12], v[7], h[13]), 0, 0, 0.5, 1), sizsysbtn, RectHelper._ALIGNCENTER);
-            rl[21] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[12], v[7], h[13]), 0.5, 0, 1, 1), sizsysbtn, RectHelper._ALIGNCENTER);
-                 
-
-            rl[22] = rh.GetRectByProp(v[8], h[0], v[9], h[11]);
-
-            rl[23] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[12], v[9], h[13]),2/3.0,0,1,1),0,0,1/3.0,1), sizbtn);
-            rl[24] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[12], v[9], h[13]), 2 / 3.0, 0, 1, 1), 1/3.0, 0, 2 / 3.0, 1), sizbtn);
-            rl[25] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[12], v[9], h[13]), 2 / 3.0, 0, 1, 1), 2/3.0, 0, 1, 1), sizbtn);
         
-        
-
-            rl[26] = rh.GetRectByProp(rh.GetRectByProp(v[8], h[12], v[9], h[13]),1/6.0,0,2/3.0,1);
-            rl[27] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[8], h[12], v[9], h[13]), 0,0,0.9/6.0,1), sizlabel, RectHelper._ALIGNRIGHT);
-            rl[28] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[8], h[12], v[9], h[13]), 0, 0, 0.9 / 6.0, 1), sizhlp, RectHelper._ALIGNRIGHT|RectHelper._ALIGNBOTTOM);
-            rl[29] = rh.GetAlignRect(rh.GetRectByProp(v[0], h[13], v[9], h[14]), sizlabel, RectHelper._ALIGNLEFT|RectHelper._ALIGNTOP);
-
-            return rl;
-        }
-        private void FillCtrlList()
-        {
-            ctrl_list[0] = button_Input;
-            ctrl_list[1] = listView_Logs;
-            ctrl_list[2] = button_Output;
-            ctrl_list[3] = button_GroupGood;
-            ctrl_list[4] = label_Group;
-            ctrl_list[5] = button_TimeGood;
-            ctrl_list[6] = label_Time;
-            ctrl_list[7] = button_LogGood;
-            ctrl_list[8] = label_Log;
-            
-            ctrl_list[9] = richTextBox_Group;
-            ctrl_list[10] = richTextBox_GroupCheck;
-            ctrl_list[11] = richTextBox_Time;
-            ctrl_list[12] = richTextBox_TimeCheck;
-            ctrl_list[13] = richTextBox_Log;
-            ctrl_list[14] = richTextBox_LogCheck;
-            ctrl_list[15] = button_GroupBad;
-            ctrl_list[16] = button_TimeBad;
-            ctrl_list[17] = button_LogMiddle;
-            ctrl_list[18] = button_LogBad;
-            ctrl_list[19] = button_LogCheckHelp;
-            ctrl_list[20] = button_PrevLog;
-            ctrl_list[21] = button_NextLog;
-            ctrl_list[22] = pictureBox_Graph;
-            ctrl_list[23] = button_GraphGood;
-            ctrl_list[24] = button_GraphMiddle;
-            ctrl_list[25] = button_GraphBad;
-            ctrl_list[26] = richTextBox_GraphCheck;
-            ctrl_list[27] = label_Graph;
-            ctrl_list[28] = button_GraphCheckHelp;
-            ctrl_list[29] = label_Status;
-        }
-
         private void richTextBox_GroupCheck_TextChanged(object sender, EventArgs e)
         {
 
@@ -280,8 +230,108 @@ namespace Audit
 
         private void button_Input_Click(object sender, EventArgs e)
         {
-            Rule rl = new Rule();
-            rl.ShowDialog();
+            Rule rl = new Rule(this.dt_units);
+            if (rl.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+            if (backgroundWorker_LogFetcher.IsBusy == false)
+                backgroundWorker_LogFetcher.RunWorkerAsync(rl);
+            else
+                MessageBox.Show("事件抽取器正忙！");
+
+    //        MemoryStream mstream = new MemoryStream((byte[])dt.Rows[0]["graph"]);
+    //              this.pictureBox_Graph.Image = Image.FromStream(mstream);
         }
+        public void ShowLog(int rowid)
+        {
+            foreach (DataRow r in this.dt_logs.Rows)
+            {
+                if (Convert.ToInt32(r["ROWID"]) == rowid)
+                {
+                    this.cur_log = rowid;
+                    this.richTextBox_Group.Text = r["AB_TYPE_NAME"].ToString();
+                    this.richTextBox_Time.Text = r["START_DATE"].ToString() + " - \n" + (r["END_DATE"] is DBNull ? "未结束" : r["END_DATE"].ToString());
+                    this.richTextBox_Log.Text = r["AB_DESC"].ToString();
+                    MemoryStream mstream = new MemoryStream((byte[])r["GRAPH"]);
+                    this.pictureBox_Graph.Image = Image.FromStream(mstream);
+                    if (pictureBox_Graph.Height >= pictureBox_Graph.Image.Height && pictureBox_Graph.Width >= pictureBox_Graph.Image.Width)
+                    {
+                        pictureBox_Graph.SizeMode = PictureBoxSizeMode.CenterImage;
+                    }
+                    else
+                    {
+                        pictureBox_Graph.SizeMode = PictureBoxSizeMode.StretchImage;
+                    }
+                    this.label_LogInfo.Text = string.Format("{0} {1}{2}{3}{4}[{5}]", r["SCIENCE"], r["UNITNAME"], r["STATIONNAME"], r["INSTRCODE"], r["INSTRNAME"], r["POINTID"]);
+
+                    break;
+                }
+            }
+        }
+        private void ShowLog(string log_id)
+        {
+            foreach (DataRow r in this.dt_logs.Rows)
+            {
+                if (r["log_id"].ToString() == log_id)
+                {
+                    ShowLog(Convert.ToInt32(r["rowid"]));
+                    break;
+                }
+            }
+        }
+
+        private void backgroundWorker_LogFetcher_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Rule rl = e.Argument as Rule;
+            BackgroundWorker wker = sender as BackgroundWorker;
+            for (int i = 0; i < rl.unit_num.GetLength(0); i++)
+            {
+                this.RefreshStatus("正在抽取" + rl.unit_num[i, 0] + "的事件……");
+                SqlGenerator sg = new SqlGenerator();
+                DataTable dt = orahlper.GetDataTable(sg.GenExtractionSql(Convert.ToInt32(rl.unit_num[i, 1]), rl.unit_num[i, 2], rl.after_date.Year, rl.after_date.Month, rl.after_date.Day, rl.no_earlier));
+                this.Invoke(new SetDtCallback((_dt) =>
+                {
+                    foreach (DataRow r in _dt.Rows)
+                    {
+                        lock (locker_dt_logs)
+                        {
+                            dt_logs.Columns["ROWID"].AutoIncrement = true;
+                            dt_logs.ImportRow(r);
+                            dt_logs.Columns["ROWID"].AutoIncrement = false;
+                        }
+                        if (this.log_shown == false)
+                        {
+                            this.log_shown = true;
+                            this.ShowLog(r["log_id"].ToString());
+                        }
+                    }
+                }
+                    ), new object[] { dt });
+                
+            }
+            RefreshStatus("事件抽取完成");
+
+        }
+
+        private void backgroundWorker_LogFetcher_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void MainFrame_Load(object sender, EventArgs e)
+        {
+            new Thread(ReloadDtUnits).Start();
+            new Thread(InitDtLogs).Start();
+        }
+
+        private void dataGridView_Logs_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dt_logs != null && dt_logs.Rows.Count > 0)
+            {
+                object rid = this.dataGridView_Logs.CurrentRow.Cells["rowid"].Value;
+                if(!(rid is DBNull))
+                    this.ShowLog(Convert.ToInt32(rid));
+            }
+        }
+        
     }
 }

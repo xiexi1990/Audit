@@ -24,8 +24,13 @@ namespace Audit
         }
         public int ExecuteNonQuery(string strsql)
         {
-            OracleCommand ocmd = new OracleCommand(strsql, this.oracon);
-            return ocmd.ExecuteNonQuery();
+            int rtn;
+            lock (this)
+            {
+                OracleCommand ocmd = new OracleCommand(strsql, this.oracon);
+                rtn = ocmd.ExecuteNonQuery();
+            }
+            return rtn;
         }
         public int GetInt32(string strsql)
         {
@@ -38,24 +43,32 @@ namespace Audit
         public object GetSingleValue(string strsql)
         {
             //       TestConnection();
-            OracleCommand ocmd = new OracleCommand();
-            ocmd.Connection = oracon;
-            ocmd.CommandText = strsql;
-            if (feedback)
+            object rtn;
+            lock (this)
             {
-                FeedBack(strsql);
+                OracleCommand ocmd = new OracleCommand();
+                ocmd.Connection = oracon;
+                ocmd.CommandText = strsql;
+                if (feedback)
+                {
+                    FeedBack(strsql);
+                }
+                rtn = ocmd.ExecuteScalar();
             }
-            return ocmd.ExecuteScalar();
+            return rtn;
         }
         public DataTable GetDataTable(string strsql)
         {
-            OracleDataAdapter oda = new OracleDataAdapter(strsql, oracon);
             DataTable dt = new DataTable();
-            if (feedback)
+            lock (this)
             {
-                FeedBack(strsql);
+                OracleDataAdapter oda = new OracleDataAdapter(strsql, oracon);
+                if (feedback)
+                {
+                    FeedBack(strsql);
+                }
+                oda.Fill(dt);
             }
-            oda.Fill(dt);
             return dt;
         }
         protected void TestConnection()

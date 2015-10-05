@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainFrame));
             this.richTextBox_Time = new System.Windows.Forms.RichTextBox();
             this.richTextBox_Log = new System.Windows.Forms.RichTextBox();
             this.button_TimeGood = new System.Windows.Forms.Button();
@@ -44,7 +43,6 @@
             this.button_TimeBad = new System.Windows.Forms.Button();
             this.button_NextLog = new System.Windows.Forms.Button();
             this.button_Output = new System.Windows.Forms.Button();
-            this.listView_Logs = new System.Windows.Forms.ListView();
             this.button_Input = new System.Windows.Forms.Button();
             this.richTextBox_Group = new System.Windows.Forms.RichTextBox();
             this.button_GroupGood = new System.Windows.Forms.Button();
@@ -58,14 +56,19 @@
             this.label_Time = new System.Windows.Forms.Label();
             this.label_Log = new System.Windows.Forms.Label();
             this.label_Graph = new System.Windows.Forms.Label();
-            this.label_Status = new System.Windows.Forms.Label();
+            this.dataGridView_Logs = new System.Windows.Forms.DataGridView();
+            this.backgroundWorker_LogFetcher = new System.ComponentModel.BackgroundWorker();
+            this.richTextBox_Status = new System.Windows.Forms.RichTextBox();
+            this.label_LogInfo = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).BeginInit();
             this.SuspendLayout();
             // 
             // richTextBox_Time
             // 
             this.richTextBox_Time.Location = new System.Drawing.Point(207, 166);
             this.richTextBox_Time.Name = "richTextBox_Time";
+            this.richTextBox_Time.ReadOnly = true;
             this.richTextBox_Time.Size = new System.Drawing.Size(194, 26);
             this.richTextBox_Time.TabIndex = 0;
             this.richTextBox_Time.Text = "起止时间";
@@ -75,6 +78,7 @@
             // 
             this.richTextBox_Log.Location = new System.Drawing.Point(196, 324);
             this.richTextBox_Log.Name = "richTextBox_Log";
+            this.richTextBox_Log.ReadOnly = true;
             this.richTextBox_Log.Size = new System.Drawing.Size(194, 84);
             this.richTextBox_Log.TabIndex = 0;
             this.richTextBox_Log.Text = "事件记录";
@@ -194,22 +198,13 @@
             // 
             // button_Output
             // 
-            this.button_Output.Location = new System.Drawing.Point(12, 493);
+            this.button_Output.Location = new System.Drawing.Point(26, 404);
             this.button_Output.Name = "button_Output";
             this.button_Output.Size = new System.Drawing.Size(49, 86);
             this.button_Output.TabIndex = 3;
             this.button_Output.Text = "产出报表";
             this.button_Output.UseVisualStyleBackColor = true;
             this.button_Output.Click += new System.EventHandler(this.button9_Click);
-            // 
-            // listView_Logs
-            // 
-            this.listView_Logs.Location = new System.Drawing.Point(12, 85);
-            this.listView_Logs.Name = "listView_Logs";
-            this.listView_Logs.Size = new System.Drawing.Size(97, 286);
-            this.listView_Logs.TabIndex = 4;
-            this.listView_Logs.UseCompatibleStateImageBehavior = false;
-            this.listView_Logs.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
             // 
             // button_Input
             // 
@@ -225,6 +220,7 @@
             // 
             this.richTextBox_Group.Location = new System.Drawing.Point(196, 39);
             this.richTextBox_Group.Name = "richTextBox_Group";
+            this.richTextBox_Group.ReadOnly = true;
             this.richTextBox_Group.Size = new System.Drawing.Size(194, 29);
             this.richTextBox_Group.TabIndex = 0;
             this.richTextBox_Group.Text = "事件分类";
@@ -279,7 +275,6 @@
             // pictureBox_Graph
             // 
             this.pictureBox_Graph.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox_Graph.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox_Graph.Image")));
             this.pictureBox_Graph.Location = new System.Drawing.Point(560, 15);
             this.pictureBox_Graph.Name = "pictureBox_Graph";
             this.pictureBox_Graph.Size = new System.Drawing.Size(334, 377);
@@ -334,21 +329,51 @@
             this.label_Graph.TabIndex = 7;
             this.label_Graph.Text = "图件标注\r\n审核意见";
             // 
-            // label_Status
+            // dataGridView_Logs
             // 
-            this.label_Status.AutoSize = true;
-            this.label_Status.Location = new System.Drawing.Point(149, 587);
-            this.label_Status.Name = "label_Status";
-            this.label_Status.Size = new System.Drawing.Size(77, 12);
-            this.label_Status.TabIndex = 8;
-            this.label_Status.Text = "label_Status";
+            this.dataGridView_Logs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_Logs.Location = new System.Drawing.Point(16, 78);
+            this.dataGridView_Logs.MultiSelect = false;
+            this.dataGridView_Logs.Name = "dataGridView_Logs";
+            this.dataGridView_Logs.ReadOnly = true;
+            this.dataGridView_Logs.RowTemplate.Height = 23;
+            this.dataGridView_Logs.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_Logs.Size = new System.Drawing.Size(80, 249);
+            this.dataGridView_Logs.TabIndex = 9;
+            this.dataGridView_Logs.SelectionChanged += new System.EventHandler(this.dataGridView_Logs_SelectionChanged);
             // 
-            // Form1
+            // backgroundWorker_LogFetcher
+            // 
+            this.backgroundWorker_LogFetcher.WorkerReportsProgress = true;
+            this.backgroundWorker_LogFetcher.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_LogFetcher_DoWork);
+            this.backgroundWorker_LogFetcher.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_LogFetcher_ProgressChanged);
+            // 
+            // richTextBox_Status
+            // 
+            this.richTextBox_Status.Location = new System.Drawing.Point(26, 518);
+            this.richTextBox_Status.Name = "richTextBox_Status";
+            this.richTextBox_Status.Size = new System.Drawing.Size(100, 74);
+            this.richTextBox_Status.TabIndex = 10;
+            this.richTextBox_Status.Text = "";
+            // 
+            // label_LogInfo
+            // 
+            this.label_LogInfo.AutoSize = true;
+            this.label_LogInfo.Location = new System.Drawing.Point(214, 7);
+            this.label_LogInfo.Name = "label_LogInfo";
+            this.label_LogInfo.Size = new System.Drawing.Size(47, 12);
+            this.label_LogInfo.TabIndex = 11;
+            this.label_LogInfo.Text = "LogInfo";
+            this.label_LogInfo.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // MainFrame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(940, 608);
-            this.Controls.Add(this.label_Status);
+            this.Controls.Add(this.label_LogInfo);
+            this.Controls.Add(this.richTextBox_Status);
+            this.Controls.Add(this.dataGridView_Logs);
             this.Controls.Add(this.label_Graph);
             this.Controls.Add(this.label_Log);
             this.Controls.Add(this.label_Time);
@@ -358,7 +383,6 @@
             this.Controls.Add(this.button_LogCheckHelp);
             this.Controls.Add(this.button_GraphCheckHelp);
             this.Controls.Add(this.button_Input);
-            this.Controls.Add(this.listView_Logs);
             this.Controls.Add(this.button_Output);
             this.Controls.Add(this.button_NextLog);
             this.Controls.Add(this.button_PrevLog);
@@ -378,11 +402,12 @@
             this.Controls.Add(this.richTextBox_GroupCheck);
             this.Controls.Add(this.richTextBox_Group);
             this.Controls.Add(this.richTextBox_Time);
-            this.Name = "Form1";
+            this.Name = "MainFrame";
             this.Text = "Form1";
-            this.SizeChanged += new System.EventHandler(this.Form1_SizeChanged);
+            this.Load += new System.EventHandler(this.MainFrame_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -405,7 +430,6 @@
         private System.Windows.Forms.Button button_TimeBad;
         private System.Windows.Forms.Button button_NextLog;
         private System.Windows.Forms.Button button_Output;
-        private System.Windows.Forms.ListView listView_Logs;
         private System.Windows.Forms.Button button_Input;
         private System.Windows.Forms.RichTextBox richTextBox_Group;
         private System.Windows.Forms.Button button_GroupGood;
@@ -419,7 +443,10 @@
         private System.Windows.Forms.Label label_Time;
         private System.Windows.Forms.Label label_Log;
         private System.Windows.Forms.Label label_Graph;
-        private System.Windows.Forms.Label label_Status;
+        private System.Windows.Forms.DataGridView dataGridView_Logs;
+        private System.ComponentModel.BackgroundWorker backgroundWorker_LogFetcher;
+        private System.Windows.Forms.RichTextBox richTextBox_Status;
+        private System.Windows.Forms.Label label_LogInfo;
     }
 }
 
