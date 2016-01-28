@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace Audit
 {
@@ -14,6 +15,7 @@ namespace Audit
         [STAThread]
         static void Main()
         {
+            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainFrame());

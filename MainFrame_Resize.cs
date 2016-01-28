@@ -108,8 +108,7 @@ namespace Audit
         }
         private void Form1_Resize(object sender, EventArgs e)
         {
-
-            Rectangle[] rlist = this.GetResizeRectList(new Point(0, 0), this.Size);
+            Rectangle[] rlist = this.GetResizeRectList(new Point(0, menuStrip1.Height), new Size(this.Size.Width, this.Size.Height - menuStrip1.Height));
             for (int i = 0; i < this.ctrl_list.GetLength(0); i++)
             {
                 this.ctrl_list[i].Location = rlist[i].Location;

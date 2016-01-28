@@ -24,6 +24,12 @@ namespace Audit
             this.dataGridView_Units.Columns[0].Visible = false;
             this.dataGridView_Units.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             this.checkBox_NoEarlier.Checked = true;
+
+            if (true)
+            {
+                dateTimePicker_AfterDate.Value = new DateTime(2014, 9, 1);
+                richTextBox_Units.Text = @"地震预测研究所 10,震防中心 0,辽宁省 20,吉林省 15,黑龙江 15,上海市 15,江苏省 15,浙江省 15,安徽省 15,福建省 20,江西省 15,山东省 20,河南省 15,湖北省 15,湖南省 15,广东省 15,广西壮族自治区 15,海南省 10,四川省 20,云南省 20,西藏自治区 10,重庆市 15,陕西省 20,";
+            }
         }
 
         private void button_Add_Click(object sender, EventArgs e)

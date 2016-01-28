@@ -60,8 +60,12 @@
             this.backgroundWorker_LogFetcher = new System.ComponentModel.BackgroundWorker();
             this.richTextBox_Status = new System.Windows.Forms.RichTextBox();
             this.label_LogInfo = new System.Windows.Forms.Label();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.MenuItem_Settings = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_PageWithAlt = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // richTextBox_Time
@@ -129,8 +133,9 @@
             this.button_PrevLog.Name = "button_PrevLog";
             this.button_PrevLog.Size = new System.Drawing.Size(49, 86);
             this.button_PrevLog.TabIndex = 3;
-            this.button_PrevLog.Text = "上一事件(P)";
+            this.button_PrevLog.Text = "上一事件(PageUp)";
             this.button_PrevLog.UseVisualStyleBackColor = true;
+            this.button_PrevLog.Click += new System.EventHandler(this.button_PrevLog_Click);
             // 
             // richTextBox_LogCheck
             // 
@@ -192,9 +197,9 @@
             this.button_NextLog.Name = "button_NextLog";
             this.button_NextLog.Size = new System.Drawing.Size(49, 86);
             this.button_NextLog.TabIndex = 3;
-            this.button_NextLog.Text = "下一事件(N)";
+            this.button_NextLog.Text = "下一事件(PageDown)";
             this.button_NextLog.UseVisualStyleBackColor = true;
-            this.button_NextLog.Click += new System.EventHandler(this.button9_Click);
+            this.button_NextLog.Click += new System.EventHandler(this.button_NextLog_Click);
             // 
             // button_Output
             // 
@@ -340,6 +345,7 @@
             this.dataGridView_Logs.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView_Logs.Size = new System.Drawing.Size(80, 249);
             this.dataGridView_Logs.TabIndex = 9;
+            this.dataGridView_Logs.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_Logs_RowsRemoved);
             this.dataGridView_Logs.SelectionChanged += new System.EventHandler(this.dataGridView_Logs_SelectionChanged);
             // 
             // backgroundWorker_LogFetcher
@@ -365,6 +371,32 @@
             this.label_LogInfo.TabIndex = 11;
             this.label_LogInfo.Text = "LogInfo";
             this.label_LogInfo.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItem_Settings});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(940, 25);
+            this.menuStrip1.TabIndex = 12;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // MenuItem_Settings
+            // 
+            this.MenuItem_Settings.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItem_PageWithAlt});
+            this.MenuItem_Settings.Name = "MenuItem_Settings";
+            this.MenuItem_Settings.Size = new System.Drawing.Size(44, 21);
+            this.MenuItem_Settings.Text = "设置";
+            // 
+            // MenuItem_PageWithAlt
+            // 
+            this.MenuItem_PageWithAlt.CheckOnClick = true;
+            this.MenuItem_PageWithAlt.Name = "MenuItem_PageWithAlt";
+            this.MenuItem_PageWithAlt.Size = new System.Drawing.Size(160, 22);
+            this.MenuItem_PageWithAlt.Text = "翻页快捷键Alt+";
+            this.MenuItem_PageWithAlt.Click += new System.EventHandler(this.MenuItem_PageWithCtrl_Click);
             // 
             // MainFrame
             // 
@@ -402,12 +434,18 @@
             this.Controls.Add(this.richTextBox_GroupCheck);
             this.Controls.Add(this.richTextBox_Group);
             this.Controls.Add(this.richTextBox_Time);
+            this.Controls.Add(this.menuStrip1);
+            this.KeyPreview = true;
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainFrame";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.MainFrame_Load);
+            this.Click += new System.EventHandler(this.MainFrame_Click);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -447,6 +485,9 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker_LogFetcher;
         private System.Windows.Forms.RichTextBox richTextBox_Status;
         private System.Windows.Forms.Label label_LogInfo;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_Settings;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_PageWithAlt;
     }
 }
 
