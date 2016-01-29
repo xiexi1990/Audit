@@ -1,6 +1,4 @@
-﻿#define LOGTEST1
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -41,7 +39,7 @@ namespace Audit
         public DataTable dt_units, dt_logs;
         private object locker_dt_logs = new object();
         private int cur_log = -1;
-        private bool log_shown = false, alt_down = false, ctrl_down = false;
+        private bool log_shown = false, alt_down = false, ctrl_down = false, text_change_observe = true, score_change_observe = true;
         
         public object[,] UNIT_NUM = { { "IGP", 10 }, { "IGL", 10 }, { "ICD", 10 }, { "BJ", 15 }, { "TJ", 20 }, { "HE", 20 }, { "SX", 20 }, { "NM", 15 }, { "IES", 10 }, { "DPC", 0 }, { "LN", 20 }, { "JL", 15 }, { "HL", 15 }, { "SH", 15 }, { "JS", 15 }, { "ZJ", 15 }, { "AH", 15 }, { "FJ", 20 }, { "JX", 15 }, { "SD", 20 }, { "HA", 15 }, { "HB", 15 }, { "HN", 15 }, { "GD", 15 }, { "GX", 15 }, { "HI", 10 }, { "SC", 20 }, { "YN", 20 }, { "XZ", 10 }, { "CQ", 15 }, { "SN", 20 }, { "GS", 20 }, { "QH", 15 }, { "NX", 20 }, { "XJ", 20 } };
         public MainFrame()
@@ -69,6 +67,11 @@ namespace Audit
             this.FillCtrlList();
             this.Form1_Resize(null, null);
             this.button_Input.Enabled = false;
+            richTextBox_GroupCheck.TextChanged += new EventHandler(richTextBox_TextChanged);
+            richTextBox_TimeCheck.TextChanged += new EventHandler(richTextBox_TextChanged);
+            richTextBox_LogCheck.TextChanged += new EventHandler(richTextBox_TextChanged);
+            richTextBox_GraphCheck.TextChanged += new EventHandler(richTextBox_TextChanged);
+            
           //  button1.Visible = false;
           //  button_PrevLog.Text = "上一事件"
 
@@ -77,79 +80,7 @@ namespace Audit
         {
             this.orahlper.oracon.Close();
         }
-        public void InitDtLogs()
-        {
-            this.RefreshStatus("正在初始化事件表……");
-            SqlGenerator sg = new SqlGenerator();
-#if LOGTEST
-            DataTable dt = this.orahlper.GetDataTable(sg.GenExtractionSql(1, "HB", 2014, 1, 1, false));
-#else
-            DataTable dt = this.orahlper.GetDataTable(sg.GenExtractionSql(0, "HB", 2014, 1, 1, false)).Clone();
-#endif       
-            DataColumn dc_rowid = new DataColumn("ROWID", typeof(int));
-            dc_rowid.AutoIncrement = false;
-            dc_rowid.AutoIncrementSeed = 1;
-            dt.Columns.Add(dc_rowid);
-            dt.Columns["ROWID"].SetOrdinal(0);
-#if LOGTEST
-            dt.Rows[0]["ROWID"] = 1;
-#endif
-            dt.Columns.Add("SCORE_GROUP", typeof(int));
-            dt.Columns.Add("SCORE_TIME", typeof(int));
-            dt.Columns.Add("SCORE_LOG", typeof(int));
-            dt.Columns.Add("SCORE_GRAPH", typeof(int));
-            dt.Columns.Add("COMMENTS_GROUP", typeof(string));
-            dt.Columns.Add("COMMENTS_TIME", typeof(string));
-            dt.Columns.Add("COMMENTS_LOG", typeof(string));
-            dt.Columns.Add("COMMENTS_GRAPH", typeof(string));
-            this.Invoke(new Param1Callback((_dt) =>
-            {
-                lock (locker_dt_logs)
-                {
-                    this.dt_logs = (DataTable)_dt;
-                    this.dataGridView_Logs.DataSource = this.dt_logs;
-                }
-                foreach (DataGridViewColumn c in dataGridView_Logs.Columns)
-                {
-                    if (c.Name == "ROWID" || c.Name == "UNITNAME" || c.Name == "STATIONNAME" || c.Name == "INSTRCODE" || c.Name == "INSTRNAME" || c.Name == "AB_TYPE_NAME" || c.Name == "SCIENCE" || c.Name == "START_DATE" || c.Name == "END_DATE")
-                    {
-                        c.Width = 50;
-                        continue;
-                    }
-                    c.Visible = false;
-                }
-                dataGridView_Logs.Columns["ROWID"].HeaderText = "序号";
-#if LOGTEST
-                this.ShowLog(1);
-#endif
-            }
-            ), new object[] { dt });
-            this.RefreshStatus("初始化事件表完成");
-
-            if (this.button_Input.InvokeRequired)
-            {
-                this.Invoke(new Param0Callback(() => { this.button_Input.Enabled = true; }));
-            }
-            else
-                this.button_Input.Enabled = true;
-        }
-        public void RefreshStatus(string s)
-        {
-            if (this.richTextBox_Status.InvokeRequired)
-                this.Invoke(new StrCallback(RefreshStatus), new object[] { s });
-            else
-            {
-                if (this.richTextBox_Status.Text.Length == 0)
-                    this.richTextBox_Status.Text = s;
-                else
-                {
-                    this.richTextBox_Status.Text += "\n" + s;
-                }
-                this.richTextBox_Status.SelectionStart = this.richTextBox_Status.Text.Length;
-                this.richTextBox_Status.SelectionLength = 0;
-                this.richTextBox_Status.Focus();
-            }
-        }
+        
 
         public void ReloadDtUnits()
         {
@@ -180,8 +111,37 @@ namespace Audit
         {
         }
 
-        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        private void richTextBox_TextChanged(object sender, EventArgs e)
         {
+            if (!text_change_observe)
+                return;
+            RichTextBox rtb = sender as RichTextBox;
+            string col = null;
+            switch (rtb.Name)
+            {
+                case "richTextBox_GroupCheck":
+                    col = "COMMENTS_GROUP";
+                    break;
+                case "richTextBox_TimeCheck":
+                    col = "COMMENTS_TIME";
+                    break;
+                case "richTextBox_LogCheck":
+                    col = "COMMENTS_LOG";
+                    break;
+                case "richTextBox_GraphCheck":
+                    col = "COMMENTS_GRAPH";
+                    break;
+            }
+            if (col != null)
+            {
+                if (cur_log - 1 >= 0 && cur_log - 1 < dt_logs.Rows.Count)
+                {
+                    lock (locker_dt_logs)
+                    {
+                        dt_logs.Rows[cur_log - 1][col] = rtb.Text;
+                    }
+                }
+            }
         }     
 
         private void pictureBox1_DoubleClick(object sender, EventArgs e)
@@ -208,56 +168,7 @@ namespace Audit
     //        MemoryStream mstream = new MemoryStream((byte[])dt.Rows[0]["graph"]);
     //              this.pictureBox_Graph.Image = Image.FromStream(mstream);
         }
-        public void ShowLog(int rowid)
-        {
-            DataRow r = null;
-
-            if (Convert.ToInt32(dt_logs.Rows[rowid - 1]["ROWID"]) == rowid)
-            {
-                r = dt_logs.Rows[rowid - 1];
-            }
-            else
-            {
-                foreach (DataRow _r in this.dt_logs.Rows)
-                {
-                    if (Convert.ToInt32(_r["ROWID"]) == rowid)
-                    {
-                        r = _r;
-                        Debug.WriteLine("not hit");
-                        break;
-                    }
-                }
-            }
-            if (r != null && r.RowState != DataRowState.Deleted)
-            {
-                this.cur_log = rowid;
-                this.richTextBox_Group.Text = r["AB_TYPE_NAME"].ToString();
-                this.richTextBox_Time.Text = r["START_DATE"].ToString() + " - \n" + (r["END_DATE"] is DBNull ? "未结束" : r["END_DATE"].ToString());
-                this.richTextBox_Log.Text = r["AB_DESC"].ToString();
-                MemoryStream mstream = new MemoryStream((byte[])r["GRAPH"]);
-                this.pictureBox_Graph.Image = Image.FromStream(mstream);
-                if (pictureBox_Graph.Height >= pictureBox_Graph.Image.Height && pictureBox_Graph.Width >= pictureBox_Graph.Image.Width)
-                {
-                    pictureBox_Graph.SizeMode = PictureBoxSizeMode.CenterImage;
-                }
-                else
-                {
-                    pictureBox_Graph.SizeMode = PictureBoxSizeMode.StretchImage;
-                }
-                this.label_LogInfo.Text = string.Format("{0} {1}{2}{3}{4}[{5}]", r["SCIENCE"], r["UNITNAME"], r["STATIONNAME"], r["INSTRCODE"], r["INSTRNAME"], r["POINTID"]);
-            }
-        }
-        private void ShowLog(string log_id)
-        {
-            foreach (DataRow r in this.dt_logs.Rows)
-            {
-                if (r["log_id"].ToString() == log_id)
-                {
-                    ShowLog(Convert.ToInt32(r["rowid"]));
-                    break;
-                }
-            }
-        }
+        
 
         private void backgroundWorker_LogFetcher_DoWork(object sender, DoWorkEventArgs e)
         {
@@ -319,8 +230,7 @@ namespace Audit
         {
 
         }
-
-     
+  
         protected override bool ProcessKeyPreview(ref Message m)
         {
             if (true && m.Msg == 0x0100) /// WM_KEYDOWN

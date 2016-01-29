@@ -76,7 +76,6 @@
             this.richTextBox_Time.Size = new System.Drawing.Size(194, 26);
             this.richTextBox_Time.TabIndex = 0;
             this.richTextBox_Time.Text = "起止时间";
-            this.richTextBox_Time.TextChanged += new System.EventHandler(this.richTextBox1_TextChanged);
             // 
             // richTextBox_Log
             // 
@@ -257,7 +256,6 @@
             this.richTextBox_GroupCheck.Size = new System.Drawing.Size(205, 55);
             this.richTextBox_GroupCheck.TabIndex = 0;
             this.richTextBox_GroupCheck.Text = "";
-            this.richTextBox_GroupCheck.TextChanged += new System.EventHandler(this.richTextBox_GroupCheck_TextChanged);
             // 
             // button_GraphCheckHelp
             // 

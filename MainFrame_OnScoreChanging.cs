@@ -47,15 +47,59 @@ namespace Audit
                 score_log_buttons[new_value].BackColor = Color.PaleVioletRed;
         }
 
-        private void button_TimeGood_Click(object sender, EventArgs e) { vb.score_time = 0; }
-        private void button_TimeBad_Click(object sender, EventArgs e) { vb.score_time = 1; }
-        private void button_GraphGood_Click(object sender, EventArgs e) { vb.score_graph = 0; }
-        private void button_GraphMiddle_Click(object sender, EventArgs e) { vb.score_graph = 1; }
-        private void button_GraphBad_Click(object sender, EventArgs e) { vb.score_graph = 2; }
-        private void button_LogGood_Click(object sender, EventArgs e) { vb.score_log = 0; }
-        private void button_LogMiddle_Click(object sender, EventArgs e) { vb.score_log = 1; }
-        private void button_LogBad_Click(object sender, EventArgs e) { vb.score_log = 2; }
-        private void button_GroupGood_Click(object sender, EventArgs e) { vb.score_group = 0; }
-        private void button_GroupBad_Click(object sender, EventArgs e) { vb.score_group = 1; }
+        private void WriteScoreToDt(string col, int v)
+        {
+            if (!score_change_observe)
+                return;
+            if (cur_log - 1 >= 0 && cur_log - 1 < dt_logs.Rows.Count)
+            {
+                lock (locker_dt_logs)
+                {
+                    dt_logs.Rows[cur_log - 1][col] = v;
+                }
+            }
+        }
+
+        private void button_TimeGood_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt("SCORE_TIME", vb.score_time = 0);
+        }
+        private void button_TimeBad_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt("SCORE_TIME", vb.score_time = 1);
+        }
+        private void button_GraphGood_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt("SCORE_GRAPH", vb.score_graph = 0);
+        }
+        private void button_GraphMiddle_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt("SCORE_GRAPH", vb.score_graph = 1);
+        }
+        private void button_GraphBad_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt("SCORE_GRAPH", vb.score_graph = 2);
+        }
+        private void button_LogGood_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt("SCORE_LOG", vb.score_log = 0);
+        }
+        private void button_LogMiddle_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt("SCORE_LOG", vb.score_log = 1);
+        }
+        private void button_LogBad_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt("SCORE_LOG", vb.score_log = 2);
+        }
+        private void button_GroupGood_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt("SCORE_GROUP", vb.score_group = 0);
+        }
+        private void button_GroupBad_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt("SCORE_GROUP", vb.score_group = 1);
+        }
+        
     }
 }
