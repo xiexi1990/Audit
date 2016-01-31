@@ -58,6 +58,7 @@ namespace Audit
                 vb.score_time = r["SCORE_TIME"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_TIME"]);
                 vb.score_log = r["SCORE_LOG"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_LOG"]);
                 vb.score_graph = r["SCORE_GRAPH"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_GRAPH"]);
+                CheckColor();
                     
                 text_change_observe = true;
             }

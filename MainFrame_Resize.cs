@@ -11,7 +11,7 @@ namespace Audit
             double[] v = new double[10] { 0.02, 0.2, 0.22, 0.27, 0.28, 0.42, 0.43, 0.48, 0.5, 0.98 };
             double[] h = new double[16] { 0.02, 0.04, 0.09, 0.11, 0.21, 0.23, 0.28, 0.3, 0.4, 0.42, 0.61, 0.63, 0.82, 0.83, 0.92, 0.98 };
 
-            Rectangle[] rl = new Rectangle[31];
+            Rectangle[] rl = new Rectangle[32];
             RectHelper rh = new RectHelper();
             rh.lefttop = lefttop;
             rh.siz = siz;
@@ -52,8 +52,8 @@ namespace Audit
 
             rl[19] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[11], v[3], h[12]), sizhlp, RectHelper._ALIGNBOTTOM | RectHelper._ALIGNRIGHT);
 
-            rl[20] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 0, 0, 0.5, 1), sizsysbtn, RectHelper._ALIGNCENTER);
-            rl[21] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 0.5, 0, 1, 1), sizsysbtn, RectHelper._ALIGNCENTER);
+            rl[20] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 0, 0, 1/3.0, 1), new Size(Convert.ToInt32(sizsysbtn.Width * 0.7), sizsysbtn.Height), RectHelper._ALIGNCENTER);
+            rl[21] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 1/3.0, 0, 2/3.0, 1), new Size(Convert.ToInt32(sizsysbtn.Width * 0.7), sizsysbtn.Height), RectHelper._ALIGNCENTER);
 
 
             rl[22] = rh.GetRectByProp(v[8], h[1], v[9], h[12]);
@@ -69,6 +69,8 @@ namespace Audit
             rl[28] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0, 0, 0.9 / 6.0, 1), sizhlp, RectHelper._ALIGNRIGHT | RectHelper._ALIGNBOTTOM);
             rl[29] = rh.GetRectByProp(v[0], h[13], v[1], h[14]);
             rl[30] = rh.GetCenterRect(rh.GetRectByProp(v[2], h[0], v[9], h[1]), new Size(200,20));
+
+            rl[31] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 2 / 3.0, 0, 1, 1), new Size(Convert.ToInt32(sizsysbtn.Width * 0.7), sizsysbtn.Height), RectHelper._ALIGNCENTER);
             return rl;
         }
         private void FillCtrlList()
@@ -105,6 +107,7 @@ namespace Audit
             ctrl_list[28] = button_GraphCheckHelp;
             ctrl_list[29] = richTextBox_Status;
             ctrl_list[30] = label_LogInfo;
+            ctrl_list[31] = button_ClearScore;
         }
         private void Form1_Resize(object sender, EventArgs e)
         {

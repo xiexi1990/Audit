@@ -33,7 +33,7 @@ namespace Audit
             score_time_buttons = new Button[2], 
             score_graph_buttons = new Button[3], 
             score_log_buttons = new Button[3];
-        private Control[] ctrl_list = new Control[31];
+        private Control[] ctrl_list = new Control[32];
         private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
   //      private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
         public DataTable dt_units, dt_logs;
@@ -340,6 +340,15 @@ namespace Audit
                 button_PrevLog.Text = "上一事件(PageUp)";
                 button_NextLog.Text = "下一事件(PageDown)";
             }
+        }
+
+        private void button_ClearScore_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt("SCORE_GROUP", vb.score_group = -1);
+            WriteScoreToDt("SCORE_TIME", vb.score_time = -1);
+            WriteScoreToDt("SCORE_LOG", vb.score_log = -1);
+            WriteScoreToDt("SCORE_GRAPH", vb.score_graph = -1);
+            CheckColor();
         }
 
         //protected override void WndProc(ref Message m)

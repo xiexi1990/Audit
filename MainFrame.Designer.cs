@@ -63,6 +63,8 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.MenuItem_Settings = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_PageWithAlt = new System.Windows.Forms.ToolStripMenuItem();
+            this.button_ClearScore = new System.Windows.Forms.Button();
+            this.listBox_Sentences = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -75,6 +77,7 @@
             this.richTextBox_Time.ReadOnly = true;
             this.richTextBox_Time.Size = new System.Drawing.Size(194, 26);
             this.richTextBox_Time.TabIndex = 0;
+            this.richTextBox_Time.TabStop = false;
             this.richTextBox_Time.Text = "起止时间";
             // 
             // richTextBox_Log
@@ -84,6 +87,7 @@
             this.richTextBox_Log.ReadOnly = true;
             this.richTextBox_Log.Size = new System.Drawing.Size(194, 84);
             this.richTextBox_Log.TabIndex = 0;
+            this.richTextBox_Log.TabStop = false;
             this.richTextBox_Log.Text = "事件记录";
             // 
             // button_TimeGood
@@ -91,7 +95,7 @@
             this.button_TimeGood.Location = new System.Drawing.Point(137, 166);
             this.button_TimeGood.Name = "button_TimeGood";
             this.button_TimeGood.Size = new System.Drawing.Size(49, 44);
-            this.button_TimeGood.TabIndex = 2;
+            this.button_TimeGood.TabIndex = 6;
             this.button_TimeGood.Text = "对";
             this.button_TimeGood.UseVisualStyleBackColor = true;
             this.button_TimeGood.Click += new System.EventHandler(this.button_TimeGood_Click);
@@ -101,7 +105,7 @@
             this.button_LogGood.Location = new System.Drawing.Point(137, 327);
             this.button_LogGood.Name = "button_LogGood";
             this.button_LogGood.Size = new System.Drawing.Size(49, 44);
-            this.button_LogGood.TabIndex = 2;
+            this.button_LogGood.TabIndex = 8;
             this.button_LogGood.Text = "好";
             this.button_LogGood.UseVisualStyleBackColor = true;
             this.button_LogGood.Click += new System.EventHandler(this.button_LogGood_Click);
@@ -111,7 +115,7 @@
             this.button_LogMiddle.Location = new System.Drawing.Point(396, 314);
             this.button_LogMiddle.Name = "button_LogMiddle";
             this.button_LogMiddle.Size = new System.Drawing.Size(59, 39);
-            this.button_LogMiddle.TabIndex = 2;
+            this.button_LogMiddle.TabIndex = 9;
             this.button_LogMiddle.Text = "中";
             this.button_LogMiddle.UseVisualStyleBackColor = true;
             this.button_LogMiddle.Click += new System.EventHandler(this.button_LogMiddle_Click);
@@ -121,7 +125,7 @@
             this.button_LogBad.Location = new System.Drawing.Point(396, 369);
             this.button_LogBad.Name = "button_LogBad";
             this.button_LogBad.Size = new System.Drawing.Size(59, 39);
-            this.button_LogBad.TabIndex = 2;
+            this.button_LogBad.TabIndex = 10;
             this.button_LogBad.Text = "差";
             this.button_LogBad.UseVisualStyleBackColor = true;
             this.button_LogBad.Click += new System.EventHandler(this.button_LogBad_Click);
@@ -132,6 +136,7 @@
             this.button_PrevLog.Name = "button_PrevLog";
             this.button_PrevLog.Size = new System.Drawing.Size(49, 86);
             this.button_PrevLog.TabIndex = 3;
+            this.button_PrevLog.TabStop = false;
             this.button_PrevLog.Text = "上一事件(PageUp)";
             this.button_PrevLog.UseVisualStyleBackColor = true;
             this.button_PrevLog.Click += new System.EventHandler(this.button_PrevLog_Click);
@@ -141,7 +146,7 @@
             this.richTextBox_LogCheck.Location = new System.Drawing.Point(196, 414);
             this.richTextBox_LogCheck.Name = "richTextBox_LogCheck";
             this.richTextBox_LogCheck.Size = new System.Drawing.Size(194, 51);
-            this.richTextBox_LogCheck.TabIndex = 0;
+            this.richTextBox_LogCheck.TabIndex = 2;
             this.richTextBox_LogCheck.Text = "";
             // 
             // richTextBox_GraphCheck
@@ -149,7 +154,7 @@
             this.richTextBox_GraphCheck.Location = new System.Drawing.Point(672, 459);
             this.richTextBox_GraphCheck.Name = "richTextBox_GraphCheck";
             this.richTextBox_GraphCheck.Size = new System.Drawing.Size(256, 61);
-            this.richTextBox_GraphCheck.TabIndex = 0;
+            this.richTextBox_GraphCheck.TabIndex = 3;
             this.richTextBox_GraphCheck.Text = "";
             // 
             // button_GraphMiddle
@@ -157,7 +162,7 @@
             this.button_GraphMiddle.Location = new System.Drawing.Point(728, 404);
             this.button_GraphMiddle.Name = "button_GraphMiddle";
             this.button_GraphMiddle.Size = new System.Drawing.Size(60, 39);
-            this.button_GraphMiddle.TabIndex = 2;
+            this.button_GraphMiddle.TabIndex = 12;
             this.button_GraphMiddle.Text = "中";
             this.button_GraphMiddle.UseVisualStyleBackColor = true;
             this.button_GraphMiddle.Click += new System.EventHandler(this.button_GraphMiddle_Click);
@@ -167,7 +172,7 @@
             this.button_GraphBad.Location = new System.Drawing.Point(835, 398);
             this.button_GraphBad.Name = "button_GraphBad";
             this.button_GraphBad.Size = new System.Drawing.Size(59, 39);
-            this.button_GraphBad.TabIndex = 2;
+            this.button_GraphBad.TabIndex = 13;
             this.button_GraphBad.Text = "差";
             this.button_GraphBad.UseVisualStyleBackColor = true;
             this.button_GraphBad.Click += new System.EventHandler(this.button_GraphBad_Click);
@@ -177,7 +182,7 @@
             this.richTextBox_TimeCheck.Location = new System.Drawing.Point(196, 220);
             this.richTextBox_TimeCheck.Name = "richTextBox_TimeCheck";
             this.richTextBox_TimeCheck.Size = new System.Drawing.Size(194, 51);
-            this.richTextBox_TimeCheck.TabIndex = 0;
+            this.richTextBox_TimeCheck.TabIndex = 1;
             this.richTextBox_TimeCheck.Text = "";
             // 
             // button_TimeBad
@@ -185,7 +190,7 @@
             this.button_TimeBad.Location = new System.Drawing.Point(405, 175);
             this.button_TimeBad.Name = "button_TimeBad";
             this.button_TimeBad.Size = new System.Drawing.Size(60, 44);
-            this.button_TimeBad.TabIndex = 2;
+            this.button_TimeBad.TabIndex = 7;
             this.button_TimeBad.Text = "错";
             this.button_TimeBad.UseVisualStyleBackColor = true;
             this.button_TimeBad.Click += new System.EventHandler(this.button_TimeBad_Click);
@@ -196,6 +201,7 @@
             this.button_NextLog.Name = "button_NextLog";
             this.button_NextLog.Size = new System.Drawing.Size(49, 86);
             this.button_NextLog.TabIndex = 3;
+            this.button_NextLog.TabStop = false;
             this.button_NextLog.Text = "下一事件(PageDown)";
             this.button_NextLog.UseVisualStyleBackColor = true;
             this.button_NextLog.Click += new System.EventHandler(this.button_NextLog_Click);
@@ -206,6 +212,7 @@
             this.button_Output.Name = "button_Output";
             this.button_Output.Size = new System.Drawing.Size(49, 86);
             this.button_Output.TabIndex = 3;
+            this.button_Output.TabStop = false;
             this.button_Output.Text = "产出报表";
             this.button_Output.UseVisualStyleBackColor = true;
             this.button_Output.Click += new System.EventHandler(this.button9_Click);
@@ -216,6 +223,7 @@
             this.button_Input.Name = "button_Input";
             this.button_Input.Size = new System.Drawing.Size(96, 38);
             this.button_Input.TabIndex = 5;
+            this.button_Input.TabStop = false;
             this.button_Input.Text = "按指定规则生成事件集";
             this.button_Input.UseVisualStyleBackColor = true;
             this.button_Input.Click += new System.EventHandler(this.button_Input_Click);
@@ -227,6 +235,7 @@
             this.richTextBox_Group.ReadOnly = true;
             this.richTextBox_Group.Size = new System.Drawing.Size(194, 29);
             this.richTextBox_Group.TabIndex = 0;
+            this.richTextBox_Group.TabStop = false;
             this.richTextBox_Group.Text = "事件分类";
             // 
             // button_GroupGood
@@ -234,7 +243,7 @@
             this.button_GroupGood.Location = new System.Drawing.Point(137, 23);
             this.button_GroupGood.Name = "button_GroupGood";
             this.button_GroupGood.Size = new System.Drawing.Size(49, 44);
-            this.button_GroupGood.TabIndex = 2;
+            this.button_GroupGood.TabIndex = 4;
             this.button_GroupGood.Text = "对";
             this.button_GroupGood.UseVisualStyleBackColor = true;
             this.button_GroupGood.Click += new System.EventHandler(this.button_GroupGood_Click);
@@ -244,7 +253,7 @@
             this.button_GroupBad.Location = new System.Drawing.Point(405, 39);
             this.button_GroupBad.Name = "button_GroupBad";
             this.button_GroupBad.Size = new System.Drawing.Size(49, 44);
-            this.button_GroupBad.TabIndex = 2;
+            this.button_GroupBad.TabIndex = 5;
             this.button_GroupBad.Text = "错";
             this.button_GroupBad.UseVisualStyleBackColor = true;
             this.button_GroupBad.Click += new System.EventHandler(this.button_GroupBad_Click);
@@ -263,6 +272,7 @@
             this.button_GraphCheckHelp.Name = "button_GraphCheckHelp";
             this.button_GraphCheckHelp.Size = new System.Drawing.Size(28, 20);
             this.button_GraphCheckHelp.TabIndex = 6;
+            this.button_GraphCheckHelp.TabStop = false;
             this.button_GraphCheckHelp.Text = "?";
             this.button_GraphCheckHelp.UseVisualStyleBackColor = true;
             // 
@@ -272,6 +282,7 @@
             this.button_LogCheckHelp.Name = "button_LogCheckHelp";
             this.button_LogCheckHelp.Size = new System.Drawing.Size(28, 20);
             this.button_LogCheckHelp.TabIndex = 6;
+            this.button_LogCheckHelp.TabStop = false;
             this.button_LogCheckHelp.Text = "?";
             this.button_LogCheckHelp.UseVisualStyleBackColor = true;
             // 
@@ -291,7 +302,7 @@
             this.button_GraphGood.Location = new System.Drawing.Point(615, 398);
             this.button_GraphGood.Name = "button_GraphGood";
             this.button_GraphGood.Size = new System.Drawing.Size(49, 44);
-            this.button_GraphGood.TabIndex = 2;
+            this.button_GraphGood.TabIndex = 11;
             this.button_GraphGood.Text = "好";
             this.button_GraphGood.UseVisualStyleBackColor = true;
             this.button_GraphGood.Click += new System.EventHandler(this.button_GraphGood_Click);
@@ -343,6 +354,7 @@
             this.dataGridView_Logs.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView_Logs.Size = new System.Drawing.Size(80, 249);
             this.dataGridView_Logs.TabIndex = 9;
+            this.dataGridView_Logs.TabStop = false;
             this.dataGridView_Logs.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_Logs_RowsRemoved);
             this.dataGridView_Logs.SelectionChanged += new System.EventHandler(this.dataGridView_Logs_SelectionChanged);
             // 
@@ -358,6 +370,7 @@
             this.richTextBox_Status.Name = "richTextBox_Status";
             this.richTextBox_Status.Size = new System.Drawing.Size(100, 74);
             this.richTextBox_Status.TabIndex = 10;
+            this.richTextBox_Status.TabStop = false;
             this.richTextBox_Status.Text = "";
             // 
             // label_LogInfo
@@ -396,11 +409,33 @@
             this.MenuItem_PageWithAlt.Text = "翻页快捷键Alt+";
             this.MenuItem_PageWithAlt.Click += new System.EventHandler(this.MenuItem_PageWithCtrl_Click);
             // 
+            // button_ClearScore
+            // 
+            this.button_ClearScore.Location = new System.Drawing.Point(433, 509);
+            this.button_ClearScore.Name = "button_ClearScore";
+            this.button_ClearScore.Size = new System.Drawing.Size(59, 69);
+            this.button_ClearScore.TabIndex = 13;
+            this.button_ClearScore.TabStop = false;
+            this.button_ClearScore.Text = "清除得分";
+            this.button_ClearScore.UseVisualStyleBackColor = true;
+            this.button_ClearScore.Click += new System.EventHandler(this.button_ClearScore_Click);
+            // 
+            // listBox_Sentences
+            // 
+            this.listBox_Sentences.FormattingEnabled = true;
+            this.listBox_Sentences.ItemHeight = 12;
+            this.listBox_Sentences.Location = new System.Drawing.Point(446, 91);
+            this.listBox_Sentences.Name = "listBox_Sentences";
+            this.listBox_Sentences.Size = new System.Drawing.Size(85, 76);
+            this.listBox_Sentences.TabIndex = 14;
+            // 
             // MainFrame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(940, 608);
+            this.Controls.Add(this.listBox_Sentences);
+            this.Controls.Add(this.button_ClearScore);
             this.Controls.Add(this.label_LogInfo);
             this.Controls.Add(this.richTextBox_Status);
             this.Controls.Add(this.dataGridView_Logs);
@@ -486,6 +521,8 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_Settings;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_PageWithAlt;
+        private System.Windows.Forms.Button button_ClearScore;
+        private System.Windows.Forms.ListBox listBox_Sentences;
     }
 }
 

@@ -47,6 +47,12 @@ namespace Audit
                 score_log_buttons[new_value].BackColor = Color.PaleVioletRed;
         }
 
+        private void WSTD_CC(string col, int v)
+        {
+            WriteScoreToDt(col, v);
+            CheckColor();
+        }
+
         private void WriteScoreToDt(string col, int v)
         {
             if (!score_change_observe)
@@ -60,45 +66,78 @@ namespace Audit
             }
         }
 
+        private void CheckColor()
+        {
+            if (cur_log - 1 >= 0 && cur_log - 1 < dt_logs.Rows.Count)
+            {
+                int j = 0;
+                for (int i = 0; i < dt_logs.Rows.Count; i++)
+                {
+                    if (dt_logs.Rows[i].RowState == System.Data.DataRowState.Deleted)
+                    {
+                        continue;
+                    }
+                    if (i > cur_log - 1)
+                        break;
+                    else if(i == cur_log - 1)
+                    {
+                        if ((!(dt_logs.Rows[cur_log - 1]["SCORE_GROUP"] is DBNull) && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_GROUP"]) >= 0 && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_GROUP"]) <= 1) &&
+                            (!(dt_logs.Rows[cur_log - 1]["SCORE_TIME"] is DBNull) && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_TIME"]) >= 0 && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_TIME"]) <= 1) &&
+                            (!(dt_logs.Rows[cur_log - 1]["SCORE_LOG"] is DBNull) && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_LOG"]) >= 0 && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_LOG"]) <= 2) &&
+                            (!(dt_logs.Rows[cur_log - 1]["SCORE_GRAPH"] is DBNull) && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_GRAPH"]) >= 0 && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_GRAPH"]) <= 2))
+                        {
+                            this.dataGridView_Logs.Rows[j].Cells["ROWID"].Style.BackColor = Color.LightGreen;
+                        }
+                        else
+                        {
+                            this.dataGridView_Logs.Rows[j].Cells["ROWID"].Style.BackColor = Color.White;
+                        }
+                        break;
+                    }
+                    j++;
+                }
+            }
+        }
+
         private void button_TimeGood_Click(object sender, EventArgs e)
         {
-            WriteScoreToDt("SCORE_TIME", vb.score_time = 0);
+            WSTD_CC("SCORE_TIME", vb.score_time = 0);
         }
         private void button_TimeBad_Click(object sender, EventArgs e)
         {
-            WriteScoreToDt("SCORE_TIME", vb.score_time = 1);
+            WSTD_CC("SCORE_TIME", vb.score_time = 1);
         }
         private void button_GraphGood_Click(object sender, EventArgs e)
         {
-            WriteScoreToDt("SCORE_GRAPH", vb.score_graph = 0);
+            WSTD_CC("SCORE_GRAPH", vb.score_graph = 0);
         }
         private void button_GraphMiddle_Click(object sender, EventArgs e)
         {
-            WriteScoreToDt("SCORE_GRAPH", vb.score_graph = 1);
+            WSTD_CC("SCORE_GRAPH", vb.score_graph = 1);
         }
         private void button_GraphBad_Click(object sender, EventArgs e)
         {
-            WriteScoreToDt("SCORE_GRAPH", vb.score_graph = 2);
+            WSTD_CC("SCORE_GRAPH", vb.score_graph = 2);
         }
         private void button_LogGood_Click(object sender, EventArgs e)
         {
-            WriteScoreToDt("SCORE_LOG", vb.score_log = 0);
+            WSTD_CC("SCORE_LOG", vb.score_log = 0);
         }
         private void button_LogMiddle_Click(object sender, EventArgs e)
         {
-            WriteScoreToDt("SCORE_LOG", vb.score_log = 1);
+            WSTD_CC("SCORE_LOG", vb.score_log = 1);
         }
         private void button_LogBad_Click(object sender, EventArgs e)
         {
-            WriteScoreToDt("SCORE_LOG", vb.score_log = 2);
+            WSTD_CC("SCORE_LOG", vb.score_log = 2);
         }
         private void button_GroupGood_Click(object sender, EventArgs e)
         {
-            WriteScoreToDt("SCORE_GROUP", vb.score_group = 0);
+            WSTD_CC("SCORE_GROUP", vb.score_group = 0);
         }
         private void button_GroupBad_Click(object sender, EventArgs e)
         {
-            WriteScoreToDt("SCORE_GROUP", vb.score_group = 1);
+            WSTD_CC("SCORE_GROUP", vb.score_group = 1);
         }
         
     }
