@@ -33,12 +33,12 @@ namespace Audit
             score_time_buttons = new Button[2], 
             score_graph_buttons = new Button[3], 
             score_log_buttons = new Button[3];
-        private Control[] ctrl_list = new Control[32];
+        private Control[] ctrl_list = new Control[33];
         private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
   //      private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
         public DataTable dt_units, dt_logs;
         private object locker_dt_logs = new object();
-        private int cur_log = -1;
+    //    private int cur_log = -1;
         private bool log_shown = false, alt_down = false, ctrl_down = false, text_change_observe = true, score_change_observe = true;
         
         public object[,] UNIT_NUM = { { "IGP", 10 }, { "IGL", 10 }, { "ICD", 10 }, { "BJ", 15 }, { "TJ", 20 }, { "HE", 20 }, { "SX", 20 }, { "NM", 15 }, { "IES", 10 }, { "DPC", 0 }, { "LN", 20 }, { "JL", 15 }, { "HL", 15 }, { "SH", 15 }, { "JS", 15 }, { "ZJ", 15 }, { "AH", 15 }, { "FJ", 20 }, { "JX", 15 }, { "SD", 20 }, { "HA", 15 }, { "HB", 15 }, { "HN", 15 }, { "GD", 15 }, { "GX", 15 }, { "HI", 10 }, { "SC", 20 }, { "YN", 20 }, { "XZ", 10 }, { "CQ", 15 }, { "SN", 20 }, { "GS", 20 }, { "QH", 15 }, { "NX", 20 }, { "XJ", 20 } };
@@ -71,8 +71,9 @@ namespace Audit
             richTextBox_TimeCheck.TextChanged += new EventHandler(richTextBox_TextChanged);
             richTextBox_LogCheck.TextChanged += new EventHandler(richTextBox_TextChanged);
             richTextBox_GraphCheck.TextChanged += new EventHandler(richTextBox_TextChanged);
+
+            listBox_Sentences.Visible = false;
             
-          //  button1.Visible = false;
           //  button_PrevLog.Text = "上一事件"
 
         }
@@ -134,11 +135,12 @@ namespace Audit
             }
             if (col != null)
             {
-                if (cur_log - 1 >= 0 && cur_log - 1 < dt_logs.Rows.Count)
+                var r = dataGridView_Logs.CurrentRow;
+                if (r != null && r.DataBoundItem != null)
                 {
                     lock (locker_dt_logs)
                     {
-                        dt_logs.Rows[cur_log - 1][col] = rtb.Text;
+                        (r.DataBoundItem as DataRowView).Row[col] = rtb.Text;
                     }
                 }
             }
@@ -188,11 +190,15 @@ namespace Audit
                             dt_logs.Columns["ROWID"].AutoIncrement = true;
                             dt_logs.ImportRow(r);
                             dt_logs.Columns["ROWID"].AutoIncrement = false;
+                            dt_logs.Rows[dt_logs.Rows.Count - 1]["SCORE_GROUP"] = -1;
+                            dt_logs.Rows[dt_logs.Rows.Count - 1]["SCORE_TIME"] = -1;
+                            dt_logs.Rows[dt_logs.Rows.Count - 1]["SCORE_LOG"] = -1;
+                            dt_logs.Rows[dt_logs.Rows.Count - 1]["SCORE_GRAPH"] = -1;
                         }
                         if (this.log_shown == false)
                         {
                             this.log_shown = true;
-                            this.ShowLog(r["log_id"].ToString());
+                            ShowLog(dt_logs.Rows[dt_logs.Rows.Count - 1]);
                         }
                     }
                 }
@@ -216,14 +222,7 @@ namespace Audit
 
         private void dataGridView_Logs_SelectionChanged(object sender, EventArgs e)
         {
-            if (dt_logs != null && dt_logs.Rows.Count > 0)
-            {
-                if (this.dataGridView_Logs.CurrentRow == null)
-                    return;
-                object rid = this.dataGridView_Logs.CurrentRow.Cells["rowid"].Value;
-                if(!(rid is DBNull))
-                    this.ShowLog(Convert.ToInt32(rid));
-            }
+            ShowLog(dataGridView_Logs.CurrentRow);
         }
 
         private void dataGridView_Logs_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
@@ -349,6 +348,20 @@ namespace Audit
             WriteScoreToDt("SCORE_LOG", vb.score_log = -1);
             WriteScoreToDt("SCORE_GRAPH", vb.score_graph = -1);
             CheckColor();
+        }
+
+        private void button_AllGood_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt("SCORE_GROUP", vb.score_group = 0);
+            WriteScoreToDt("SCORE_TIME", vb.score_time = 0);
+            WriteScoreToDt("SCORE_LOG", vb.score_log = 0);
+            WriteScoreToDt("SCORE_GRAPH", vb.score_graph = 0);
+            CheckColor();
+        }
+
+        private void dataGridView_Logs_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            CheckAllColor();
         }
 
         //protected override void WndProc(ref Message m)

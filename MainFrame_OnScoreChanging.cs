@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
+using System.Data;
 using System;
 
 namespace Audit
@@ -57,44 +58,46 @@ namespace Audit
         {
             if (!score_change_observe)
                 return;
-            if (cur_log - 1 >= 0 && cur_log - 1 < dt_logs.Rows.Count)
+            if (dataGridView_Logs.CurrentRow != null && dataGridView_Logs.CurrentRow.DataBoundItem != null)
             {
                 lock (locker_dt_logs)
                 {
-                    dt_logs.Rows[cur_log - 1][col] = v;
+                    (dataGridView_Logs.CurrentRow.DataBoundItem as DataRowView).Row[col] = v;
                 }
             }
         }
 
         private void CheckColor()
         {
-            if (cur_log - 1 >= 0 && cur_log - 1 < dt_logs.Rows.Count)
+            if (dataGridView_Logs.CurrentRow != null && dataGridView_Logs.CurrentRow.DataBoundItem != null)
             {
-                int j = 0;
-                for (int i = 0; i < dt_logs.Rows.Count; i++)
+                DataRow r = (dataGridView_Logs.CurrentRow.DataBoundItem as DataRowView).Row;
+                if (Convert.ToInt32(r["SCORE_GROUP"]) != -1 && Convert.ToInt32(r["SCORE_TIME"]) != -1 && Convert.ToInt32(r["SCORE_LOG"]) != -1 && Convert.ToInt32(r["SCORE_GRAPH"]) != -1)
                 {
-                    if (dt_logs.Rows[i].RowState == System.Data.DataRowState.Deleted)
+                    dataGridView_Logs.CurrentRow.Cells["ROWID"].Style.BackColor = Color.LightGreen;
+                }
+                else
+                {
+                    dataGridView_Logs.CurrentRow.Cells["ROWID"].Style.BackColor = Color.White;
+                }
+            }
+        }
+
+        private void CheckAllColor()
+        {
+            foreach (DataGridViewRow gr in dataGridView_Logs.Rows)
+            {
+                if (gr != null && gr.DataBoundItem != null)
+                {
+                    DataRow r = (gr.DataBoundItem as DataRowView).Row;
+                    if (Convert.ToInt32(r["SCORE_GROUP"]) != -1 && Convert.ToInt32(r["SCORE_TIME"]) != -1 && Convert.ToInt32(r["SCORE_LOG"]) != -1 && Convert.ToInt32(r["SCORE_GRAPH"]) != -1)
                     {
-                        continue;
+                        gr.Cells["ROWID"].Style.BackColor = Color.LightGreen;
                     }
-                    if (i > cur_log - 1)
-                        break;
-                    else if(i == cur_log - 1)
+                    else
                     {
-                        if ((!(dt_logs.Rows[cur_log - 1]["SCORE_GROUP"] is DBNull) && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_GROUP"]) >= 0 && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_GROUP"]) <= 1) &&
-                            (!(dt_logs.Rows[cur_log - 1]["SCORE_TIME"] is DBNull) && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_TIME"]) >= 0 && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_TIME"]) <= 1) &&
-                            (!(dt_logs.Rows[cur_log - 1]["SCORE_LOG"] is DBNull) && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_LOG"]) >= 0 && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_LOG"]) <= 2) &&
-                            (!(dt_logs.Rows[cur_log - 1]["SCORE_GRAPH"] is DBNull) && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_GRAPH"]) >= 0 && Convert.ToInt32(dt_logs.Rows[cur_log - 1]["SCORE_GRAPH"]) <= 2))
-                        {
-                            this.dataGridView_Logs.Rows[j].Cells["ROWID"].Style.BackColor = Color.LightGreen;
-                        }
-                        else
-                        {
-                            this.dataGridView_Logs.Rows[j].Cells["ROWID"].Style.BackColor = Color.White;
-                        }
-                        break;
+                        gr.Cells["ROWID"].Style.BackColor = Color.White;
                     }
-                    j++;
                 }
             }
         }

@@ -63,8 +63,14 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.MenuItem_Settings = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_PageWithAlt = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_AutoGood = new System.Windows.Forms.ToolStripMenuItem();
+            this.文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.读取ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.保存ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.另存为ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.button_ClearScore = new System.Windows.Forms.Button();
             this.listBox_Sentences = new System.Windows.Forms.ListBox();
+            this.button_AllGood = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -355,6 +361,7 @@
             this.dataGridView_Logs.Size = new System.Drawing.Size(80, 249);
             this.dataGridView_Logs.TabIndex = 9;
             this.dataGridView_Logs.TabStop = false;
+            this.dataGridView_Logs.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView_Logs_ColumnHeaderMouseClick);
             this.dataGridView_Logs.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_Logs_RowsRemoved);
             this.dataGridView_Logs.SelectionChanged += new System.EventHandler(this.dataGridView_Logs_SelectionChanged);
             // 
@@ -386,7 +393,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItem_Settings});
+            this.MenuItem_Settings,
+            this.文件ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(940, 25);
@@ -396,7 +404,8 @@
             // MenuItem_Settings
             // 
             this.MenuItem_Settings.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItem_PageWithAlt});
+            this.MenuItem_PageWithAlt,
+            this.MenuItem_AutoGood});
             this.MenuItem_Settings.Name = "MenuItem_Settings";
             this.MenuItem_Settings.Size = new System.Drawing.Size(44, 21);
             this.MenuItem_Settings.Text = "设置";
@@ -408,6 +417,41 @@
             this.MenuItem_PageWithAlt.Size = new System.Drawing.Size(160, 22);
             this.MenuItem_PageWithAlt.Text = "翻页快捷键Alt+";
             this.MenuItem_PageWithAlt.Click += new System.EventHandler(this.MenuItem_PageWithCtrl_Click);
+            // 
+            // MenuItem_AutoGood
+            // 
+            this.MenuItem_AutoGood.CheckOnClick = true;
+            this.MenuItem_AutoGood.Name = "MenuItem_AutoGood";
+            this.MenuItem_AutoGood.Size = new System.Drawing.Size(160, 22);
+            this.MenuItem_AutoGood.Text = "自动评为全好";
+            // 
+            // 文件ToolStripMenuItem
+            // 
+            this.文件ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.读取ToolStripMenuItem,
+            this.保存ToolStripMenuItem,
+            this.另存为ToolStripMenuItem});
+            this.文件ToolStripMenuItem.Name = "文件ToolStripMenuItem";
+            this.文件ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
+            this.文件ToolStripMenuItem.Text = "文件";
+            // 
+            // 读取ToolStripMenuItem
+            // 
+            this.读取ToolStripMenuItem.Name = "读取ToolStripMenuItem";
+            this.读取ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.读取ToolStripMenuItem.Text = "读取";
+            // 
+            // 保存ToolStripMenuItem
+            // 
+            this.保存ToolStripMenuItem.Name = "保存ToolStripMenuItem";
+            this.保存ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.保存ToolStripMenuItem.Text = "保存";
+            // 
+            // 另存为ToolStripMenuItem
+            // 
+            this.另存为ToolStripMenuItem.Name = "另存为ToolStripMenuItem";
+            this.另存为ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.另存为ToolStripMenuItem.Text = "另存为";
             // 
             // button_ClearScore
             // 
@@ -429,11 +473,22 @@
             this.listBox_Sentences.Size = new System.Drawing.Size(85, 76);
             this.listBox_Sentences.TabIndex = 14;
             // 
+            // button_AllGood
+            // 
+            this.button_AllGood.Location = new System.Drawing.Point(450, 256);
+            this.button_AllGood.Name = "button_AllGood";
+            this.button_AllGood.Size = new System.Drawing.Size(80, 39);
+            this.button_AllGood.TabIndex = 15;
+            this.button_AllGood.Text = "全评为好(&A)";
+            this.button_AllGood.UseVisualStyleBackColor = true;
+            this.button_AllGood.Click += new System.EventHandler(this.button_AllGood_Click);
+            // 
             // MainFrame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(940, 608);
+            this.Controls.Add(this.button_AllGood);
             this.Controls.Add(this.listBox_Sentences);
             this.Controls.Add(this.button_ClearScore);
             this.Controls.Add(this.label_LogInfo);
@@ -523,6 +578,12 @@
         private System.Windows.Forms.ToolStripMenuItem MenuItem_PageWithAlt;
         private System.Windows.Forms.Button button_ClearScore;
         private System.Windows.Forms.ListBox listBox_Sentences;
+        private System.Windows.Forms.Button button_AllGood;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_AutoGood;
+        private System.Windows.Forms.ToolStripMenuItem 文件ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 读取ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 保存ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 另存为ToolStripMenuItem;
     }
 }
 
