@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.richTextBox_Time = new System.Windows.Forms.RichTextBox();
             this.richTextBox_Log = new System.Windows.Forms.RichTextBox();
             this.button_TimeGood = new System.Windows.Forms.Button();
@@ -64,6 +65,7 @@
             this.MenuItem_Settings = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_PageWithAlt = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_AutoGood = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_AutoCompletionLimit = new System.Windows.Forms.ToolStripMenuItem();
             this.文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.读取ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.保存ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,6 +73,7 @@
             this.button_ClearScore = new System.Windows.Forms.Button();
             this.listBox_Sentences = new System.Windows.Forms.ListBox();
             this.button_AllGood = new System.Windows.Forms.Button();
+            this.timer_ReSelect = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -221,7 +224,6 @@
             this.button_Output.TabStop = false;
             this.button_Output.Text = "产出报表";
             this.button_Output.UseVisualStyleBackColor = true;
-            this.button_Output.Click += new System.EventHandler(this.button9_Click);
             // 
             // button_Input
             // 
@@ -362,14 +364,12 @@
             this.dataGridView_Logs.TabIndex = 9;
             this.dataGridView_Logs.TabStop = false;
             this.dataGridView_Logs.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView_Logs_ColumnHeaderMouseClick);
-            this.dataGridView_Logs.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_Logs_RowsRemoved);
             this.dataGridView_Logs.SelectionChanged += new System.EventHandler(this.dataGridView_Logs_SelectionChanged);
             // 
             // backgroundWorker_LogFetcher
             // 
             this.backgroundWorker_LogFetcher.WorkerReportsProgress = true;
             this.backgroundWorker_LogFetcher.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_LogFetcher_DoWork);
-            this.backgroundWorker_LogFetcher.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_LogFetcher_ProgressChanged);
             // 
             // richTextBox_Status
             // 
@@ -405,7 +405,8 @@
             // 
             this.MenuItem_Settings.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuItem_PageWithAlt,
-            this.MenuItem_AutoGood});
+            this.MenuItem_AutoGood,
+            this.MenuItem_AutoCompletionLimit});
             this.MenuItem_Settings.Name = "MenuItem_Settings";
             this.MenuItem_Settings.Size = new System.Drawing.Size(44, 21);
             this.MenuItem_Settings.Text = "设置";
@@ -414,7 +415,7 @@
             // 
             this.MenuItem_PageWithAlt.CheckOnClick = true;
             this.MenuItem_PageWithAlt.Name = "MenuItem_PageWithAlt";
-            this.MenuItem_PageWithAlt.Size = new System.Drawing.Size(160, 22);
+            this.MenuItem_PageWithAlt.Size = new System.Drawing.Size(220, 22);
             this.MenuItem_PageWithAlt.Text = "翻页快捷键Alt+";
             this.MenuItem_PageWithAlt.Click += new System.EventHandler(this.MenuItem_PageWithCtrl_Click);
             // 
@@ -422,8 +423,15 @@
             // 
             this.MenuItem_AutoGood.CheckOnClick = true;
             this.MenuItem_AutoGood.Name = "MenuItem_AutoGood";
-            this.MenuItem_AutoGood.Size = new System.Drawing.Size(160, 22);
+            this.MenuItem_AutoGood.Size = new System.Drawing.Size(220, 22);
             this.MenuItem_AutoGood.Text = "自动评为全好";
+            // 
+            // MenuItem_AutoCompletionLimit
+            // 
+            this.MenuItem_AutoCompletionLimit.CheckOnClick = true;
+            this.MenuItem_AutoCompletionLimit.Name = "MenuItem_AutoCompletionLimit";
+            this.MenuItem_AutoCompletionLimit.Size = new System.Drawing.Size(220, 22);
+            this.MenuItem_AutoCompletionLimit.Text = "自动补全内容限为同类事件";
             // 
             // 文件ToolStripMenuItem
             // 
@@ -468,10 +476,12 @@
             // 
             this.listBox_Sentences.FormattingEnabled = true;
             this.listBox_Sentences.ItemHeight = 12;
-            this.listBox_Sentences.Location = new System.Drawing.Point(446, 91);
+            this.listBox_Sentences.Location = new System.Drawing.Point(460, 85);
             this.listBox_Sentences.Name = "listBox_Sentences";
             this.listBox_Sentences.Size = new System.Drawing.Size(85, 76);
             this.listBox_Sentences.TabIndex = 14;
+            this.listBox_Sentences.SelectedIndexChanged += new System.EventHandler(this.listBox_Sentences_SelectedIndexChanged);
+            this.listBox_Sentences.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBox_Sentences_KeyDown);
             // 
             // button_AllGood
             // 
@@ -482,6 +492,11 @@
             this.button_AllGood.Text = "全评为好(&A)";
             this.button_AllGood.UseVisualStyleBackColor = true;
             this.button_AllGood.Click += new System.EventHandler(this.button_AllGood_Click);
+            // 
+            // timer_ReSelect
+            // 
+            this.timer_ReSelect.Interval = 1;
+            this.timer_ReSelect.Tick += new System.EventHandler(this.timer_ReSelect_Tick);
             // 
             // MainFrame
             // 
@@ -528,7 +543,6 @@
             this.Name = "MainFrame";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.MainFrame_Load);
-            this.Click += new System.EventHandler(this.MainFrame_Click);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).EndInit();
@@ -584,6 +598,8 @@
         private System.Windows.Forms.ToolStripMenuItem 读取ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 保存ToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem 另存为ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_AutoCompletionLimit;
+        private System.Windows.Forms.Timer timer_ReSelect;
     }
 }
 
