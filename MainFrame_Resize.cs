@@ -8,8 +8,8 @@ namespace Audit
     {
         public Rectangle[] GetResizeRectList(Point lefttop, Size siz)
         {
-            double[] v = new double[10] { 0.02, 0.2, 0.22, 0.27, 0.28, 0.42, 0.43, 0.48, 0.5, 0.98 };
-            double[] h = new double[16] { 0.02, 0.04, 0.09, 0.11, 0.21, 0.23, 0.28, 0.3, 0.4, 0.42, 0.61, 0.63, 0.82, 0.83, 0.92, 0.98 };
+            double[] v = new double[10] { 0.01, 0.21, 0.22, 0.27, 0.28, 0.45, 0.46, 0.51, 0.53, 0.98 };
+            double[] h = new double[16] { 0.02, 0.04, 0.09, 0.11, 0.19, 0.21, 0.27, 0.29, 0.37, 0.39, 0.68, 0.7, 0.82, 0.83, 0.92, 0.98 };
 
             Rectangle[] rl = new Rectangle[33];
             RectHelper rh = new RectHelper();
@@ -58,13 +58,13 @@ namespace Audit
 
             rl[22] = rh.GetRectByProp(v[8], h[1], v[9], h[12]);
 
-            rl[23] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 2 / 3.0, 0, 1, 1), 0, 0, 1 / 3.0, 1), sizbtn);
-            rl[24] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 2 / 3.0, 0, 1, 1), 1 / 3.0, 0, 2 / 3.0, 1), sizbtn);
-            rl[25] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 2 / 3.0, 0, 1, 1), 2 / 3.0, 0, 1, 1), sizbtn);
+            rl[23] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0.6, 0, 1, 1), 0, 0, 1 / 3.0, 1), sizbtn);
+            rl[24] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0.6, 0, 1, 1), 1 / 3.0, 0, 2 / 3.0, 1), sizbtn);
+            rl[25] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0.6, 0, 1, 1), 2 / 3.0, 0, 1, 1), sizbtn);
 
 
 
-            rl[26] = rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 1 / 6.0, 0, 2 / 3.0, 1);
+            rl[26] = rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 1 / 6.0, 0, 0.6, 1);
             rl[27] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0, 0, 0.9 / 6.0, 1), sizlabel, RectHelper._ALIGNRIGHT);
             rl[28] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0, 0, 0.9 / 6.0, 1), sizhlp, RectHelper._ALIGNRIGHT | RectHelper._ALIGNBOTTOM);
             rl[29] = rh.GetRectByProp(v[0], h[13], v[1], h[14]);

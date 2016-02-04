@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -36,14 +35,16 @@ namespace Audit
         private Control[] ctrl_list = new Control[33];
         private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
   //      private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
-        public DataTable dt_units, dt_logs;
-        private object locker_dt_logs = new object();
+        public DataSet dtset = new DataSet("dt_set");
+        public DataTable dt_units, dt_logs, dt_logs_copy;
+        private object locker_dt_logs = new object(), locker_dtset = new object();
     //    private int cur_log = -1;
         private bool log_shown = false, alt_down = false, ctrl_down = false, text_change_observe = true, score_change_observe = true;
         private RichTextBox rtb_active = null;
         private RichTextBox[] rtbs_check = new RichTextBox[4];
         private int rtb_text_end = -1;
         private bool omit_rtb_keyup = false;
+        private string cur_file = null;
         
         public object[,] UNIT_NUM = { { "IGP", 10 }, { "IGL", 10 }, { "ICD", 10 }, { "BJ", 15 }, { "TJ", 20 }, { "HE", 20 }, { "SX", 20 }, { "NM", 15 }, { "IES", 10 }, { "DPC", 0 }, { "LN", 20 }, { "JL", 15 }, { "HL", 15 }, { "SH", 15 }, { "JS", 15 }, { "ZJ", 15 }, { "AH", 15 }, { "FJ", 20 }, { "JX", 15 }, { "SD", 20 }, { "HA", 15 }, { "HB", 15 }, { "HN", 15 }, { "GD", 15 }, { "GX", 15 }, { "HI", 10 }, { "SC", 20 }, { "YN", 20 }, { "XZ", 10 }, { "CQ", 15 }, { "SN", 20 }, { "GS", 20 }, { "QH", 15 }, { "NX", 20 }, { "XJ", 20 } };
         public MainFrame()
@@ -65,6 +66,9 @@ namespace Audit
             rtbs_check[1] = richTextBox_TimeCheck;
             rtbs_check[2] = richTextBox_LogCheck;
             rtbs_check[3] = richTextBox_GraphCheck;
+
+    //        MenuItem_SaveSchema.Enabled = true;
+            MenuItem_Save.Enabled = false;
             if (false)
             {
                 this.richTextBox_GroupCheck.Text = "对事件分类的审核意见";
@@ -82,7 +86,6 @@ namespace Audit
             {
                 rtbs_check[i].TextChanged += new EventHandler(richTextBox_TextChanged);
                 rtbs_check[i].KeyDown += new KeyEventHandler(richTextBox_KeyDown);
-           //     rtbs_check[i].MouseClick += new MouseEventHandler(richTextBox_MouseClick);
                 rtbs_check[i].HideSelection = false;
             }
 
@@ -152,132 +155,11 @@ namespace Audit
 
     //        MemoryStream mstream = new MemoryStream((byte[])dt.Rows[0]["graph"]);
     //              this.pictureBox_Graph.Image = Image.FromStream(mstream);
-        }
-        
-
-        private void backgroundWorker_LogFetcher_DoWork(object sender, DoWorkEventArgs e)
-        {
-            Rule rl = e.Argument as Rule;
-            BackgroundWorker wker = sender as BackgroundWorker;
-            for (int i = 0; i < rl.unit_num.GetLength(0); i++)
-            {
-                this.RefreshStatus("正在抽取" + rl.unit_num[i, 0] + "的事件……");
-                SqlGenerator sg = new SqlGenerator();
-                DataTable dt = orahlper.GetDataTable(sg.GenExtractionSql(Convert.ToInt32(rl.unit_num[i, 1]), rl.unit_num[i, 2], rl.after_date.Year, rl.after_date.Month, rl.after_date.Day, rl.no_earlier));
-                this.Invoke(new Param1Callback((_dt) =>
-                {
-                    foreach (DataRow r in ((DataTable)_dt).Rows)
-                    {
-                        lock (locker_dt_logs)
-                        {
-                            dt_logs.Columns["ROWID"].AutoIncrement = true;
-                            dt_logs.ImportRow(r);
-                            dt_logs.Columns["ROWID"].AutoIncrement = false;
-                            dt_logs.Rows[dt_logs.Rows.Count - 1]["SCORE_GROUP"] = -1;
-                            dt_logs.Rows[dt_logs.Rows.Count - 1]["SCORE_TIME"] = -1;
-                            dt_logs.Rows[dt_logs.Rows.Count - 1]["SCORE_LOG"] = -1;
-                            dt_logs.Rows[dt_logs.Rows.Count - 1]["SCORE_GRAPH"] = -1;
-                        }
-                        if (this.log_shown == false)
-                        {
-                            this.log_shown = true;
-                            ShowLog(dt_logs.Rows[dt_logs.Rows.Count - 1]);
-                        }
-                    }
-                }
-                    ), new object[] { dt });
-                
-            }
-            RefreshStatus("事件抽取完成");
-
-        }
-
-        private void MainFrame_Load(object sender, EventArgs e)
-        {
-            new Thread(ReloadDtUnits).Start();
-            new Thread(InitDtLogs).Start();
-        }
+        }        
 
         private void dataGridView_Logs_SelectionChanged(object sender, EventArgs e)
         {
             ShowLog(dataGridView_Logs.CurrentRow);
-        }
-  
-        protected override bool ProcessKeyPreview(ref Message m)
-        {
-            if (m.Msg == 0x0100) /// WM_KEYDOWN
-            {
-                //Debug.WriteLine(string.Format("hwnd = {0}", m.HWnd));
-                //Debug.WriteLine(string.Format("msg = {0}", m.Msg));
-                //Debug.WriteLine(string.Format("wparam = {0}", m.WParam));
-                //Debug.WriteLine(string.Format("lparam = {0}\n", m.LParam));
-                if(!MenuItem_PageWithAlt.Checked)
-                {
-                    if (!(m.HWnd == dataGridView_Logs.Handle))
-                    {
-                        //     this.Text = string.Format("keydown {0}", sta++);
-                        if ((int)m.WParam == 33)
-                        {
-                            GoPrevLog();
-                            return true;
-                        }
-                        else if ((int)m.WParam == 34)
-                        {
-                            GoNextLog();
-                            return true;
-                        }
-                    }
-                }
-                if ((int)m.WParam == 0x11)
-                {
-                    ctrl_down = true;
-                }
-          //      else if
-            }
-            else if (m.Msg == 0x101) /// WM_KEYUP
-            {
-                if ((int)m.WParam == 0x11)
-                {
-                    ctrl_down = false;
-                }
-                if (m.HWnd == richTextBox_GroupCheck.Handle)
-                {
-                    //if (omit_rtb_keyup)
-                    //{
-                    //    omit_rtb_keyup = false;            
-                    //    return true;
-                    //}
-                }
-            }
-            else if (m.Msg == 0x104) /// WM_SYSKEYDOWN
-            {
-                if ((int)m.WParam == 0x12)
-                {
-                    alt_down = true;
-                }
-                if (MenuItem_PageWithAlt.Checked)
-                {
-                    if ((int)m.WParam == 33)
-                    {
-                        GoPrevLog();
-                        return true;
-                    }
-                    else if ((int)m.WParam == 34)
-                    {
-                        GoNextLog();
-                        return true;
-                    }
-                }
-            }
-            else if (m.Msg == 0x105) /// WM_SYSKEYUP
-            {
-                if ((int)m.WParam == 0x12)
-                {
-                    alt_down = false;
-                }
-            }
-
-            return  base.ProcessKeyPreview(ref m);
         }
 
         private void GoPrevLog()
@@ -289,96 +171,24 @@ namespace Audit
             SendMessage(this.dataGridView_Logs.Handle, 0x0100, 40, 0);
         }
 
-        private void button_PrevLog_Click(object sender, EventArgs e)
-        {
-            GoPrevLog();
-        }
-
-        private void button_NextLog_Click(object sender, EventArgs e)
-        {
-            GoNextLog();
-        }
-
         private void Global_MainFrame_Click(object sender, EventArgs e)
         {
-            if ((sender as Control).Name != "listBox_Sentences")
-            {
-                if (listBox_Sentences.Visible)
-                {
-                    listBox_Sentences.Visible = false;
-                }
-            }
+            //if ((sender as Control).Name != "listBox_Sentences")
+            //{
+            //    if (listBox_Sentences.Visible)
+            //    {
+            //        listBox_Sentences.Visible = false;
+            //    }
+            //}
         }
         private void Global_MainFrame_KeyDown(object sender, KeyEventArgs e)
         {
       //      Debug.WriteLine(e.KeyData);
-        }
-
-        private void MenuItem_PageWithCtrl_Click(object sender, EventArgs e)
-        {
-            if (MenuItem_PageWithAlt.Checked == true)
-            {
-                button_PrevLog.Text = "上一事件(Alt+PageUp)";
-                button_NextLog.Text = "下一事件(Alt+PageDown)";
-            }
-            else
-            {
-                button_PrevLog.Text = "上一事件(PageUp)";
-                button_NextLog.Text = "下一事件(PageDown)";
-            }
-        }
-
-        private void button_ClearScore_Click(object sender, EventArgs e)
-        {
-            WriteScoreToDt("SCORE_GROUP", vb.score_group = -1);
-            WriteScoreToDt("SCORE_TIME", vb.score_time = -1);
-            WriteScoreToDt("SCORE_LOG", vb.score_log = -1);
-            WriteScoreToDt("SCORE_GRAPH", vb.score_graph = -1);
-            CheckColor();
-        }
-
-        private void button_AllGood_Click(object sender, EventArgs e)
-        {
-            WriteScoreToDt("SCORE_GROUP", vb.score_group = 0);
-            WriteScoreToDt("SCORE_TIME", vb.score_time = 0);
-            WriteScoreToDt("SCORE_LOG", vb.score_log = 0);
-            WriteScoreToDt("SCORE_GRAPH", vb.score_graph = 0);
-            CheckColor();
-        }
+        }   
 
         private void dataGridView_Logs_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             CheckAllColor();
-        }
-
-        private int Reload_LB_Sentences(bool limit)
-        {
-            if(dataGridView_Logs.CurrentRow == null || dataGridView_Logs.CurrentRow.DataBoundItem == null)
-                return -1;
-            DataView dv = new DataView(dt_logs);
-            dv.RowStateFilter = DataViewRowState.CurrentRows;
-            string rf = "rowid <> " + dataGridView_Logs.CurrentRow.Cells["ROWID"].Value;
-            string col = null;
-            switch (rtb_active.Name)
-            {
-                case "richTextBox_GroupCheck": col = "COMMENTS_GROUP"; break;
-                case "richTextBox_TimeCheck": col = "COMMENTS_TIME"; break;
-                case "richTextBox_LogCheck": col = "COMMENTS_LOG"; break;
-                case "richTextBox_GraphCheck": col = "COMMENTS_GRAPH"; break;
-            }
-            rf += " and " + col + " is not null and trim(" + col + ") <> ''";
-            if (limit)
-            {
-                rf += " and ab_type_name = '" + dataGridView_Logs.CurrentRow.Cells["AB_TYPE_NAME"].Value + "'"; 
-            }
-            dv.RowFilter = rf;
-            listBox_Sentences.DataSource = dv.ToTable(true, new string[] { col });
-      //      listBox_Sentences.DataSource = dv;
-            listBox_Sentences.DisplayMember = col;
-            listBox_Sentences.ValueMember = col;
-            listBox_Sentences.SelectedIndex = -1;
-          
-            return dv.Count;
         }
 
         private void richTextBox_KeyDown(object sender, KeyEventArgs e)
@@ -440,18 +250,6 @@ namespace Audit
             }
         }
 
-        private void richTextBox_MouseClick(object sender, MouseEventArgs e)
-        {
-            //if (e.Button == System.Windows.Forms.MouseButtons.Left)
-            //{
-            //    if (listBox_Sentences.Visible)
-            //    {
-            //        listBox_Sentences.Visible = false;
-            //        listBox_Sentences.SelectedIndex = -1;
-            //    }
-            //}
-        }
-
         private void timer_ReSelect_Tick(object sender, EventArgs e)
         {
             timer_ReSelect.Stop();
@@ -461,5 +259,123 @@ namespace Audit
             }
         }
 
+        private void listBox_Sentences_Leave(object sender, EventArgs e)
+        {
+            if (listBox_Sentences.Visible)
+            {
+                listBox_Sentences.Visible = false;
+            }
+        }
+
+        private void MenuItem_Save_Click(object sender, EventArgs e)
+        {
+            if (cur_file == null)
+            {
+                MenuItem_SaveAs_Click(null, null);
+            }
+            else
+            {
+                if (backgroundWorker_DTAccessor.IsBusy == false)
+                {
+                    DTAccessorParam p = new DTAccessorParam();
+                    p.is_read = false;
+                    p.filename = cur_file;
+                    backgroundWorker_DTAccessor.RunWorkerAsync(p);
+                }
+                else
+                    MessageBox.Show("文件保存器正忙！");
+            }
+        }
+
+        private void MenuItem_SaveSchema_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sd = new SaveFileDialog();
+            sd.Filter = "sch文件|*.sch";
+            sd.FilterIndex = 1;
+            if (sd.ShowDialog() == DialogResult.OK)
+            {
+                dtset.WriteXml(sd.FileName, XmlWriteMode.WriteSchema);
+              //  dtset.WriteXmlSchema(sd.FileName);
+            }
+        }
+
+        private void MenuItem_SaveAs_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sd = new SaveFileDialog();
+            sd.Filter = "dt文件|*.dt";
+            sd.FilterIndex = 1;
+            sd.FileName = cur_file;
+            if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (backgroundWorker_DTAccessor.IsBusy == false)
+                {
+                    DTAccessorParam p = new DTAccessorParam();
+                    p.is_read = false;
+                    p.filename = sd.FileName;
+                    backgroundWorker_DTAccessor.RunWorkerAsync(p);
+                }
+                else
+                    MessageBox.Show("文件存取器正忙！");
+            }
+        }
+
+        private void MenuItem_Open_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog od = new OpenFileDialog();
+            od.Filter = "dt文件|*.dt";
+            od.FilterIndex = 1;
+            if (od.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (backgroundWorker_DTAccessor.IsBusy == false)
+                {
+                    DTAccessorParam p = new DTAccessorParam();
+                    p.is_read = true;
+                    p.filename = od.FileName;
+                    backgroundWorker_DTAccessor.RunWorkerAsync(p);
+                }
+                else
+                    MessageBox.Show("文件存取器正忙！");
+            }
+        }
+
+        private void backgroundWorker_DTAccessor_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            DTAccessorParam p = e.Argument as DTAccessorParam;
+            if (p.is_read)
+            {
+                this.Invoke(new Param0Callback(() =>
+                {
+                    RefreshStatus("正在读取文件……");
+                    lock (locker_dt_logs)
+                    {
+                        dt_logs.ReadXml(p.filename);
+                    }
+                    RefreshStatus("文件读取成功");
+                    this.CheckAllColor();
+                }
+                ));
+            }
+            else
+            {
+                this.Invoke(new Param0Callback(()=>
+                    dt_logs_copy = dt_logs.Copy()
+                    ));
+                RefreshStatus("正在保存文件……");
+                dt_logs_copy.WriteXml(p.filename);
+                RefreshStatus("文件保存成功");
+            }
+            this.Invoke(new Param0Callback(() =>
+            {
+                this.Text = p.filename + "  保存于" +
+                    File.GetLastWriteTime(p.filename).ToString("yyyy/MM/dd HH:mm:ss");
+                if (p.is_read && dt_logs.Rows.Count > 0)
+                {
+                    this.log_shown = true;
+                    this.ShowLog(dt_logs.Rows[0]);
+                }
+            }));
+            cur_file = p.filename;
+
+        }
     }
 }

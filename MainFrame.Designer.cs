@@ -66,14 +66,17 @@
             this.MenuItem_PageWithAlt = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_AutoGood = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_AutoCompletionLimit = new System.Windows.Forms.ToolStripMenuItem();
-            this.文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.读取ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.保存ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.另存为ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_File = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Open = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Save = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_SaveAs = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_ReadSchema = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_SaveSchema = new System.Windows.Forms.ToolStripMenuItem();
             this.button_ClearScore = new System.Windows.Forms.Button();
             this.listBox_Sentences = new System.Windows.Forms.ListBox();
             this.button_AllGood = new System.Windows.Forms.Button();
             this.timer_ReSelect = new System.Windows.Forms.Timer(this.components);
+            this.backgroundWorker_DTAccessor = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -394,7 +397,7 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuItem_Settings,
-            this.文件ToolStripMenuItem});
+            this.MenuItem_File});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(940, 25);
@@ -417,7 +420,7 @@
             this.MenuItem_PageWithAlt.Name = "MenuItem_PageWithAlt";
             this.MenuItem_PageWithAlt.Size = new System.Drawing.Size(220, 22);
             this.MenuItem_PageWithAlt.Text = "翻页快捷键Alt+";
-            this.MenuItem_PageWithAlt.Click += new System.EventHandler(this.MenuItem_PageWithCtrl_Click);
+            this.MenuItem_PageWithAlt.Click += new System.EventHandler(this.MenuItem_PageWithAlt_Click);
             // 
             // MenuItem_AutoGood
             // 
@@ -433,33 +436,53 @@
             this.MenuItem_AutoCompletionLimit.Size = new System.Drawing.Size(220, 22);
             this.MenuItem_AutoCompletionLimit.Text = "自动补全内容限为同类事件";
             // 
-            // 文件ToolStripMenuItem
+            // MenuItem_File
             // 
-            this.文件ToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.读取ToolStripMenuItem,
-            this.保存ToolStripMenuItem,
-            this.另存为ToolStripMenuItem});
-            this.文件ToolStripMenuItem.Name = "文件ToolStripMenuItem";
-            this.文件ToolStripMenuItem.Size = new System.Drawing.Size(44, 21);
-            this.文件ToolStripMenuItem.Text = "文件";
+            this.MenuItem_File.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItem_Open,
+            this.MenuItem_Save,
+            this.MenuItem_SaveAs,
+            this.MenuItem_ReadSchema,
+            this.MenuItem_SaveSchema});
+            this.MenuItem_File.Name = "MenuItem_File";
+            this.MenuItem_File.Size = new System.Drawing.Size(44, 21);
+            this.MenuItem_File.Text = "文件";
             // 
-            // 读取ToolStripMenuItem
+            // MenuItem_Open
             // 
-            this.读取ToolStripMenuItem.Name = "读取ToolStripMenuItem";
-            this.读取ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-            this.读取ToolStripMenuItem.Text = "读取";
+            this.MenuItem_Open.Name = "MenuItem_Open";
+            this.MenuItem_Open.Size = new System.Drawing.Size(152, 22);
+            this.MenuItem_Open.Text = "打开";
+            this.MenuItem_Open.Click += new System.EventHandler(this.MenuItem_Open_Click);
             // 
-            // 保存ToolStripMenuItem
+            // MenuItem_Save
             // 
-            this.保存ToolStripMenuItem.Name = "保存ToolStripMenuItem";
-            this.保存ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-            this.保存ToolStripMenuItem.Text = "保存";
+            this.MenuItem_Save.Name = "MenuItem_Save";
+            this.MenuItem_Save.Size = new System.Drawing.Size(152, 22);
+            this.MenuItem_Save.Text = "保存";
+            this.MenuItem_Save.Click += new System.EventHandler(this.MenuItem_Save_Click);
             // 
-            // 另存为ToolStripMenuItem
+            // MenuItem_SaveAs
             // 
-            this.另存为ToolStripMenuItem.Name = "另存为ToolStripMenuItem";
-            this.另存为ToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
-            this.另存为ToolStripMenuItem.Text = "另存为";
+            this.MenuItem_SaveAs.Name = "MenuItem_SaveAs";
+            this.MenuItem_SaveAs.Size = new System.Drawing.Size(152, 22);
+            this.MenuItem_SaveAs.Text = "另存为";
+            this.MenuItem_SaveAs.Click += new System.EventHandler(this.MenuItem_SaveAs_Click);
+            // 
+            // MenuItem_ReadSchema
+            // 
+            this.MenuItem_ReadSchema.Enabled = false;
+            this.MenuItem_ReadSchema.Name = "MenuItem_ReadSchema";
+            this.MenuItem_ReadSchema.Size = new System.Drawing.Size(152, 22);
+            this.MenuItem_ReadSchema.Text = "读取表信息";
+            // 
+            // MenuItem_SaveSchema
+            // 
+            this.MenuItem_SaveSchema.Enabled = false;
+            this.MenuItem_SaveSchema.Name = "MenuItem_SaveSchema";
+            this.MenuItem_SaveSchema.Size = new System.Drawing.Size(152, 22);
+            this.MenuItem_SaveSchema.Text = "保存表信息";
+            this.MenuItem_SaveSchema.Click += new System.EventHandler(this.MenuItem_SaveSchema_Click);
             // 
             // button_ClearScore
             // 
@@ -482,6 +505,7 @@
             this.listBox_Sentences.TabIndex = 14;
             this.listBox_Sentences.SelectedIndexChanged += new System.EventHandler(this.listBox_Sentences_SelectedIndexChanged);
             this.listBox_Sentences.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listBox_Sentences_KeyDown);
+            this.listBox_Sentences.Leave += new System.EventHandler(this.listBox_Sentences_Leave);
             // 
             // button_AllGood
             // 
@@ -497,6 +521,10 @@
             // 
             this.timer_ReSelect.Interval = 1;
             this.timer_ReSelect.Tick += new System.EventHandler(this.timer_ReSelect_Tick);
+            // 
+            // backgroundWorker_DTAccessor
+            // 
+            this.backgroundWorker_DTAccessor.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DTAccessor_DoWork);
             // 
             // MainFrame
             // 
@@ -594,12 +622,15 @@
         private System.Windows.Forms.ListBox listBox_Sentences;
         private System.Windows.Forms.Button button_AllGood;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_AutoGood;
-        private System.Windows.Forms.ToolStripMenuItem 文件ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 读取ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 保存ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem 另存为ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_File;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_Open;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_Save;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_SaveAs;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_AutoCompletionLimit;
         private System.Windows.Forms.Timer timer_ReSelect;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_ReadSchema;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_SaveSchema;
+        private System.ComponentModel.BackgroundWorker backgroundWorker_DTAccessor;
     }
 }
 
