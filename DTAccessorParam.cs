@@ -9,6 +9,8 @@ namespace Audit
     public class DTAccessorParam
     {
         public string filename;
-        public bool is_read;
+        private bool is_read; /// abolish
+        public int DTAP_mode;
+        public const int DTAP_add = 1, DTAP_save = 2;
     }
 }

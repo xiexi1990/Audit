@@ -39,11 +39,17 @@ namespace Audit
                             ShowLog(dt_logs.Rows[dt_logs.Rows.Count - 1]);
                         }
                     }
+                    this.RefreshStatus(rl.unit_num[i, 0] + "共抽取" + dt.Rows.Count + "条");
                 }
                     ));
 
             }
-            RefreshStatus("事件抽取完成");
+            this.Invoke(new Param0Callback(() =>
+            {
+                CheckAllColor();
+                RefreshStatus("事件抽取完成");
+            }
+            ));
         }
     }
 }

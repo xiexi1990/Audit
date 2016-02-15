@@ -24,12 +24,11 @@ namespace Audit
             this.dataGridView_Units.Columns[0].Visible = false;
             this.dataGridView_Units.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             this.checkBox_NoEarlier.Checked = true;
-
-            if (true)
-            {
-                dateTimePicker_AfterDate.Value = new DateTime(2014, 9, 1);
-                richTextBox_Units.Text = @"辽宁省 20,河南省 15,湖北省 15";
-            }
+        }
+        public void Set(DateTime time, string text)
+        {
+            dateTimePicker_AfterDate.Value = time;
+            richTextBox_Units.Text = text;
         }
 
         private void button_Add_Click(object sender, EventArgs e)

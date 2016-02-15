@@ -10,6 +10,7 @@ using System.IO;
 using System.Threading;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using excel = Microsoft.Office.Interop.Excel;
 
 
 namespace Audit
@@ -35,9 +36,12 @@ namespace Audit
         private Control[] ctrl_list = new Control[33];
         private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
   //      private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
-        public DataSet dtset = new DataSet("dt_set");
-        public DataTable dt_units, dt_logs, dt_logs_copy;
-        private object locker_dt_logs = new object(), locker_dtset = new object();
+        public DataSet ds_load = new DataSet("ds_load"), ds_dt = new DataSet("ds_dt");
+        public DataView dv_dt_logs;
+        int dgv_sorted_index = -1;
+        bool dgv_sorted_asc = true, dgv_unit_asc = true;
+        public DataTable dt_units, dt_logs, dt_wt_copy, dt_units_comments, dt_param;
+        private object locker_dt_logs = new object(), locker_ds_load = new object();
     //    private int cur_log = -1;
         private bool log_shown = false, alt_down = false, ctrl_down = false, text_change_observe = true, score_change_observe = true;
         private RichTextBox rtb_active = null;
@@ -67,7 +71,7 @@ namespace Audit
             rtbs_check[2] = richTextBox_LogCheck;
             rtbs_check[3] = richTextBox_GraphCheck;
 
-    //        MenuItem_SaveSchema.Enabled = true;
+            MenuItem_SaveSchema.Enabled = true;
             MenuItem_Save.Enabled = false;
             if (false)
             {
@@ -102,7 +106,8 @@ namespace Audit
         {
             this.orahlper.oracon.Close();
         }
-
+        
+     
         private void richTextBox_TextChanged(object sender, EventArgs e)
         {
             if (!text_change_observe)
@@ -132,6 +137,7 @@ namespace Audit
                     lock (locker_dt_logs)
                     {
                         (r.DataBoundItem as DataRowView).Row[col] = rtb.Text;
+                        (r.DataBoundItem as DataRowView).Row["AUDIT_TIME"] = DateTime.Now;
                     }
                 }
             }
@@ -146,6 +152,10 @@ namespace Audit
         private void button_Input_Click(object sender, EventArgs e)
         {
             Rule rl = new Rule(this.dt_units);
+            if (orahlper.oracon.DataSource == "127.0.0.1/orcx")
+            {
+                rl.Set(new DateTime(2014, 9, 1), @"河南省 15,湖北省 15, 辽宁省 20");
+            }
             if (rl.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
             if (backgroundWorker_LogFetcher.IsBusy == false)
@@ -188,6 +198,32 @@ namespace Audit
 
         private void dataGridView_Logs_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
+            if (dataGridView_Logs.Columns[e.ColumnIndex].Name == "UNITNAME")
+            {
+                dgv_unit_asc ^= true;
+            }
+            else
+            {
+                if (e.ColumnIndex == dgv_sorted_index)
+                {
+                    dgv_sorted_asc ^= true;
+                }
+                else
+                {
+                    dgv_sorted_asc = true;
+                    dgv_sorted_index = e.ColumnIndex;
+                }
+            }
+            string sort = "unitname";
+            if (!dgv_unit_asc)
+                sort += " desc";
+            if (dgv_sorted_index >= 0)
+            {
+                sort += ", " + dataGridView_Logs.Columns[dgv_sorted_index].Name;
+                if (!dgv_sorted_asc)
+                    sort += " desc";
+            }
+            this.dv_dt_logs.Sort = sort;
             CheckAllColor();
         }
 
@@ -197,7 +233,7 @@ namespace Audit
             rtb_text_end = rtb_active.TextLength;
             if (e.KeyCode == Keys.Right && rtb_active.SelectionStart == rtb_active.TextLength)
             {
-                if (Reload_LB_Sentences(MenuItem_AutoCompletionLimit.Checked) <= 0)
+                if (ReloadLBSentences(MenuItem_AutoCompletionLimit.Checked) <= 0)
                 {
                     return;
                 }
@@ -242,7 +278,7 @@ namespace Audit
         //        Debug.Write(e.KeyCode);
         //        Debug.Write(e.KeyData + "\n");
                 MenuItem_AutoCompletionLimit.Checked = MenuItem_AutoCompletionLimit.Checked ^ true;
-                if (Reload_LB_Sentences(MenuItem_AutoCompletionLimit.Checked) > 0)
+                if (ReloadLBSentences(MenuItem_AutoCompletionLimit.Checked) > 0)
                 {
                     listBox_Sentences.SelectedIndex = 0;
                 }
@@ -278,7 +314,7 @@ namespace Audit
                 if (backgroundWorker_DTAccessor.IsBusy == false)
                 {
                     DTAccessorParam p = new DTAccessorParam();
-                    p.is_read = false;
+                    p.DTAP_mode = DTAccessorParam.DTAP_save;
                     p.filename = cur_file;
                     backgroundWorker_DTAccessor.RunWorkerAsync(p);
                 }
@@ -294,8 +330,8 @@ namespace Audit
             sd.FilterIndex = 1;
             if (sd.ShowDialog() == DialogResult.OK)
             {
-                dtset.WriteXml(sd.FileName, XmlWriteMode.WriteSchema);
-              //  dtset.WriteXmlSchema(sd.FileName);
+                ds_load.WriteXml(sd.FileName, XmlWriteMode.WriteSchema);
+              //  ds_load.WriteXmlSchema(sd.FileName);
             }
         }
 
@@ -310,7 +346,7 @@ namespace Audit
                 if (backgroundWorker_DTAccessor.IsBusy == false)
                 {
                     DTAccessorParam p = new DTAccessorParam();
-                    p.is_read = false;
+                    p.DTAP_mode = DTAccessorParam.DTAP_save;
                     p.filename = sd.FileName;
                     backgroundWorker_DTAccessor.RunWorkerAsync(p);
                 }
@@ -319,7 +355,7 @@ namespace Audit
             }
         }
 
-        private void MenuItem_Open_Click(object sender, EventArgs e)
+        private void MenuItem_Add_Click(object sender, EventArgs e)
         {
             OpenFileDialog od = new OpenFileDialog();
             od.Filter = "dt文件|*.dt";
@@ -329,7 +365,7 @@ namespace Audit
                 if (backgroundWorker_DTAccessor.IsBusy == false)
                 {
                     DTAccessorParam p = new DTAccessorParam();
-                    p.is_read = true;
+                    p.DTAP_mode = DTAccessorParam.DTAP_add;
                     p.filename = od.FileName;
                     backgroundWorker_DTAccessor.RunWorkerAsync(p);
                 }
@@ -341,34 +377,35 @@ namespace Audit
         private void backgroundWorker_DTAccessor_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             DTAccessorParam p = e.Argument as DTAccessorParam;
-            if (p.is_read)
+            if (p.DTAP_mode == DTAccessorParam.DTAP_add)
             {
                 this.Invoke(new Param0Callback(() =>
                 {
-                    RefreshStatus("正在读取文件……");
+                    RefreshStatus("正在加载文件……");
+                    int pn = dt_logs.Rows.Count;
                     lock (locker_dt_logs)
                     {
                         dt_logs.ReadXml(p.filename);
                     }
-                    RefreshStatus("文件读取成功");
+                    RefreshStatus("文件加载成功，共加载" + (dt_logs.Rows.Count - pn) + "条");
                     this.CheckAllColor();
                 }
                 ));
             }
-            else
+            else if(p.DTAP_mode == DTAccessorParam.DTAP_save)
             {
                 this.Invoke(new Param0Callback(()=>
-                    dt_logs_copy = dt_logs.Copy()
+                    dt_wt_copy = dt_logs.Copy()
                     ));
                 RefreshStatus("正在保存文件……");
-                dt_logs_copy.WriteXml(p.filename);
+                dt_wt_copy.WriteXml(p.filename);
                 RefreshStatus("文件保存成功");
             }
             this.Invoke(new Param0Callback(() =>
             {
                 this.Text = p.filename + "  保存于" +
                     File.GetLastWriteTime(p.filename).ToString("yyyy/MM/dd HH:mm:ss");
-                if (p.is_read && dt_logs.Rows.Count > 0)
+                if (p.DTAP_mode == DTAccessorParam.DTAP_add && dt_logs.Rows.Count > 0)
                 {
                     this.log_shown = true;
                     this.ShowLog(dt_logs.Rows[0]);
@@ -376,6 +413,45 @@ namespace Audit
             }));
             cur_file = p.filename;
 
+        }
+
+        private void WriteReportExcel(string filename)
+        {
+            filename = "c:\\testxml1";
+            excel.Application eapp = new excel.Application();
+            excel.Workbook book = eapp.Workbooks.Add();
+            excel.Worksheet sheet = book.Worksheets[1];
+            sheet.Cells[1, 1] = "hello";
+            
+            eapp.Visible = true;
+            book.SaveAs(filename);
+        }
+
+        private void button_Output_Click(object sender, EventArgs e)
+        {
+            WriteReportExcel(null);
+        }
+
+        private void backgroundWorker_ReportWriter_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+
+        }
+
+        private void dataGridView_Logs_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
+        {
+       //     Text = "compare";
+       //     Debug.WriteLine("compare");
+            //e.
+        }
+
+        private void dataGridView_Logs_Sorted(object sender, EventArgs e)
+        {
+            Debug.WriteLine("sorted!");
+        }
+
+        private void dataGridView_Logs_RowsRemoved(object sender, DataGridViewRowsRemovedEventArgs e)
+        {
+            CheckAllColor();
         }
     }
 }

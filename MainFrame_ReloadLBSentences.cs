@@ -5,7 +5,7 @@ namespace Audit
 {
     public partial class MainFrame : Form
     {
-        private int Reload_LB_Sentences(bool limit)
+        private int ReloadLBSentences(bool limit)
         {
             if (dataGridView_Logs.CurrentRow == null || dataGridView_Logs.CurrentRow.DataBoundItem == null)
                 return -1;

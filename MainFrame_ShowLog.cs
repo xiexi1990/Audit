@@ -42,7 +42,7 @@ namespace Audit
                 vb.score_time = Convert.ToInt32(r["SCORE_TIME"]);
                 vb.score_log = Convert.ToInt32(r["SCORE_LOG"]);
                 vb.score_graph = Convert.ToInt32(r["SCORE_GRAPH"]);
-                CheckColor();
+                CheckColor(dataGridView_Logs.CurrentRow);
                 if (vb.score_group == -1 && vb.score_time == -1 && vb.score_log == -1 && vb.score_graph == -1 && MenuItem_AutoGood.Checked)
                 {
                     button_AllGood_Click(null, null);

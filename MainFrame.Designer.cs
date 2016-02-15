@@ -67,7 +67,7 @@
             this.MenuItem_AutoGood = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_AutoCompletionLimit = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_File = new System.Windows.Forms.ToolStripMenuItem();
-            this.MenuItem_Open = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Add = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_Save = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_SaveAs = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_ReadSchema = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,6 +77,7 @@
             this.button_AllGood = new System.Windows.Forms.Button();
             this.timer_ReSelect = new System.Windows.Forms.Timer(this.components);
             this.backgroundWorker_DTAccessor = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorker_ReportWriter = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -227,6 +228,7 @@
             this.button_Output.TabStop = false;
             this.button_Output.Text = "产出报表";
             this.button_Output.UseVisualStyleBackColor = true;
+            this.button_Output.Click += new System.EventHandler(this.button_Output_Click);
             // 
             // button_Input
             // 
@@ -362,12 +364,14 @@
             this.dataGridView_Logs.Name = "dataGridView_Logs";
             this.dataGridView_Logs.ReadOnly = true;
             this.dataGridView_Logs.RowTemplate.Height = 23;
-            this.dataGridView_Logs.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView_Logs.Size = new System.Drawing.Size(80, 249);
             this.dataGridView_Logs.TabIndex = 9;
             this.dataGridView_Logs.TabStop = false;
             this.dataGridView_Logs.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridView_Logs_ColumnHeaderMouseClick);
+            this.dataGridView_Logs.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.dataGridView_Logs_RowsRemoved);
             this.dataGridView_Logs.SelectionChanged += new System.EventHandler(this.dataGridView_Logs_SelectionChanged);
+            this.dataGridView_Logs.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.dataGridView_Logs_SortCompare);
+            this.dataGridView_Logs.Sorted += new System.EventHandler(this.dataGridView_Logs_Sorted);
             // 
             // backgroundWorker_LogFetcher
             // 
@@ -439,7 +443,7 @@
             // MenuItem_File
             // 
             this.MenuItem_File.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.MenuItem_Open,
+            this.MenuItem_Add,
             this.MenuItem_Save,
             this.MenuItem_SaveAs,
             this.MenuItem_ReadSchema,
@@ -448,24 +452,24 @@
             this.MenuItem_File.Size = new System.Drawing.Size(44, 21);
             this.MenuItem_File.Text = "文件";
             // 
-            // MenuItem_Open
+            // MenuItem_Add
             // 
-            this.MenuItem_Open.Name = "MenuItem_Open";
-            this.MenuItem_Open.Size = new System.Drawing.Size(152, 22);
-            this.MenuItem_Open.Text = "打开";
-            this.MenuItem_Open.Click += new System.EventHandler(this.MenuItem_Open_Click);
+            this.MenuItem_Add.Name = "MenuItem_Add";
+            this.MenuItem_Add.Size = new System.Drawing.Size(136, 22);
+            this.MenuItem_Add.Text = "加载";
+            this.MenuItem_Add.Click += new System.EventHandler(this.MenuItem_Add_Click);
             // 
             // MenuItem_Save
             // 
             this.MenuItem_Save.Name = "MenuItem_Save";
-            this.MenuItem_Save.Size = new System.Drawing.Size(152, 22);
+            this.MenuItem_Save.Size = new System.Drawing.Size(136, 22);
             this.MenuItem_Save.Text = "保存";
             this.MenuItem_Save.Click += new System.EventHandler(this.MenuItem_Save_Click);
             // 
             // MenuItem_SaveAs
             // 
             this.MenuItem_SaveAs.Name = "MenuItem_SaveAs";
-            this.MenuItem_SaveAs.Size = new System.Drawing.Size(152, 22);
+            this.MenuItem_SaveAs.Size = new System.Drawing.Size(136, 22);
             this.MenuItem_SaveAs.Text = "另存为";
             this.MenuItem_SaveAs.Click += new System.EventHandler(this.MenuItem_SaveAs_Click);
             // 
@@ -473,14 +477,14 @@
             // 
             this.MenuItem_ReadSchema.Enabled = false;
             this.MenuItem_ReadSchema.Name = "MenuItem_ReadSchema";
-            this.MenuItem_ReadSchema.Size = new System.Drawing.Size(152, 22);
+            this.MenuItem_ReadSchema.Size = new System.Drawing.Size(136, 22);
             this.MenuItem_ReadSchema.Text = "读取表信息";
             // 
             // MenuItem_SaveSchema
             // 
             this.MenuItem_SaveSchema.Enabled = false;
             this.MenuItem_SaveSchema.Name = "MenuItem_SaveSchema";
-            this.MenuItem_SaveSchema.Size = new System.Drawing.Size(152, 22);
+            this.MenuItem_SaveSchema.Size = new System.Drawing.Size(136, 22);
             this.MenuItem_SaveSchema.Text = "保存表信息";
             this.MenuItem_SaveSchema.Click += new System.EventHandler(this.MenuItem_SaveSchema_Click);
             // 
@@ -525,6 +529,10 @@
             // backgroundWorker_DTAccessor
             // 
             this.backgroundWorker_DTAccessor.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DTAccessor_DoWork);
+            // 
+            // backgroundWorker_ReportWriter
+            // 
+            this.backgroundWorker_ReportWriter.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_ReportWriter_DoWork);
             // 
             // MainFrame
             // 
@@ -623,7 +631,7 @@
         private System.Windows.Forms.Button button_AllGood;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_AutoGood;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_File;
-        private System.Windows.Forms.ToolStripMenuItem MenuItem_Open;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_Add;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_Save;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_SaveAs;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_AutoCompletionLimit;
@@ -631,6 +639,7 @@
         private System.Windows.Forms.ToolStripMenuItem MenuItem_ReadSchema;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_SaveSchema;
         private System.ComponentModel.BackgroundWorker backgroundWorker_DTAccessor;
+        private System.ComponentModel.BackgroundWorker backgroundWorker_ReportWriter;
     }
 }
 
