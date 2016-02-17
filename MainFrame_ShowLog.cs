@@ -10,6 +10,7 @@ namespace Audit
 {
     public partial class MainFrame : Form
     {
+       
         public void ShowLog(DataRow r)
         {
             if (!log_shown)
@@ -20,7 +21,22 @@ namespace Audit
     //            this.cur_log = rowid;
                 this.richTextBox_Group.Text = r["AB_TYPE_NAME"].ToString();
                 this.richTextBox_Time.Text = r["START_DATE"].ToString() + " - \n" + (r["END_DATE"] is DBNull ? "未结束" : r["END_DATE"].ToString());
-                this.richTextBox_Log.Text = r["AB_DESC"].ToString();
+                this.richTextBox_Log.Text = r["AB_DESC"].ToString().Trim() + "\n";
+                CheckResult cr = new CheckResult();
+                cr.Fill(dt_check, r["LOG_ID"].ToString());
+
+                int start = richTextBox_Log.TextLength;
+                richTextBox_Log.AppendText(cr.wholestr[0] + "\n");
+           //     richTextBox_Log.Text += cr.wholestr[0] + "\n";
+                richTextBox_Log.Select(start, cr.wholestr[0].Length);
+                richTextBox_Log.SelectionColor = Color.Blue;
+
+                start = richTextBox_Log.TextLength;
+                richTextBox_Log.AppendText(cr.wholestr[1] + "\n");
+                //     richTextBox_Log.Text += cr.wholestr[0] + "\n";
+                richTextBox_Log.Select(start, cr.wholestr[1].Length);
+                richTextBox_Log.SelectionColor = Color.Red;
+                
                 MemoryStream mstream = new MemoryStream((byte[])r["GRAPH"]);
                 this.pictureBox_Graph.Image = Image.FromStream(mstream);
                 if (pictureBox_Graph.Height >= pictureBox_Graph.Image.Height && pictureBox_Graph.Width >= pictureBox_Graph.Image.Width)

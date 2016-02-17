@@ -15,7 +15,9 @@ namespace Audit
             {
                 this.RefreshStatus("正在抽取" + rl.unit_num[i, 0] + "的事件……");
                 SqlGenerator sg = new SqlGenerator();
-                DataTable dt = orahlper.GetDataTable(sg.GenExtractionSql(Convert.ToInt32(rl.unit_num[i, 1]), rl.unit_num[i, 2], rl.after_date.Year, rl.after_date.Month, rl.after_date.Day, rl.no_earlier));
+                string esql = sg.GenExtractionSql(Convert.ToInt32(rl.unit_num[i, 1]), rl.unit_num[i, 2], rl.after_date.Year, rl.after_date.Month, rl.after_date.Day, rl.no_earlier);
+                DataTable dt = orahlper.GetDataTable(esql);
+                DataTable dt2 = orahlper.GetDataTable(sg.GenCheckSql(dt));
                 this.Invoke(new Param0Callback(() =>
                 {
                     foreach (DataRow r in dt.Rows)
@@ -30,26 +32,26 @@ namespace Audit
                             dt_logs.Rows[dt_logs.Rows.Count - 1]["SCORE_LOG"] = -1;
                             dt_logs.Rows[dt_logs.Rows.Count - 1]["SCORE_GRAPH"] = -1;
                         }
-                        if (this.log_shown == false)
-                        {
-                            this.log_shown = true;
-                            //this.Invoke(new Param0Callback(()=>
-                            //ShowLog(dt_logs.Rows[dt_logs.Rows.Count - 1])
-                            //));
-                            ShowLog(dt_logs.Rows[dt_logs.Rows.Count - 1]);
-                        }
                     }
+                    dt_check.Merge(dt2);
                     this.RefreshStatus(rl.unit_num[i, 0] + "共抽取" + dt.Rows.Count + "条");
+                    if (this.log_shown == false)
+                    {
+                        this.log_shown = true;
+                        ShowLog(dt_logs.Rows[dt_logs.Rows.Count - 1]);
+                    }
                 }
                     ));
-
             }
             this.Invoke(new Param0Callback(() =>
             {
+                DataView dv = new DataView(dt_check);
+                dt_check = dv.ToTable(true);
                 CheckAllColor();
                 RefreshStatus("事件抽取完成");
             }
             ));
+            
         }
     }
 }
