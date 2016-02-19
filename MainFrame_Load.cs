@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Threading;
 using System;
+using System.Diagnostics;
 
 namespace Audit
 {
@@ -35,6 +36,8 @@ namespace Audit
   //              dt.Columns["ROWID"].SetOrdinal(0);
                 dt.Columns.Add("AUDIT_TIME", typeof(DateTime));
                 dt.Columns["AUDIT_TIME"].SetOrdinal(0);
+                dt.Columns.Add("AUDIT_USER");
+                dt.Columns.Add("POSTPONE", typeof(bool));
 #if LOGTEST
             dt.Rows[0]["ROWID"] = 1;
 #endif
@@ -79,7 +82,10 @@ namespace Audit
 #if LOGTEST
                 this.ShowLog(1);
 #endif
-
+                lock (locker_dt_logs)
+                {
+                    dt_logs.RowChanged += new DataRowChangeEventHandler(DT_RowChanged);
+                }
                 this.RefreshStatus("初始化事件表完成");
                 this.button_Input.Enabled = true;
             }
@@ -145,6 +151,20 @@ namespace Audit
                     new Thread(new ParameterizedThreadStart(InitDtLogs)).Start(false);
                 }
             }
+        }
+
+        private void DT_RowChanged(object sender, DataRowChangeEventArgs e)
+        {
+            DataTable dt = sender as DataTable;
+            if (dt.TableName == "dt_logs" || dt.TableName == "dt_units_comments")
+            {
+                newsaved = false;
+            }
+            else
+            {
+                MessageBox.Show("unexpected datatable rowchanged event!");
+            }
+    //        Debug.WriteLine("rowchanged" + sta++);
         }
     }
 }

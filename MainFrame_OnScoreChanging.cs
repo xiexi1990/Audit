@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Data;
 using System;
+using System.Diagnostics;
 
 namespace Audit
 {
@@ -83,31 +84,51 @@ namespace Audit
 
         private void CheckColor(DataGridViewRow row)
         {
+            Debug.WriteLine("checkcolor" + sta++);
             if (row != null && row.DataBoundItem != null)
             {
                 Color color;
                 DataRow r = (row.DataBoundItem as DataRowView).Row;
-                if (Convert.ToInt32(r["SCORE_GROUP"]) != -1 && Convert.ToInt32(r["SCORE_TIME"]) != -1 && Convert.ToInt32(r["SCORE_LOG"]) != -1 && Convert.ToInt32(r["SCORE_GRAPH"]) != -1)
+                if (!(r["POSTPONE"] is DBNull) && Convert.ToBoolean(r["POSTPONE"]))
                 {
-                    color = Color.LightGreen;
+                    color = Color.LightSkyBlue;
                 }
                 else
                 {
-                    color = Color.White;
+                    if (!(r["SCORE_GROUP"] is DBNull || r["SCORE_TIME"] is DBNull || r["SCORE_LOG"] is DBNull || r["SCORE_GRAPH"] is DBNull) && Convert.ToInt32(r["SCORE_GROUP"]) != -1 && Convert.ToInt32(r["SCORE_TIME"]) != -1 && Convert.ToInt32(r["SCORE_LOG"]) != -1 && Convert.ToInt32(r["SCORE_GRAPH"]) != -1)
+                    {
+                        int re = Convert.ToInt32(r["SCORE_GROUP"]) * 2 + Convert.ToInt32(r["SCORE_TIME"]) * 2 + Convert.ToInt32(r["SCORE_LOG"]) + Convert.ToInt32(r["SCORE_GRAPH"]);
+                        if (re == 0)
+                            color = Color.LightGreen;
+                        else if (re == 1)
+                            color = Color.Yellow;
+                        else
+                            color = Color.PaleVioletRed;
+                    }
+                    else
+                    {
+                        color = Color.White;
+                    }
                 }
-                foreach (DataGridViewCell c in row.Cells)
-                {
-                    c.Style.BackColor = color;
-                }
+                row.DefaultCellStyle.BackColor = color;
+                bool set_red = false;
                 foreach (DataGridViewRow _r in dataGridView_Logs.Rows)
                 {
                     if (_r == null || _r.Cells["LOG_ID"].Value == null)
                         continue;
                     if (_r != row && _r.Cells["LOG_ID"].Value.ToString() == row.Cells["LOG_ID"].Value.ToString())
                     {
-                        row.Cells["LOG_ID"].Style.BackColor = Color.PaleVioletRed;
+                        set_red = true;
                         break;
                     }
+                }
+                if (set_red)
+                {
+                    row.Cells["LOG_ID"].Style.BackColor = Color.Red;
+                }
+                else
+                {
+                    row.Cells["LOG_ID"].Style.BackColor = row.DefaultCellStyle.BackColor;
                 }
             }
         }

@@ -11,20 +11,22 @@ namespace Audit
             double[] v = new double[10] { 0.01, 0.21, 0.22, 0.27, 0.28, 0.45, 0.46, 0.51, 0.53, 0.98 };
             double[] h = new double[16] { 0.02, 0.04, 0.09, 0.11, 0.19, 0.21, 0.27, 0.29, 0.37, 0.39, 0.68, 0.7, 0.82, 0.83, 0.92, 0.98 };
 
-            Rectangle[] rl = new Rectangle[33];
+            Rectangle[] rl = new Rectangle[35];
             RectHelper rh = new RectHelper();
             rh.lefttop = lefttop;
             rh.siz = siz;
             Size sizbtn = rh.GetRectByProp(v[2], h[3], v[3], h[4]).Size;
             Size sizlabel = new Size(50, 20);
             Size sizhlp = new Size(20, 20);
-            Size sizsysbtn = rh.GetRectByProp(rh.GetRectByProp(v[2], h[3], v[7], h[4]), 0, 0, 0.4, 0.7).Size;
+            Size sizsysbtn = rh.GetRectByProp(0, 0, 0.07, 0.06).Size;
+            Size sizmidbtns = rh.GetRectByProp(0, 0, 0.07, 0.06).Size;
 
-            rl[0] = rh.GetRectByProp(v[0], h[0], v[1], h[2]);
+            rl[0] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(v[0], h[0], v[1], h[2]), 0, 0, 0.5, 1), sizsysbtn);
+            
             rl[1] = rh.GetRectByProp(v[0], h[3], v[1], 0.74);
-            rl[2] = rh.GetCenterRect(rh.GetRectByProp(v[0], 0.76, v[1], 0.8), sizsysbtn);
+            rl[2] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(v[0], h[0], v[1], h[2]), 0.5, 0, 1, 1), sizsysbtn);
 
-
+            rl[34] = rh.GetCenterRect(rh.GetRectByProp(v[0], 0.76, v[1], 0.8), sizsysbtn);
 
             rl[3] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[1], v[3], h[4]), sizbtn, RectHelper._ALIGNTOP);
             rl[4] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[3], v[3], h[4]), sizlabel, RectHelper._ALIGNRIGHT);
@@ -52,8 +54,9 @@ namespace Audit
 
             rl[19] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[11], v[3], h[12]), sizhlp, RectHelper._ALIGNBOTTOM | RectHelper._ALIGNRIGHT);
 
-            rl[20] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 0, 0, 1/4.0, 1), new Size(Convert.ToInt32(sizsysbtn.Width * 0.6), sizsysbtn.Height), RectHelper._ALIGNCENTER);
-            rl[21] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 1/4.0, 0, 2/4.0, 1), new Size(Convert.ToInt32(sizsysbtn.Width * 0.6), sizsysbtn.Height), RectHelper._ALIGNCENTER);
+
+            rl[20] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 0, 0, 1/4.0, 1), sizmidbtns, RectHelper._ALIGNCENTER);
+            rl[21] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 1 / 4.0, 0, 2 / 4.0, 1), sizmidbtns, RectHelper._ALIGNCENTER);
 
 
             rl[22] = rh.GetRectByProp(v[8], h[1], v[9], h[12]);
@@ -69,9 +72,12 @@ namespace Audit
             rl[28] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0, 0, 0.9 / 6.0, 1), sizhlp, RectHelper._ALIGNRIGHT | RectHelper._ALIGNBOTTOM);
             rl[29] = rh.GetRectByProp(v[0], h[13], v[1], h[14]);
             rl[30] = rh.GetCenterRect(rh.GetRectByProp(v[2], h[0], v[9], h[1]), new Size(200,20));
+            rl[33] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[0], v[6], h[1]), new Size(50, 20), 0);
 
-            rl[31] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 2 / 4.0, 0, 3/4.0, 1), new Size(Convert.ToInt32(sizsysbtn.Width * 0.6), sizsysbtn.Height), RectHelper._ALIGNCENTER);
-            rl[32] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 3 / 4.0, 0, 4/4.0, 1), new Size(Convert.ToInt32(sizsysbtn.Width * 0.6), sizsysbtn.Height), RectHelper._ALIGNCENTER);
+            rl[31] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 2 / 4.0, 0, 3 / 4.0, 1), sizmidbtns, RectHelper._ALIGNCENTER);
+            rl[32] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 3 / 4.0, 0, 4 / 4.0, 1), sizmidbtns, RectHelper._ALIGNCENTER);
+
+
             return rl;
         }
         private void FillCtrlList()
@@ -110,6 +116,8 @@ namespace Audit
             ctrl_list[30] = label_LogInfo;
             ctrl_list[31] = button_ClearScore;
             ctrl_list[32] = button_AllGood;
+            ctrl_list[33] = checkBox_Postpone;
+            ctrl_list[34] = button_ClearDTLogs;
         }
         private void Form1_Resize(object sender, EventArgs e)
         {

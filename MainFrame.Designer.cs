@@ -67,6 +67,7 @@
             this.MenuItem_AutoGood = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_AutoCompletionLimit = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_File = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Open = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_Add = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_Save = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_SaveAs = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,6 +79,9 @@
             this.timer_ReSelect = new System.Windows.Forms.Timer(this.components);
             this.backgroundWorker_DTAccessor = new System.ComponentModel.BackgroundWorker();
             this.backgroundWorker_ReportWriter = new System.ComponentModel.BackgroundWorker();
+            this.checkBox_Postpone = new System.Windows.Forms.CheckBox();
+            this.button_ClearDTLogs = new System.Windows.Forms.Button();
+            this.timer_AutoSave = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -360,7 +364,6 @@
             // 
             this.dataGridView_Logs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_Logs.Location = new System.Drawing.Point(16, 78);
-            this.dataGridView_Logs.MultiSelect = false;
             this.dataGridView_Logs.Name = "dataGridView_Logs";
             this.dataGridView_Logs.ReadOnly = true;
             this.dataGridView_Logs.RowTemplate.Height = 23;
@@ -443,6 +446,7 @@
             // MenuItem_File
             // 
             this.MenuItem_File.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItem_Open,
             this.MenuItem_Add,
             this.MenuItem_Save,
             this.MenuItem_SaveAs,
@@ -451,6 +455,13 @@
             this.MenuItem_File.Name = "MenuItem_File";
             this.MenuItem_File.Size = new System.Drawing.Size(44, 21);
             this.MenuItem_File.Text = "文件";
+            // 
+            // MenuItem_Open
+            // 
+            this.MenuItem_Open.Name = "MenuItem_Open";
+            this.MenuItem_Open.Size = new System.Drawing.Size(136, 22);
+            this.MenuItem_Open.Text = "打开";
+            this.MenuItem_Open.Click += new System.EventHandler(this.MenuItem_Open_Click);
             // 
             // MenuItem_Add
             // 
@@ -495,7 +506,7 @@
             this.button_ClearScore.Size = new System.Drawing.Size(59, 69);
             this.button_ClearScore.TabIndex = 13;
             this.button_ClearScore.TabStop = false;
-            this.button_ClearScore.Text = "清除得分";
+            this.button_ClearScore.Text = "清除得分(&C)";
             this.button_ClearScore.UseVisualStyleBackColor = true;
             this.button_ClearScore.Click += new System.EventHandler(this.button_ClearScore_Click);
             // 
@@ -534,11 +545,39 @@
             // 
             this.backgroundWorker_ReportWriter.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_ReportWriter_DoWork);
             // 
+            // checkBox_Postpone
+            // 
+            this.checkBox_Postpone.AutoSize = true;
+            this.checkBox_Postpone.Location = new System.Drawing.Point(300, 7);
+            this.checkBox_Postpone.Name = "checkBox_Postpone";
+            this.checkBox_Postpone.Size = new System.Drawing.Size(126, 16);
+            this.checkBox_Postpone.TabIndex = 16;
+            this.checkBox_Postpone.Text = "暂不考虑此事件(&P)";
+            this.checkBox_Postpone.UseVisualStyleBackColor = true;
+            this.checkBox_Postpone.CheckedChanged += new System.EventHandler(this.checkBox_Postpone_CheckedChanged);
+            // 
+            // button_ClearDTLogs
+            // 
+            this.button_ClearDTLogs.Location = new System.Drawing.Point(26, 337);
+            this.button_ClearDTLogs.Name = "button_ClearDTLogs";
+            this.button_ClearDTLogs.Size = new System.Drawing.Size(50, 34);
+            this.button_ClearDTLogs.TabIndex = 17;
+            this.button_ClearDTLogs.Text = "清空事件表";
+            this.button_ClearDTLogs.UseVisualStyleBackColor = true;
+            this.button_ClearDTLogs.Click += new System.EventHandler(this.button_ClearDTLogs_Click);
+            // 
+            // timer_AutoSave
+            // 
+            this.timer_AutoSave.Interval = 120000;
+            this.timer_AutoSave.Tick += new System.EventHandler(this.timer_AutoSave_Tick);
+            // 
             // MainFrame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(940, 608);
+            this.Controls.Add(this.button_ClearDTLogs);
+            this.Controls.Add(this.checkBox_Postpone);
             this.Controls.Add(this.button_AllGood);
             this.Controls.Add(this.listBox_Sentences);
             this.Controls.Add(this.button_ClearScore);
@@ -578,6 +617,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainFrame";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainFrame_FormClosing);
             this.Load += new System.EventHandler(this.MainFrame_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).EndInit();
@@ -640,6 +680,10 @@
         private System.Windows.Forms.ToolStripMenuItem MenuItem_SaveSchema;
         private System.ComponentModel.BackgroundWorker backgroundWorker_DTAccessor;
         private System.ComponentModel.BackgroundWorker backgroundWorker_ReportWriter;
+        private System.Windows.Forms.CheckBox checkBox_Postpone;
+        private System.Windows.Forms.Button button_ClearDTLogs;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_Open;
+        private System.Windows.Forms.Timer timer_AutoSave;
     }
 }
 
