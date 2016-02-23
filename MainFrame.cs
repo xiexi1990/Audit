@@ -10,8 +10,6 @@ using System.IO;
 using System.Threading;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using excel = Microsoft.Office.Interop.Excel;
-using System.ComponentModel;
 
 
 namespace Audit
@@ -25,7 +23,7 @@ namespace Audit
         private int sta = 0;
         delegate void Param0Callback();
         delegate void Param1Callback(object param);
-        delegate void StrCallback(string s);
+        delegate void RefreshStatusCallback(string s, bool b);
         public ValueBox vb = new ValueBox();
         private Button[] score_group_buttons = new Button[2],
             score_time_buttons = new Button[2],
@@ -44,14 +42,15 @@ namespace Audit
 
         private object locker_dt_logs = new object(), locker_dt_units_comments = new object(), locker_dt_param = new object();
         //    private int cur_log = -1;
+        private string prev_logid = null;
         private bool log_shown = false, text_change_observe = true, score_change_observe = true;
-        private bool newsaved = false;
+        private bool newsaved = false, newsaved_tmp = false;
         private RichTextBox rtb_active = null;
         private RichTextBox[] rtbs_check = new RichTextBox[4];
         private int rtb_text_end = -1;
         private string cur_file = null;
 
-        public object[,] UNIT_NUM = { { "IGP", 10 }, { "IGL", 10 }, { "ICD", 10 }, { "BJ", 15 }, { "TJ", 20 }, { "HE", 20 }, { "SX", 20 }, { "NM", 15 }, { "IES", 10 }, { "DPC", 0 }, { "LN", 20 }, { "JL", 15 }, { "HL", 15 }, { "SH", 15 }, { "JS", 15 }, { "ZJ", 15 }, { "AH", 15 }, { "FJ", 20 }, { "JX", 15 }, { "SD", 20 }, { "HA", 15 }, { "HB", 15 }, { "HN", 15 }, { "GD", 15 }, { "GX", 15 }, { "HI", 10 }, { "SC", 20 }, { "YN", 20 }, { "XZ", 10 }, { "CQ", 15 }, { "SN", 20 }, { "GS", 20 }, { "QH", 15 }, { "NX", 20 }, { "XJ", 20 } };
+        public object[,] UNIT_NUM = { { "AH", 15 }, { "BJ", 15 }, { "ICD", 10 }, { "IGP", 10 }, { "IGL", 10 }, { "FJ", 20 }, { "GS", 20 }, { "GD", 15 }, { "GX", 15 }, { "HI", 10 }, { "HE", 20 }, { "HA", 15 }, { "HL", 15 }, { "HB", 15 }, { "HN", 15 }, { "JL", 15 }, { "JS", 15 }, { "JX", 15 }, { "LN", 20 }, { "NM", 15 }, { "NX", 20 }, { "QH", 15 }, { "SD", 20 }, { "SX", 20 }, { "SN", 20 }, { "SH", 15 }, { "SC", 20 }, { "TJ", 20 }, { "XZ", 10 }, { "XJ", 20 }, { "IES", 10 }, { "YN", 20 }, { "ZJ", 15 }, { "DPC", 0 }, { "CQ", 15 } };
         public MainFrame()
         {
             InitializeComponent();
@@ -74,7 +73,7 @@ namespace Audit
 
             MenuItem_SaveSchema.Enabled = true;
             MenuItem_Save.Enabled = false;
-            button_Output.Enabled = false;
+    //        button_Output.Enabled = false;
 
             if (false)
             {
@@ -98,11 +97,13 @@ namespace Audit
 
             foreach (Control c in this.Controls)
             {
+                if (c.Name == listBox_Sentences.Name)
+                    continue;
                 c.MouseClick += new MouseEventHandler(Global_MainFrame_Click);
                 c.KeyDown += new KeyEventHandler(MainFrame_Global_KeyDown);
             }
             this.MouseClick += new MouseEventHandler(Global_MainFrame_Click);
-            this.KeyDown += new KeyEventHandler(MainFrame_Global_KeyDown);
+     //       this.KeyDown += new KeyEventHandler(MainFrame_Global_KeyDown);
 
             dt_units_comments = new DataTable();
             dt_units_comments.TableName = "dt_units_comments";
@@ -237,9 +238,18 @@ namespace Audit
                 {
                     return;
                 }
-                Rectangle r = new Rectangle(rtb_active.Right, rtb_active.Top, Convert.ToInt32(rtb_active.Width * 0.7 > 200 ? 200 : rtb_active.Width * 0.7), rtb_active.Height);
-                listBox_Sentences.Location = r.Location;
-                listBox_Sentences.Size = r.Size;
+                double l, t, w, h;
+                l = rtb_active.Right;
+                t = rtb_active.Top - rtb_active.Height * 0.3;
+                w = Math.Min(rtb_active.Width, 300);
+                h = rtb_active.Height * 2;
+                if (t + h > this.Bottom*0.96)
+                {
+                    t = this.Bottom*0.96 - h;
+                }
+                Rectangle rect = new Rectangle(Convert.ToInt32(l), Convert.ToInt32(t), Convert.ToInt32(w), Convert.ToInt32(h));
+                listBox_Sentences.Location = rect.Location;
+                listBox_Sentences.Size = rect.Size;
 
                 listBox_Sentences.Visible = true;
                 listBox_Sentences.Focus();
@@ -255,28 +265,6 @@ namespace Audit
             {
                 rtb_active.Select(rtb_text_end, rtb_active.TextLength - rtb_text_end);
             }
-        }
-
-        private void WriteReportExcel(string filename)
-        {
-            filename = "c:\\testxml1";
-            excel.Application eapp = new excel.Application();
-            excel.Workbook book = eapp.Workbooks.Add();
-            excel.Worksheet sheet = book.Worksheets[1];
-            sheet.Cells[1, 1] = "hello";
-
-            eapp.Visible = true;
-            book.SaveAs(filename);
-        }
-
-        private void button_Output_Click(object sender, EventArgs e)
-        {
-            WriteReportExcel(null);
-        }
-
-        private void backgroundWorker_ReportWriter_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
-        {
-
         }
 
         private void dataGridView_Logs_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
@@ -317,9 +305,9 @@ namespace Audit
 
         private void button_ClearDTLogs_Click(object sender, EventArgs e)
         {
-            if (!newsaved && dt_logs != null && dt_logs.Rows.Count > 0)
+            if (dt_logs != null && dt_logs.Rows.Count > 0)
             {
-                if (Saving(true, true) != DialogResult.Cancel)
+                if (newsaved || Saving(true, true) != DialogResult.Cancel)
                 {
                     lock (locker_dt_logs)
                     {

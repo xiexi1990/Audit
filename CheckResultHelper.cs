@@ -7,7 +7,7 @@ using System.Data;
 
 namespace Audit
 {
-    public class CheckResult
+    public class CheckResultHelper
     {
         public int[] graph = new int[2], log = new int[2], time = new int[2], group = new int[2], concern = new int[2], overanaly = new int[2], wholeresult = new int[2];
         public string[] reason = new string[2], suggestion = new string[2], result = new string[2], wholestr = new string[2];
@@ -36,16 +36,16 @@ namespace Audit
             else
             {
                 DataRow r = dv.ToTable().Rows[0];
-                graph[type] = Convert.ToInt32(r["IS_AGREE"]);
-                log[type] = Convert.ToInt32(r["FLAG_2"]);
-                time[type] = Convert.ToInt32(r["FLAG_3"]);
-                concern[type] = Convert.ToInt32(r["FLAG_4"]);
-                group[type] = Convert.ToInt32(r["FLAG_5"]);
-                overanaly[type] = Convert.ToInt32(r["FLAG_6"]);
+                graph[type] = Convert.ToInt32(r["IS_AGREE"] is DBNull ? 0 : r["IS_AGREE"]);
+                log[type] = Convert.ToInt32(r["FLAG_2"] is DBNull ? 0 : r["FLAG_2"]);
+                time[type] = Convert.ToInt32(r["FLAG_3"] is DBNull ? 0 : r["FLAG_3"]);
+                concern[type] = Convert.ToInt32(r["FLAG_4"] is DBNull ? 0 : r["FLAG_4"]);
+                group[type] = Convert.ToInt32(r["FLAG_5"] is DBNull ? 0 : r["FLAG_5"]);
+                overanaly[type] = Convert.ToInt32(r["FLAG_6"] is DBNull ? 0 : r["FLAG_6"]);
                 reason[type] = Convert.ToString(r["REASON"]);
                 suggestion[type] = Convert.ToString(r["SUGGESTION"]);
                 result[type] = Convert.ToString(r["RESULT"]);
-                checkdate[type] = Convert.ToDateTime(r["CHECK_DATE"]);
+                checkdate[type] = Convert.ToDateTime(r["CHECK_DATE"] is DBNull ? "1970/1/1" : r["CHECK_DATE"]);
                 int re = graph[type] + log[type] + time[type] * 2 + group[type] * 2;
                 wholeresult[type] = re > 2 ? 2 : re;
                 string[] re3 = { "好", "中", "差" };

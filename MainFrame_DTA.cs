@@ -87,6 +87,13 @@ namespace Audit
                 }));
                 cur_file = p.filename;
             }
+            else
+            {
+                this.Invoke(new Param0Callback(() =>
+                    {
+                        newsaved_tmp = true;
+                    }));
+            }
         }
 
         private void MenuItem_Save_Click(object sender, EventArgs e)
@@ -244,7 +251,7 @@ namespace Audit
 
         private void timer_AutoSave_Tick(object sender, EventArgs e)
         {
-            if (!newsaved && dt_logs != null && dt_logs.Rows.Count > 0)
+            if (!newsaved_tmp && dt_logs != null && dt_logs.Rows.Count > 0)
             {
                 if (!backgroundWorker_DTAccessor.IsBusy)
                 {

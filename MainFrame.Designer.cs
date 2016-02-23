@@ -544,6 +544,7 @@
             // backgroundWorker_ReportWriter
             // 
             this.backgroundWorker_ReportWriter.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_ReportWriter_DoWork);
+            this.backgroundWorker_ReportWriter.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.backgroundWorker_ReportWriter_ProgressChanged);
             // 
             // checkBox_Postpone
             // 
@@ -576,10 +577,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(940, 608);
+            this.Controls.Add(this.listBox_Sentences);
             this.Controls.Add(this.button_ClearDTLogs);
             this.Controls.Add(this.checkBox_Postpone);
             this.Controls.Add(this.button_AllGood);
-            this.Controls.Add(this.listBox_Sentences);
             this.Controls.Add(this.button_ClearScore);
             this.Controls.Add(this.label_LogInfo);
             this.Controls.Add(this.richTextBox_Status);

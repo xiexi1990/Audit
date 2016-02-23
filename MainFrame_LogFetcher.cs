@@ -38,7 +38,7 @@ namespace Audit
                     if (this.log_shown == false)
                     {
                         this.log_shown = true;
-                        ShowLog(dt_logs.Rows[dt_logs.Rows.Count - 1]);
+                        ShowLog(dt_logs.Rows[0]);
                     }
                 }
                     ));

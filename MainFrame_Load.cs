@@ -159,6 +159,7 @@ namespace Audit
             if (dt.TableName == "dt_logs" || dt.TableName == "dt_units_comments")
             {
                 newsaved = false;
+                newsaved_tmp = false;
             }
             else
             {
