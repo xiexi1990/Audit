@@ -7,7 +7,7 @@ using System.Data;
 
 namespace Audit
 {
-    class DataTableHelper
+    public class DataTableHelper
     {
             public object[,] Folio2DTable_HasColName(object[,] t)
             {

@@ -18,7 +18,7 @@ namespace Audit
             if (r != null && r.RowState != DataRowState.Deleted)
             {
                 text_change_observe = false;
-                if (Convert.ToInt32(r["SCORE_GROUP"]) == -1 && Convert.ToInt32(r["SCORE_TIME"]) == -1 && Convert.ToInt32(r["SCORE_LOG"]) == -1 && Convert.ToInt32(r["SCORE_GRAPH"]) == -1 && MenuItem_AutoGood.Checked)
+                if (Convert.ToInt32(r["SCORE_GROUP"]) == -1 && Convert.ToInt32(r["SCORE_TIME"]) == -1 && Convert.ToInt32(r["SCORE_LOG"]) == -1 && Convert.ToInt32(r["SCORE_GRAPH"]) == -1 && Convert.ToInt32(r["SCORE_GSET"]) == -1 && Convert.ToInt32(r["SCORE_GSETCLASS"]) == -1 && MenuItem_AutoGood.Checked)
                 {
                     button_AllGood_Click(null, null);
                 }
@@ -36,16 +36,9 @@ namespace Audit
                 CheckResultHelper cr = new CheckResultHelper();
                 cr.Fill(dt_check, r["LOG_ID"].ToString());
 
-                int start = richTextBox_Log.TextLength;
-                richTextBox_Log.AppendText(cr.wholestr[0] + "\n");
-                richTextBox_Log.Select(start, cr.wholestr[0].Length);
-                richTextBox_Log.SelectionColor = Color.Blue;
-
-                start = richTextBox_Log.TextLength;
-                richTextBox_Log.AppendText(cr.wholestr[1] + "\n");
-                richTextBox_Log.Select(start, cr.wholestr[1].Length);
-                richTextBox_Log.SelectionColor = Color.Red;
-                richTextBox_Log.Select(0, 0);
+                if (!GSET)
+                {
+                }
 
                 MemoryStream mstream = new MemoryStream((byte[])r["GRAPH"]);
                 this.pictureBox_Graph.Image = Image.FromStream(mstream);
@@ -59,17 +52,35 @@ namespace Audit
                 }
                 this.label_LogInfo.Text = string.Format("{0} {1}{2}{3}{4}[{5}]", r["SCIENCE"], r["UNITNAME"], r["STATIONNAME"], r["INSTRCODE"], r["INSTRNAME"], r["POINTID"]);
 
+                richTextBox_WholeInfo.Text = label_LogInfo.Text + "\n\n事件类别：" + richTextBox_Group.Text + "\n\n测项：" + r["BITEM"] + "\n\n起止时间：" + richTextBox_Time.Text + "\n\n事件描述：" + richTextBox_Log.Text;
+
+                int start = richTextBox_WholeInfo.TextLength;
+                richTextBox_WholeInfo.AppendText(cr.wholestr[0] + "\n");
+                richTextBox_WholeInfo.Select(start, cr.wholestr[0].Length);
+                richTextBox_WholeInfo.SelectionColor = Color.Blue;
+
+                start = richTextBox_WholeInfo.TextLength;
+                richTextBox_WholeInfo.AppendText(cr.wholestr[1] + "\n");
+                richTextBox_WholeInfo.Select(start, cr.wholestr[1].Length);
+                richTextBox_WholeInfo.SelectionColor = Color.Red;
+                richTextBox_WholeInfo.Select(0, 0);
+
+
                 richTextBox_GroupCheck.Text = Convert.ToString(r["COMMENTS_GROUP"]);
                 richTextBox_TimeCheck.Text = Convert.ToString(r["COMMENTS_TIME"]);
                 richTextBox_LogCheck.Text = Convert.ToString(r["COMMENTS_LOG"]);
                 richTextBox_GraphCheck.Text = Convert.ToString(r["COMMENTS_GRAPH"]);
+                richTextBox_GSetComments.Text = Convert.ToString(r["COMMENTS_GSET"]);
 
                 vb.score_group = Convert.ToInt32(r["SCORE_GROUP"]);
                 vb.score_time = Convert.ToInt32(r["SCORE_TIME"]);
                 vb.score_log = Convert.ToInt32(r["SCORE_LOG"]);
                 vb.score_graph = Convert.ToInt32(r["SCORE_GRAPH"]);
+                vb.score_gset = Convert.ToInt32(r["SCORE_GSET"]);
+                vb.score_gsetclass = Convert.ToInt32(r["SCORE_GSETCLASS"]);
 
                 checkBox_Postpone.Checked = r["POSTPONE"] is DBNull ? false : Convert.ToBoolean(r["POSTPONE"]);
+
 
                 //           CheckColor(dataGridView_Logs.CurrentRow);
                 
@@ -79,6 +90,7 @@ namespace Audit
             else
             {
                 text_change_observe = false;
+                prev_logid = null;
                 this.richTextBox_Group.Clear();
                 this.richTextBox_Time.Clear();
                 this.richTextBox_Log.Clear();
@@ -88,10 +100,14 @@ namespace Audit
                 richTextBox_TimeCheck.Clear();
                 richTextBox_LogCheck.Clear();
                 richTextBox_GraphCheck.Clear();
+                richTextBox_GSetComments.Clear();
+                richTextBox_WholeInfo.Clear();
                 vb.score_group = -1;
                 vb.score_time = -1;
                 vb.score_log = -1;
                 vb.score_graph = -1;
+                vb.score_gset = -1;
+                vb.score_gsetclass = -1;
                 checkBox_Postpone.Checked = false;
                 text_change_observe = true;
             }

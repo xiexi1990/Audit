@@ -28,11 +28,13 @@ namespace Audit
         private Button[] score_group_buttons = new Button[2],
             score_time_buttons = new Button[2],
             score_graph_buttons = new Button[3],
-            score_log_buttons = new Button[3];
-        private Control[] ctrl_list = new Control[35];
-        //       private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
-        private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
-        public DataTable dt_units, dt_logs, dt_units_comments, dt_param, dt_check;
+            score_log_buttons = new Button[3], 
+            score_gset_buttons = new Button[5], 
+            score_gsetclass_buttons = new Button[2];
+        private Control[] ctrl_list = new Control[45];
+        private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
+   //     private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
+        public DataTable dt_units, dt_logs, dt_units_comments, dt_param, dt_check, dt_bitem, dt_science;
         //   public DataTable dt_units_cache_w, dt_logs_cache_w, dt_units_comments_cache_w, dt_param_cache_w, dt_check_cache_w;
         //      public DataSet ds_cache = new DataSet("ds_cache");
 
@@ -45,8 +47,9 @@ namespace Audit
         private string prev_logid = null;
         private bool log_shown = false, text_change_observe = true, score_change_observe = true;
         private bool newsaved = false, newsaved_tmp = false;
+        bool GSET = true;
         private RichTextBox rtb_active = null;
-        private RichTextBox[] rtbs_check = new RichTextBox[4];
+        private RichTextBox[] rtbs_check = new RichTextBox[5];
         private int rtb_text_end = -1;
         private string cur_file = null;
 
@@ -54,7 +57,7 @@ namespace Audit
         public MainFrame()
         {
             InitializeComponent();
-            vb.SetDelegate(OnScoreGroupChanging, OnScoreTimeChanging, OnScoreGraphChanging, OnScoreLogChanging);
+            vb.SetDelegate(OnScoreGroupChanging, OnScoreTimeChanging, OnScoreGraphChanging, OnScoreLogChanging, OnScoreGSetChanging, OnScoreGSetClassChanging);
             score_group_buttons[0] = this.button_GroupGood;
             score_group_buttons[1] = this.button_GroupBad;
             score_time_buttons[0] = this.button_TimeGood;
@@ -65,11 +68,19 @@ namespace Audit
             score_log_buttons[0] = this.button_LogGood;
             score_log_buttons[1] = this.button_LogMiddle;
             score_log_buttons[2] = this.button_LogBad;
+            score_gset_buttons[0] = button_GSet0;
+            score_gset_buttons[1] = button_GSet1;
+            score_gset_buttons[2] = button_GSet2;
+            score_gset_buttons[3] = button_GSet3;
+            score_gset_buttons[4] = button_GSet4;
+            score_gsetclass_buttons[0] = button_GSetClass0;
+            score_gsetclass_buttons[1] = button_GSetClass1;
 
             rtbs_check[0] = richTextBox_GroupCheck;
             rtbs_check[1] = richTextBox_TimeCheck;
             rtbs_check[2] = richTextBox_LogCheck;
             rtbs_check[3] = richTextBox_GraphCheck;
+            rtbs_check[4] = richTextBox_GSetComments;
 
             MenuItem_SaveSchema.Enabled = true;
             MenuItem_Save.Enabled = false;
@@ -88,7 +99,7 @@ namespace Audit
 
             listBox_Sentences.Visible = false;
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 5; i++)
             {
                 rtbs_check[i].TextChanged += new EventHandler(richTextBox_TextChanged);
                 rtbs_check[i].KeyDown += new KeyEventHandler(richTextBox_KeyDown);
@@ -104,6 +115,17 @@ namespace Audit
             }
             this.MouseClick += new MouseEventHandler(Global_MainFrame_Click);
      //       this.KeyDown += new KeyEventHandler(MainFrame_Global_KeyDown);
+            if (GSET)
+            {
+                checkBox_Postpone.Visible = false;
+                richTextBox_Group.Visible = richTextBox_Time.Visible = richTextBox_Log.Visible = false;
+                button_LogCheckHelp.Visible = button_GraphCheckHelp.Visible = false;
+                button_Output.Enabled = false;
+                button_Input.Visible = label_LogInfo.Visible = false;
+            }
+            else
+            {
+            }
 
             dt_units_comments = new DataTable();
             dt_units_comments.TableName = "dt_units_comments";
@@ -111,6 +133,14 @@ namespace Audit
             dt_units_comments.Columns.Add("U_COMMENTS");
             dt_units_comments.RowChanged += new DataRowChangeEventHandler(DT_RowChanged);
             dt_param = new DataTable();
+            dt_science = new DataTable();
+            dt_science.TableName = "dt_science";
+            dt_science.Columns.Add("SCIENCE");
+            dt_science.Rows.Add("地磁");
+            dt_science.Rows.Add("地电");
+            dt_science.Rows.Add("流体");
+            dt_science.Rows.Add("形变");
+            dt_science.Rows.Add("重力");
 
             timer_AutoSave.Start();
         }
@@ -138,6 +168,9 @@ namespace Audit
                     break;
                 case "richTextBox_GraphCheck":
                     col = "COMMENTS_GRAPH";
+                    break;
+                case "richTextBox_GSetComments":
+                    col = "COMMENTS_GSET";
                     break;
             }
             if (col != null)
@@ -173,8 +206,11 @@ namespace Audit
             }
             if (rl.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
+            LogFetcherParam lp = new LogFetcherParam();
+            lp.type = LogFetcherParamType.Rule;
+            lp.rl = rl;
             if (backgroundWorker_LogFetcher.IsBusy == false)
-                backgroundWorker_LogFetcher.RunWorkerAsync(rl);
+                backgroundWorker_LogFetcher.RunWorkerAsync(lp);
             else
                 MessageBox.Show("事件抽取器正忙！");
         }
@@ -199,9 +235,34 @@ namespace Audit
 
         private void dataGridView_Logs_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (dataGridView_Logs.Columns[e.ColumnIndex].Name == "UNITNAME")
+            if (!GSET)
             {
-                dgv_unit_asc ^= true;
+                if (dataGridView_Logs.Columns[e.ColumnIndex].Name == "UNITNAME")
+                {
+                    dgv_unit_asc ^= true;
+                }
+                else
+                {
+                    if (e.ColumnIndex == dgv_sorted_index)
+                    {
+                        dgv_sorted_asc ^= true;
+                    }
+                    else
+                    {
+                        dgv_sorted_asc = true;
+                        dgv_sorted_index = e.ColumnIndex;
+                    }
+                }
+                string sort = "unitname";
+                if (!dgv_unit_asc)
+                    sort += " desc";
+                if (dgv_sorted_index >= 0)
+                {
+                    sort += ", " + dataGridView_Logs.Columns[dgv_sorted_index].Name;
+                    if (!dgv_sorted_asc)
+                        sort += " desc";
+                }
+                this.dv_dt_logs.Sort = sort;
             }
             else
             {
@@ -214,17 +275,12 @@ namespace Audit
                     dgv_sorted_asc = true;
                     dgv_sorted_index = e.ColumnIndex;
                 }
-            }
-            string sort = "unitname";
-            if (!dgv_unit_asc)
-                sort += " desc";
-            if (dgv_sorted_index >= 0)
-            {
-                sort += ", " + dataGridView_Logs.Columns[dgv_sorted_index].Name;
+                string sort = dataGridView_Logs.Columns[dgv_sorted_index].Name;
                 if (!dgv_sorted_asc)
                     sort += " desc";
+                dv_dt_logs.Sort = sort;
             }
-            this.dv_dt_logs.Sort = sort;
+            
             CheckAllColor();
         }
 
@@ -318,6 +374,22 @@ namespace Audit
                 }
             }
         }
+
+        private void MenuItem_FetchGSet_Click(object sender, EventArgs e)
+        {
+            GSetRule gs = new GSetRule(dt_science, dt_bitem, dt_units);
+            if (gs.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return;
+            LogFetcherParam lp = new LogFetcherParam();
+            lp.type = LogFetcherParamType.GSetRule;
+            lp.gs = gs;
+            if (backgroundWorker_LogFetcher.IsBusy == false)
+                backgroundWorker_LogFetcher.RunWorkerAsync(lp);
+            else
+                MessageBox.Show("事件抽取器正忙！");
+        }
+
+        
    
     }
 }

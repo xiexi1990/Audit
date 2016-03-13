@@ -35,6 +35,8 @@ namespace Audit
             WriteScoreToDt_T("SCORE_TIME", vb.score_time = -1);
             WriteScoreToDt_T("SCORE_LOG", vb.score_log = -1);
             WriteScoreToDt_T("SCORE_GRAPH", vb.score_graph = -1);
+            WriteScoreToDt_T("SCORE_GSET", vb.score_gset = -1);
+            WriteScoreToDt_T("SCORE_GSETCLASS", vb.score_gsetclass = -1);
             CheckColor(dataGridView_Logs.CurrentRow);
         }
 
@@ -44,6 +46,8 @@ namespace Audit
             WriteScoreToDt_T("SCORE_TIME", vb.score_time = 0);
             WriteScoreToDt_T("SCORE_LOG", vb.score_log = 0);
             WriteScoreToDt_T("SCORE_GRAPH", vb.score_graph = 0);
+            WriteScoreToDt_T("SCORE_GSET", vb.score_gset = 0);
+            WriteScoreToDt_T("SCORE_GSETCLASS", vb.score_gsetclass = 0);
             CheckColor(dataGridView_Logs.CurrentRow);
         }
     }

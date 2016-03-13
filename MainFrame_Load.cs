@@ -25,7 +25,14 @@ namespace Audit
 #if LOGTEST
             DataTable dt = this.orahlper.GetDataTable(sg.GenExtractionSql(1, "HB", 2014, 1, 1, false));
 #else
-                esql = sg.GenExtractionSql(0, "HB", 2014, 1, 1, false);
+                if (GSET)
+                {
+                    esql = sg.GenGSetSql(null, null, null, true, true, true, DateTime.Now, DateTime.Now);
+                }
+                else
+                {
+                    esql = sg.GenExtractionSql(0, "HB", 2014, 1, 1, false);
+                }
                 dt = orahlper.GetDataTable(esql).Clone();
                 dt2 = orahlper.GetDataTable(sg.GenCheckSql(null)).Clone();
 #endif
@@ -49,6 +56,13 @@ namespace Audit
                 dt.Columns.Add("COMMENTS_TIME", typeof(string));
                 dt.Columns.Add("COMMENTS_LOG", typeof(string));
                 dt.Columns.Add("COMMENTS_GRAPH", typeof(string));
+                dt.Columns.Add("SCORE_GSET", typeof(int));
+                dt.Columns["SCORE_GSET"].SetOrdinal(1);
+                dt.Columns.Add("SCORE_GSETCLASS", typeof(int));
+                dt.Columns.Add("COMMENTS_GSET", typeof(string));
+                dt.Columns.Add("SET_ID", typeof(string));
+                dt.Columns.Add("SET_NAME", typeof(string));
+                dt.Columns.Add("SPAN", typeof(decimal));
             }
             this.Invoke(new Param0Callback(() =>
             {
@@ -66,7 +80,7 @@ namespace Audit
                 this.dataGridView_Logs.DataSource = this.dv_dt_logs;
                 foreach (DataGridViewColumn c in dataGridView_Logs.Columns)
                 {
-                    if (c.Name == "UNITNAME" || c.Name == "STATIONNAME" || c.Name == "INSTRCODE" || c.Name == "INSTRNAME" || c.Name == "AB_TYPE_NAME" || c.Name == "SCIENCE" || c.Name == "START_DATE" || c.Name == "END_DATE" || c.Name == "LOG_ID" || c.Name == "AUDIT_TIME")
+                    if (c.Name == "UNITNAME" || c.Name == "STATIONNAME" || c.Name == "INSTRCODE" || c.Name == "INSTRNAME" || c.Name == "AB_TYPE_NAME" || c.Name == "SCIENCE" || c.Name == "START_DATE" || c.Name == "END_DATE" || c.Name == "LOG_ID" || c.Name == "AUDIT_TIME" || c.Name == "INSTRID" || c.Name == "SCORE_GSET")
                     {
                         c.Width = 50;
                         c.SortMode = DataGridViewColumnSortMode.Programmatic;
@@ -94,36 +108,62 @@ namespace Audit
                 
         }
 
-        public void ReloadDtUnits(object usefile)
+        public void ReloadMinorDt(object param)
         {
-            if ((bool)usefile)
+            ReloadDtParam p = param as ReloadDtParam;
+            string typename = " ";
+            if (p.type == ReloadDtParamType.Unit)
             {
-                this.RefreshStatus("正在加载省局列表（通过文件）……");
+                typename = "省局列表";
+            }
+            else if (p.type == ReloadDtParamType.Bitem)
+            {
+                typename = "测项列表";
+            }
+            if (p.use_file)
+            {
+                this.RefreshStatus("正在加载" + typename + "（通过文件）……");
             }
             else
             {
-                this.RefreshStatus("正在加载省局列表（通过连接数据库）……");
-                DataTable dt = orahlper.GetDataTable("select unit_code, unitname from qzdata.qz_abnormity_units where unit_code != 'CEN' order by unitname");
-                dt.Columns.Add("NUM");
-                foreach (DataRow r in dt.Rows)
+                this.RefreshStatus("正在加载" + typename + "（通过连接数据库）……");
+                DataTable dt = null;
+                if (p.type == ReloadDtParamType.Unit)
                 {
-                    r["NUM"] = 0;
-                    for (int i = 0; i < UNIT_NUM.GetLength(0); i++)
+                    dt = orahlper.GetDataTable("select unit_code, unitname from qzdata.qz_abnormity_units where unit_code != 'CEN' order by unitname");
+                    dt.Columns.Add("NUM");
+                    foreach (DataRow r in dt.Rows)
                     {
-                        if (r["unit_code"].ToString() == UNIT_NUM[i, 0].ToString())
+                        r["NUM"] = 0;
+                        for (int i = 0; i < UNIT_NUM.GetLength(0); i++)
                         {
-                            r["NUM"] = UNIT_NUM[i, 1];
-                            break;
+                            if (r["unit_code"].ToString() == UNIT_NUM[i, 0].ToString())
+                            {
+                                r["NUM"] = UNIT_NUM[i, 1];
+                                break;
+                            }
                         }
                     }
                 }
+                else if (p.type == ReloadDtParamType.Bitem)
+                {
+                    dt = orahlper.GetDataTable("select distinct bitem, science from qzdata.qz_abnormity_instrinfo where science != '辅助' order by science");
+                }
                 this.Invoke(new Param0Callback(() =>
                 {
-                    this.dt_units = dt;
-                    dt_units.TableName = "dt_units";
+                    if (p.type == ReloadDtParamType.Unit)
+                    {
+                        this.dt_units = dt;
+                        dt_units.TableName = "dt_units";
+                    }
+                    else if (p.type == ReloadDtParamType.Bitem)
+                    {
+                        this.dt_bitem = dt;
+                        dt_bitem.TableName = "dt_bitem";
+                    }
                 }));
             }
-            this.RefreshStatus("加载省局列表完成");
+            this.RefreshStatus("加载" + typename + "完成");
         }
 
         private void MainFrame_Load(object sender, EventArgs e)
@@ -134,20 +174,23 @@ namespace Audit
                 DataSet ds = new DataSet();
                 ds.ReadXml("load.info", XmlReadMode.ReadSchema);
                 dt_units = ds.Tables["dt_units"];
+                dt_bitem = ds.Tables["dt_bitem"];
                 lock (locker_dt_logs)
                 {
                     dt_logs = ds.Tables["dt_logs"];
                 }
                 dt_check = ds.Tables["dt_check"];
                 RefreshStatus("读取完成");
-                new Thread(new ParameterizedThreadStart(ReloadDtUnits)).Start(true);
+                new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.Unit));
+                new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.Bitem));
                 new Thread(new ParameterizedThreadStart(InitDtLogs)).Start(true);
             }
             else
             {
                 if (MessageBox.Show("是否通过连接数据库加载表信息？", "未能找到load.info", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    new Thread(new ParameterizedThreadStart(ReloadDtUnits)).Start(false);
+                    new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.Unit));
+                    new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.Bitem));
                     new Thread(new ParameterizedThreadStart(InitDtLogs)).Start(false);
                 }
             }

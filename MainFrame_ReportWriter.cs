@@ -14,11 +14,17 @@ namespace Audit
             bool has_blank = false;
             foreach (DataGridViewRow r in dataGridView_Logs.Rows)
             {
+                if (r == null || r.DataBoundItem == null)
+                    continue;
                 if (r.Cells["LOG_ID"].Style.BackColor == Color.Red)
                 {
                     has_red = true;
                 }
-                if (!(r.Cells["UNITNAME"].Style.BackColor == Color.LightGreen || r.Cells["UNITNAME"].Style.BackColor == Color.Yellow || r.Cells["UNITNAME"].Style.BackColor == Color.PaleVioletRed))
+                DataRow dr = (r.DataBoundItem as DataRowView).Row;
+                if(!(!(dr["SCORE_GROUP"] is DBNull) && Convert.ToInt32(dr["SCORE_GROUP"]) != -1 && 
+                    !(dr["SCORE_TIME"] is DBNull) && Convert.ToInt32(dr["SCORE_TIME"]) != -1 && 
+                    !(dr["SCORE_LOG"] is DBNull) && Convert.ToInt32(dr["SCORE_LOG"]) != -1 && 
+                    !(dr["SCORE_GRAPH"] is DBNull) && Convert.ToInt32(dr["SCORE_GRAPH"]) != -1))
                 {
                     has_blank = true;
                 }

@@ -11,7 +11,7 @@ namespace Audit
         private void backgroundWorker_DTAccessor_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             DTAccessorParam p = e.Argument as DTAccessorParam;
-            if (p.DTAP_mode == DTAccessorParam.DTAP_add)
+            if (p.type == DTAccessorParamType.Add)
             {
                 RefreshStatus("正在加载文件……");
                 DataSet ds = new DataSet();
@@ -50,7 +50,7 @@ namespace Audit
                 }
                 ));
             }
-            else if (p.DTAP_mode == DTAccessorParam.DTAP_save)
+            else if (p.type == DTAccessorParamType.Save)
             {
                 if (!p.save_tmp)
                     RefreshStatus("正在保存文件……");
@@ -79,7 +79,7 @@ namespace Audit
                 {
                     newsaved = true;
                     this.Text = p.filename + "  保存于" + File.GetLastWriteTime(p.filename).ToString("yyyy/MM/dd HH:mm:ss");
-                    if (p.DTAP_mode == DTAccessorParam.DTAP_add && dt_logs.Rows.Count > 0)
+                    if (p.type == DTAccessorParamType.Add && dt_logs.Rows.Count > 0)
                     {
                         this.log_shown = true;
                         this.ShowLog(dt_logs.Rows[0]);
@@ -107,7 +107,7 @@ namespace Audit
                 if (backgroundWorker_DTAccessor.IsBusy == false)
                 {
                     DTAccessorParam p = new DTAccessorParam();
-                    p.DTAP_mode = DTAccessorParam.DTAP_save;
+                    p.type = DTAccessorParamType.Save;
                     p.filename = cur_file;
                     backgroundWorker_DTAccessor.RunWorkerAsync(p);
                 }
@@ -127,6 +127,7 @@ namespace Audit
                 ds.Tables.Add(dt_logs.Clone());
                 ds.Tables.Add(dt_check.Clone());
                 ds.Tables.Add(dt_units);
+                ds.Tables.Add(dt_bitem);
                 ds.WriteXml(sd.FileName, XmlWriteMode.WriteSchema);
             }
         }
@@ -146,7 +147,7 @@ namespace Audit
                 if (backgroundWorker_DTAccessor.IsBusy == false)
                 {
                     DTAccessorParam p = new DTAccessorParam();
-                    p.DTAP_mode = DTAccessorParam.DTAP_add;
+                    p.type = DTAccessorParamType.Add;
                     p.filename = od.FileName;
                     backgroundWorker_DTAccessor.RunWorkerAsync(p);
                 }
@@ -189,7 +190,7 @@ namespace Audit
                 if (re == System.Windows.Forms.DialogResult.OK)
                 {
                     DTAccessorParam p = new DTAccessorParam();
-                    p.DTAP_mode = DTAccessorParam.DTAP_save;
+                    p.type = DTAccessorParamType.Save;
                     p.filename = sd.FileName;
                     if (syn)
                     {
@@ -240,7 +241,7 @@ namespace Audit
                         dt_logs.Clear();
                     }
                     DTAccessorParam p = new DTAccessorParam();
-                    p.DTAP_mode = DTAccessorParam.DTAP_add;
+                    p.type = DTAccessorParamType.Add;
                     p.filename = od.FileName;
                     backgroundWorker_DTAccessor.RunWorkerAsync(p);
                 }
@@ -256,7 +257,7 @@ namespace Audit
                 if (!backgroundWorker_DTAccessor.IsBusy)
                 {
                     DTAccessorParam p = new DTAccessorParam();
-                    p.DTAP_mode = DTAccessorParam.DTAP_save;
+                    p.type = DTAccessorParamType.Save;
                     p.filename = "_TMP.dt";
                     p.save_tmp = true;
                     backgroundWorker_DTAccessor.RunWorkerAsync(p);

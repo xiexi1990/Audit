@@ -59,7 +59,38 @@ namespace Audit
                 score_log_buttons[new_value].BackColor = Color.Yellow;
             else if (new_value == 2)
                 score_log_buttons[new_value].BackColor = Color.Red;
-        }      
+        }
+        private void OnScoreGSetChanging(int new_value)
+        {
+            if (vb.score_gset >= 0 && vb.score_gset <= 4)
+            {
+                score_gset_buttons[vb.score_gset].BackColor = SystemColors.Control;
+                score_gset_buttons[vb.score_gset].UseVisualStyleBackColor = true;
+            }
+            if (new_value == 0)
+                score_gset_buttons[new_value].BackColor = Color.Green;
+            else if (new_value == 1)
+                score_gset_buttons[new_value].BackColor = Color.GreenYellow;
+            else if (new_value == 2)
+                score_gset_buttons[new_value].BackColor = Color.Yellow;
+            else if(new_value == 3)
+                score_gset_buttons[new_value].BackColor = Color.Red;
+            else if(new_value == 4)
+                score_gset_buttons[new_value].BackColor = Color.LightSkyBlue;
+        }
+        private void OnScoreGSetClassChanging(int new_value)
+        {
+            if (vb.score_gsetclass >= 0 && vb.score_gsetclass <= 1)
+            {
+                score_gsetclass_buttons[vb.score_gsetclass].BackColor = SystemColors.Control;
+                score_gsetclass_buttons[vb.score_gsetclass].UseVisualStyleBackColor = true;
+            }
+            if (new_value == 0)
+                score_gsetclass_buttons[new_value].BackColor = Color.GreenYellow;
+            else if (new_value == 1)
+                score_gsetclass_buttons[new_value].BackColor = Color.Green;
+        }
+     
 
         private void WSTD_CC_T(string col, int v)
         {
@@ -95,19 +126,45 @@ namespace Audit
                 }
                 else
                 {
-                    if (!(r["SCORE_GROUP"] is DBNull || r["SCORE_TIME"] is DBNull || r["SCORE_LOG"] is DBNull || r["SCORE_GRAPH"] is DBNull) && Convert.ToInt32(r["SCORE_GROUP"]) != -1 && Convert.ToInt32(r["SCORE_TIME"]) != -1 && Convert.ToInt32(r["SCORE_LOG"]) != -1 && Convert.ToInt32(r["SCORE_GRAPH"]) != -1)
+                    if (GSET)
                     {
-                        int re = Convert.ToInt32(r["SCORE_GROUP"]) * 2 + Convert.ToInt32(r["SCORE_TIME"]) * 2 + Convert.ToInt32(r["SCORE_LOG"]) + Convert.ToInt32(r["SCORE_GRAPH"]);
-                        if (re == 0)
-                            color = Color.LightGreen;
-                        else if (re == 1)
-                            color = Color.Yellow;
+                        if (r["SCORE_GSET"] is DBNull)
+                        {
+                            color = Color.White;
+                        }
                         else
-                            color = Color.PaleVioletRed;
+                        {
+                            int sco = Convert.ToInt32(r["SCORE_GSET"]);    
+                            if (sco == 0)
+                                color = Color.Green;
+                            else if (sco == 1)
+                                color = Color.GreenYellow;
+                            else if (sco == 2)
+                                color = Color.Yellow;
+                            else if (sco == 3)
+                                color = Color.Red;
+                            else if (sco == 4)
+                                color = Color.LightSkyBlue;
+                            else
+                                color = Color.White;
+                        }
                     }
                     else
                     {
-                        color = Color.White;
+                        if (!(r["SCORE_GROUP"] is DBNull || r["SCORE_TIME"] is DBNull || r["SCORE_LOG"] is DBNull || r["SCORE_GRAPH"] is DBNull) && Convert.ToInt32(r["SCORE_GROUP"]) != -1 && Convert.ToInt32(r["SCORE_TIME"]) != -1 && Convert.ToInt32(r["SCORE_LOG"]) != -1 && Convert.ToInt32(r["SCORE_GRAPH"]) != -1)
+                        {
+                            int re = Convert.ToInt32(r["SCORE_GROUP"]) * 2 + Convert.ToInt32(r["SCORE_TIME"]) * 2 + Convert.ToInt32(r["SCORE_LOG"]) + Convert.ToInt32(r["SCORE_GRAPH"]);
+                            if (re == 0)
+                                color = Color.LightGreen;
+                            else if (re == 1)
+                                color = Color.Yellow;
+                            else
+                                color = Color.PaleVioletRed;
+                        }
+                        else
+                        {
+                            color = Color.White;
+                        }
                     }
                 }
                 row.DefaultCellStyle.BackColor = color;
@@ -181,6 +238,40 @@ namespace Audit
         {
             WSTD_CC_T("SCORE_GROUP", vb.score_group = 1);
         }
-        
+
+        private void button_GSet0_Click(object sender, EventArgs e)
+        {
+            WSTD_CC_T("SCORE_GSET", vb.score_gset = 0);
+        }
+
+        private void button_GSet1_Click(object sender, EventArgs e)
+        {
+            WSTD_CC_T("SCORE_GSET", vb.score_gset = 1);
+        }
+
+        private void button_GSet2_Click(object sender, EventArgs e)
+        {
+            WSTD_CC_T("SCORE_GSET", vb.score_gset = 2);
+        }
+
+        private void button_GSet3_Click(object sender, EventArgs e)
+        {
+            WSTD_CC_T("SCORE_GSET", vb.score_gset = 3);
+        }
+
+        private void button_GSet4_Click(object sender, EventArgs e)
+        {
+            WSTD_CC_T("SCORE_GSET", vb.score_gset = 4);
+        }
+
+        private void button_GSetClass1_Click(object sender, EventArgs e)
+        {
+            WSTD_CC_T("SCORE_GSETCLASS", vb.score_gsetclass = 1);
+        }
+
+        private void button_GSetClass0_Click(object sender, EventArgs e)
+        {
+            WSTD_CC_T("SCORE_GSETCLASS", vb.score_gsetclass = 0);
+        }
     }
 }

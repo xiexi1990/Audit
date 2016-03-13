@@ -12,7 +12,7 @@ namespace Audit
                 return -1;
             DataView dv = new DataView(dt_logs);
             dv.RowStateFilter = DataViewRowState.CurrentRows;
-            string rf = "rowid <> " + dataGridView_Logs.CurrentRow.Cells["ROWID"].Value;
+            string rf = "log_id <> '" + dataGridView_Logs.CurrentRow.Cells["LOG_ID"].Value + "'";
             string col = null;
             switch (rtb_active.Name)
             {
@@ -20,6 +20,7 @@ namespace Audit
                 case "richTextBox_TimeCheck": col = "COMMENTS_TIME"; break;
                 case "richTextBox_LogCheck": col = "COMMENTS_LOG"; break;
                 case "richTextBox_GraphCheck": col = "COMMENTS_GRAPH"; break;
+                case "richTextBox_GSetComments": col = "COMMENTS_GSET"; break;
             }
             rf += " and " + col + " is not null and trim(" + col + ") <> ''";
             if (limit)

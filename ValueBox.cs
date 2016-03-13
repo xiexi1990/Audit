@@ -8,17 +8,21 @@ namespace Audit
 {
     public class ValueBox
     {
-        private int _score_group = -1, _score_time = -1, _score_graph = -1, _score_log = -1;
+        private int _score_group = -1, _score_time = -1, _score_graph = -1, _score_log = -1, _score_gset = -1, _score_gsetclass = -1;
         private singleValueChanging score_group_changing = null, 
             score_time_changing = null, 
             score_graph_changing = null, 
-            score_log_changing = null;
-        public void SetDelegate(singleValueChanging score_group, singleValueChanging score_time, singleValueChanging score_graph, singleValueChanging score_log)
+            score_log_changing = null, 
+            score_gset_changing = null,
+            score_gsetclass_changing = null;
+        public void SetDelegate(singleValueChanging score_group, singleValueChanging score_time, singleValueChanging score_graph, singleValueChanging score_log, singleValueChanging score_gset, singleValueChanging score_gsetclass)
         {
             this.score_group_changing = new singleValueChanging(score_group);
             this.score_time_changing = new singleValueChanging(score_time);
             this.score_graph_changing = new singleValueChanging(score_graph);
             this.score_log_changing = new singleValueChanging(score_log);
+            this.score_gset_changing = new singleValueChanging(score_gset);
+            this.score_gsetclass_changing = new singleValueChanging(score_gsetclass);
         }
         public int score_group
         {
@@ -72,5 +76,33 @@ namespace Audit
                 }
             }
         }
+        public int score_gset
+        {
+            get { return _score_gset; }
+            set
+            {
+                if (value != _score_gset)
+                {
+                    if (score_gset_changing != null)
+                        score_gset_changing(value);
+                    _score_gset = value;
+                }
+            }
+        }
+
+        public int score_gsetclass
+        {
+            get { return _score_gsetclass; }
+            set
+            {
+                if (value != _score_gsetclass)
+                {
+                    if (score_gsetclass_changing != null)
+                        score_gsetclass_changing(value);
+                    _score_gsetclass = value;
+                }
+            }
+        }
+
     }
 }

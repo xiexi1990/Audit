@@ -73,6 +73,10 @@
             this.MenuItem_SaveAs = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_ReadSchema = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_SaveSchema = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Fetch = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_GSetFetch = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_GSetCommit = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_GSetRead = new System.Windows.Forms.ToolStripMenuItem();
             this.button_ClearScore = new System.Windows.Forms.Button();
             this.listBox_Sentences = new System.Windows.Forms.ListBox();
             this.button_AllGood = new System.Windows.Forms.Button();
@@ -82,6 +86,16 @@
             this.checkBox_Postpone = new System.Windows.Forms.CheckBox();
             this.button_ClearDTLogs = new System.Windows.Forms.Button();
             this.timer_AutoSave = new System.Windows.Forms.Timer(this.components);
+            this.button_GSet0 = new System.Windows.Forms.Button();
+            this.button_GSet1 = new System.Windows.Forms.Button();
+            this.button_GSet2 = new System.Windows.Forms.Button();
+            this.button_GSet3 = new System.Windows.Forms.Button();
+            this.button_GSet4 = new System.Windows.Forms.Button();
+            this.button_GSetClass1 = new System.Windows.Forms.Button();
+            this.button_GSetClass0 = new System.Windows.Forms.Button();
+            this.richTextBox_GSetComments = new System.Windows.Forms.RichTextBox();
+            this.label_GSetComments = new System.Windows.Forms.Label();
+            this.richTextBox_WholeInfo = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -308,7 +322,7 @@
             this.pictureBox_Graph.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox_Graph.Location = new System.Drawing.Point(560, 15);
             this.pictureBox_Graph.Name = "pictureBox_Graph";
-            this.pictureBox_Graph.Size = new System.Drawing.Size(334, 377);
+            this.pictureBox_Graph.Size = new System.Drawing.Size(104, 125);
             this.pictureBox_Graph.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox_Graph.TabIndex = 1;
             this.pictureBox_Graph.TabStop = false;
@@ -404,7 +418,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuItem_Settings,
-            this.MenuItem_File});
+            this.MenuItem_File,
+            this.MenuItem_Fetch});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(940, 25);
@@ -499,6 +514,35 @@
             this.MenuItem_SaveSchema.Text = "保存表信息";
             this.MenuItem_SaveSchema.Click += new System.EventHandler(this.MenuItem_SaveSchema_Click);
             // 
+            // MenuItem_Fetch
+            // 
+            this.MenuItem_Fetch.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItem_GSetFetch,
+            this.MenuItem_GSetCommit,
+            this.MenuItem_GSetRead});
+            this.MenuItem_Fetch.Name = "MenuItem_Fetch";
+            this.MenuItem_Fetch.Size = new System.Drawing.Size(44, 21);
+            this.MenuItem_Fetch.Text = "图集";
+            // 
+            // MenuItem_GSetFetch
+            // 
+            this.MenuItem_GSetFetch.Name = "MenuItem_GSetFetch";
+            this.MenuItem_GSetFetch.Size = new System.Drawing.Size(160, 22);
+            this.MenuItem_GSetFetch.Text = "图集事件抽取";
+            this.MenuItem_GSetFetch.Click += new System.EventHandler(this.MenuItem_FetchGSet_Click);
+            // 
+            // MenuItem_GSetCommit
+            // 
+            this.MenuItem_GSetCommit.Name = "MenuItem_GSetCommit";
+            this.MenuItem_GSetCommit.Size = new System.Drawing.Size(160, 22);
+            this.MenuItem_GSetCommit.Text = "写入数据库";
+            // 
+            // MenuItem_GSetRead
+            // 
+            this.MenuItem_GSetRead.Name = "MenuItem_GSetRead";
+            this.MenuItem_GSetRead.Size = new System.Drawing.Size(160, 22);
+            this.MenuItem_GSetRead.Text = "读取数据库内容";
+            // 
             // button_ClearScore
             // 
             this.button_ClearScore.Location = new System.Drawing.Point(433, 509);
@@ -524,7 +568,7 @@
             // 
             // button_AllGood
             // 
-            this.button_AllGood.Location = new System.Drawing.Point(450, 256);
+            this.button_AllGood.Location = new System.Drawing.Point(405, 252);
             this.button_AllGood.Name = "button_AllGood";
             this.button_AllGood.Size = new System.Drawing.Size(80, 39);
             this.button_AllGood.TabIndex = 15;
@@ -572,12 +616,119 @@
             this.timer_AutoSave.Interval = 120000;
             this.timer_AutoSave.Tick += new System.EventHandler(this.timer_AutoSave_Tick);
             // 
+            // button_GSet0
+            // 
+            this.button_GSet0.Location = new System.Drawing.Point(672, 85);
+            this.button_GSet0.Name = "button_GSet0";
+            this.button_GSet0.Size = new System.Drawing.Size(48, 30);
+            this.button_GSet0.TabIndex = 18;
+            this.button_GSet0.Text = "优";
+            this.button_GSet0.UseVisualStyleBackColor = true;
+            this.button_GSet0.Click += new System.EventHandler(this.button_GSet0_Click);
+            // 
+            // button_GSet1
+            // 
+            this.button_GSet1.Location = new System.Drawing.Point(726, 85);
+            this.button_GSet1.Name = "button_GSet1";
+            this.button_GSet1.Size = new System.Drawing.Size(48, 30);
+            this.button_GSet1.TabIndex = 18;
+            this.button_GSet1.Text = "良";
+            this.button_GSet1.UseVisualStyleBackColor = true;
+            this.button_GSet1.Click += new System.EventHandler(this.button_GSet1_Click);
+            // 
+            // button_GSet2
+            // 
+            this.button_GSet2.Location = new System.Drawing.Point(780, 85);
+            this.button_GSet2.Name = "button_GSet2";
+            this.button_GSet2.Size = new System.Drawing.Size(48, 30);
+            this.button_GSet2.TabIndex = 18;
+            this.button_GSet2.Text = "中";
+            this.button_GSet2.UseVisualStyleBackColor = true;
+            this.button_GSet2.Click += new System.EventHandler(this.button_GSet2_Click);
+            // 
+            // button_GSet3
+            // 
+            this.button_GSet3.Location = new System.Drawing.Point(834, 85);
+            this.button_GSet3.Name = "button_GSet3";
+            this.button_GSet3.Size = new System.Drawing.Size(48, 30);
+            this.button_GSet3.TabIndex = 18;
+            this.button_GSet3.Text = "差";
+            this.button_GSet3.UseVisualStyleBackColor = true;
+            this.button_GSet3.Click += new System.EventHandler(this.button_GSet3_Click);
+            // 
+            // button_GSet4
+            // 
+            this.button_GSet4.Location = new System.Drawing.Point(888, 85);
+            this.button_GSet4.Name = "button_GSet4";
+            this.button_GSet4.Size = new System.Drawing.Size(48, 30);
+            this.button_GSet4.TabIndex = 18;
+            this.button_GSet4.Text = "未定";
+            this.button_GSet4.UseVisualStyleBackColor = true;
+            this.button_GSet4.Click += new System.EventHandler(this.button_GSet4_Click);
+            // 
+            // button_GSetClass1
+            // 
+            this.button_GSetClass1.Location = new System.Drawing.Point(716, 131);
+            this.button_GSetClass1.Name = "button_GSetClass1";
+            this.button_GSetClass1.Size = new System.Drawing.Size(60, 30);
+            this.button_GSetClass1.TabIndex = 18;
+            this.button_GSetClass1.Text = "典型";
+            this.button_GSetClass1.UseVisualStyleBackColor = true;
+            this.button_GSetClass1.Click += new System.EventHandler(this.button_GSetClass1_Click);
+            // 
+            // button_GSetClass0
+            // 
+            this.button_GSetClass0.Location = new System.Drawing.Point(795, 131);
+            this.button_GSetClass0.Name = "button_GSetClass0";
+            this.button_GSetClass0.Size = new System.Drawing.Size(67, 30);
+            this.button_GSetClass0.TabIndex = 18;
+            this.button_GSetClass0.Text = "非典型";
+            this.button_GSetClass0.UseVisualStyleBackColor = true;
+            this.button_GSetClass0.Click += new System.EventHandler(this.button_GSetClass0_Click);
+            // 
+            // richTextBox_GSetComments
+            // 
+            this.richTextBox_GSetComments.Location = new System.Drawing.Point(704, 220);
+            this.richTextBox_GSetComments.MaxLength = 200;
+            this.richTextBox_GSetComments.Name = "richTextBox_GSetComments";
+            this.richTextBox_GSetComments.Size = new System.Drawing.Size(158, 96);
+            this.richTextBox_GSetComments.TabIndex = 19;
+            this.richTextBox_GSetComments.Text = "";
+            // 
+            // label_GSetComments
+            // 
+            this.label_GSetComments.AutoSize = true;
+            this.label_GSetComments.Location = new System.Drawing.Point(702, 198);
+            this.label_GSetComments.Name = "label_GSetComments";
+            this.label_GSetComments.Size = new System.Drawing.Size(29, 12);
+            this.label_GSetComments.TabIndex = 20;
+            this.label_GSetComments.Text = "点评";
+            // 
+            // richTextBox_WholeInfo
+            // 
+            this.richTextBox_WholeInfo.Location = new System.Drawing.Point(491, 198);
+            this.richTextBox_WholeInfo.Name = "richTextBox_WholeInfo";
+            this.richTextBox_WholeInfo.ReadOnly = true;
+            this.richTextBox_WholeInfo.Size = new System.Drawing.Size(140, 173);
+            this.richTextBox_WholeInfo.TabIndex = 21;
+            this.richTextBox_WholeInfo.Text = "";
+            // 
             // MainFrame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(940, 608);
             this.Controls.Add(this.listBox_Sentences);
+            this.Controls.Add(this.richTextBox_WholeInfo);
+            this.Controls.Add(this.label_GSetComments);
+            this.Controls.Add(this.richTextBox_GSetComments);
+            this.Controls.Add(this.button_GSetClass0);
+            this.Controls.Add(this.button_GSetClass1);
+            this.Controls.Add(this.button_GSet4);
+            this.Controls.Add(this.button_GSet3);
+            this.Controls.Add(this.button_GSet2);
+            this.Controls.Add(this.button_GSet1);
+            this.Controls.Add(this.button_GSet0);
             this.Controls.Add(this.button_ClearDTLogs);
             this.Controls.Add(this.checkBox_Postpone);
             this.Controls.Add(this.button_AllGood);
@@ -685,6 +836,20 @@
         private System.Windows.Forms.Button button_ClearDTLogs;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_Open;
         private System.Windows.Forms.Timer timer_AutoSave;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_Fetch;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_GSetFetch;
+        private System.Windows.Forms.Button button_GSet0;
+        private System.Windows.Forms.Button button_GSet1;
+        private System.Windows.Forms.Button button_GSet2;
+        private System.Windows.Forms.Button button_GSet3;
+        private System.Windows.Forms.Button button_GSet4;
+        private System.Windows.Forms.Button button_GSetClass1;
+        private System.Windows.Forms.Button button_GSetClass0;
+        private System.Windows.Forms.RichTextBox richTextBox_GSetComments;
+        private System.Windows.Forms.Label label_GSetComments;
+        private System.Windows.Forms.RichTextBox richTextBox_WholeInfo;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_GSetCommit;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_GSetRead;
     }
 }
 
