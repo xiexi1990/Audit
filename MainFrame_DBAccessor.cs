@@ -7,11 +7,11 @@ namespace Audit
 {
     public partial class MainFrame : Form
     {
-        private void backgroundWorker_LogFetcher_DoWork(object sender, DoWorkEventArgs e)
+        private void backgroundWorker_DBAccessor_DoWork(object sender, DoWorkEventArgs e)
         {
-            LogFetcherParam lp = e.Argument as LogFetcherParam;
+            DBAccessorParam lp = e.Argument as DBAccessorParam;
             //   BackgroundWorker wker = sender as BackgroundWorker;
-            if (lp.type == LogFetcherParamType.Rule)
+            if (lp.type == DBAccessorParamType.Rule)
             {
                 for (int i = 0; i < lp.rl.unit_num.GetLength(0); i++)
                 {
@@ -54,10 +54,12 @@ namespace Audit
                 }
             ));
             }
-            else if (lp.type == LogFetcherParamType.GSetRule)
+            else if (lp.type == DBAccessorParamType.GSetRule)
             {
                 RefreshStatus("正在抽取事件……");
                 DataTable dt = orahlper.GetDataTable(lp.gs.sql);
+      //          Console.WriteLine("抽取" + dt.Rows.Count + "条");
+
                 dt.Columns.Add("SCORE_GROUP", typeof(int));
                 dt.Columns.Add("SCORE_TIME", typeof(int));
                 dt.Columns.Add("SCORE_LOG", typeof(int));
@@ -100,6 +102,49 @@ namespace Audit
                     CheckAllColor();
                 }
             ));
+            }
+            else if (lp.type == DBAccessorParamType.GSetWriteDb)
+            {
+                RefreshStatus("正在写入数据库……");
+                DataTable dt = dv_dt_logs.ToTable();
+                int i = 1;
+                foreach (DataRow r in dt.Rows)
+                {
+                    if (i == 1)
+                    {
+                        RefreshStatus("正在写入第1条……");
+                    }
+                    else
+                    {
+                        RefreshStatus(string.Format("正在写入第{0}条……", i), true);
+                    }
+                    string s = string.Format("delete from qzdata.qz_abnormity_dxtjcheck where log_id = '{0}'", r["LOG_ID"]);
+                    orahlper.ExecuteNonQuery(s);
+                    int sco = 9;
+                    switch(Convert.ToInt32(r["SCORE_GSET"]))
+                    {
+                        case 0: sco = 0; break;
+                        case 2: sco = 1; break;
+                        case 3: sco = 2; break;
+                    }
+                    s = string.Format(@"insert into qzdata.qz_abnormity_dxtjcheck (check_id, log_id, is_agree, is_check, user_id, check_name, reason, flag_2, flag_3, flag_5, check_date, flag_7) values 
+('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', to_date('{10}', 'yyyymmdd hh24miss'), '{11}')", 
+                        Guid.NewGuid().ToString("N").ToUpper(), 
+                        r["LOG_ID"],
+                        Convert.ToInt32(r["SCORE_GRAPH"]) == -1 ? 9 : Convert.ToInt32(r["SCORE_GRAPH"]), 
+                        "1", 
+                        "dxtj", 
+                        "dxtj", 
+                        r["COMMENTS_GSET"], 
+                        Convert.ToInt32(r["SCORE_LOG"]) == -1 ? 9 : Convert.ToInt32(r["SCORE_LOG"]),
+                        Convert.ToInt32(r["SCORE_TIME"]) == -1 ? 9 : Convert.ToInt32(r["SCORE_TIME"]),
+                        Convert.ToInt32(r["SCORE_GROUP"]) == -1 ? 9 : Convert.ToInt32(r["SCORE_GROUP"]), 
+                        Convert.ToDateTime(r["AUDIT_TIME"]).ToString("yyyyMMdd HHmmss"), 
+                        sco);
+                    orahlper.ExecuteNonQuery(s);
+                    i++;
+                }
+                RefreshStatus("写入数据库完毕");
             }
 
         }

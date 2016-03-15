@@ -20,7 +20,7 @@ namespace Audit
             Size sizhlp = new Size(20, 20);
             Size sizsysbtn = rh.GetRectByProp(0, 0, 0.07, 0.06).Size;
             Size sizmidbtns = rh.GetRectByProp(0, 0, 0.07, 0.06).Size;
-            Size sizgsetbtns = rh.GetRectByProp(0, 0, 0.07, 0.08).Size;
+            Size sizgsetbtns = rh.GetRectByProp(0, 0, 0.14, 0.08).Size;
 
             rl[0] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(v[0], h[0], v[1], h[2]), 0, 0, 0.5, 1), sizsysbtn);
             
@@ -88,10 +88,10 @@ namespace Audit
                 rl[31] = rh.GetCenterRect(rh.GetRectByProp(rightmost, 0, 2 / 4.0, 1, 3 / 4.0), sizmidbtns);
                 rl[32] = rh.GetCenterRect(rh.GetRectByProp(rightmost, 0, 3 / 4.0, 1, 4 / 4.0), sizmidbtns);
                 Rectangle downmost = rh.GetRectByProp(v[2], h[13], 0.84, h[14]);
-                rl[36] = rh.GetAlignRect(rh.GetRectByProp(downmost, 0, 0, 1 / 8.0, 1), sizgsetbtns, RectHelper._ALIGNCENTER);
+                rl[36] = rh.GetAlignRect(rh.GetRectByProp(downmost, 0, 0, 2 / 8.0, 1), sizgsetbtns, RectHelper._ALIGNCENTER);
                 rl[37] = rh.GetAlignRect(rh.GetRectByProp(downmost, 1 / 8.0, 0, 2 / 8.0, 1), sizgsetbtns, RectHelper._ALIGNCENTER);
-                rl[38] = rh.GetAlignRect(rh.GetRectByProp(downmost, 2 / 8.0, 0, 3 / 8.0, 1), sizgsetbtns, RectHelper._ALIGNCENTER);
-                rl[39] = rh.GetAlignRect(rh.GetRectByProp(downmost, 3 / 8.0, 0, 4 / 8.0, 1), sizgsetbtns, RectHelper._ALIGNCENTER);
+                rl[38] = rh.GetAlignRect(rh.GetRectByProp(downmost, 2 / 8.0, 0, 4 / 8.0, 1), sizgsetbtns, RectHelper._ALIGNCENTER);
+                rl[39] = rh.GetAlignRect(rh.GetRectByProp(downmost, 4 / 8.0, 0, 6 / 8.0, 1), sizgsetbtns, RectHelper._ALIGNCENTER);
                 rl[40] = rh.GetAlignRect(rh.GetRectByProp(downmost, 4 / 8.0, 0, 5 / 8.0, 1), sizgsetbtns, RectHelper._ALIGNCENTER);
                 rl[41] = rh.GetAlignRect(rh.GetRectByProp(downmost, 6 / 8.0, 0, 7 / 8.0, 1), sizgsetbtns, RectHelper._ALIGNCENTER);
                 rl[42] = rh.GetAlignRect(rh.GetRectByProp(downmost, 7 / 8.0, 0, 8 / 8.0, 1), sizgsetbtns, RectHelper._ALIGNCENTER);

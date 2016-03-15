@@ -42,12 +42,19 @@ namespace Audit
 
         private void button_AllGood_Click(object sender, EventArgs e)
         {
-            WriteScoreToDt_T("SCORE_GROUP", vb.score_group = 0);
-            WriteScoreToDt_T("SCORE_TIME", vb.score_time = 0);
-            WriteScoreToDt_T("SCORE_LOG", vb.score_log = 0);
-            WriteScoreToDt_T("SCORE_GRAPH", vb.score_graph = 0);
-            WriteScoreToDt_T("SCORE_GSET", vb.score_gset = 0);
-            WriteScoreToDt_T("SCORE_GSETCLASS", vb.score_gsetclass = 0);
+            if (true)
+            {
+                WriteScoreToDt_T("SCORE_GSET", vb.score_gset = 2);
+            }
+            else
+            {
+                WriteScoreToDt_T("SCORE_GROUP", vb.score_group = 0);
+                WriteScoreToDt_T("SCORE_TIME", vb.score_time = 0);
+                WriteScoreToDt_T("SCORE_LOG", vb.score_log = 0);
+                WriteScoreToDt_T("SCORE_GRAPH", vb.score_graph = 0);
+                WriteScoreToDt_T("SCORE_GSET", vb.score_gset = 0);
+                WriteScoreToDt_T("SCORE_GSETCLASS", vb.score_gsetclass = 0);
+            }
             CheckColor(dataGridView_Logs.CurrentRow);
         }
     }

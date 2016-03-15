@@ -45,7 +45,7 @@ select distinct a.log_id, e.unit_code, e.unitname, f.stationname, a.instrcode, c
             return rtn;
         }
 
-        public string GenGSetSql(string[] science, string[] bitem, string[] unitcode, bool nation_good, bool area_good, bool science_good, DateTime end_no_earlier, DateTime begin_no_later, DateTime? begin_no_earlier = null, DateTime? end_no_later = null)
+        public string GenGSetSql(GSetSqlType type, string[] science, string[] bitem, string[] unitcode, string[] abtype, string[] abtype2, string[] stationid, bool nation_good, bool area_good, bool science_good, DateTime end_no_earlier, DateTime begin_no_later, DateTime? begin_no_earlier = null, DateTime? end_no_later = null)
         {
             string order = "";
             string sci;
@@ -70,7 +70,7 @@ select distinct a.log_id, e.unit_code, e.unitname, f.stationname, a.instrcode, c
                 bi = "(";
                 foreach (string s in bitem)
                 {
-                    bi += "c.bitem = '" + s + "' or ";
+                    bi += "a.bitem = '" + s + "' or ";
                 }
                 bi = bi.Remove(bi.Length - 3) + ")";
                 order += "x.bitem,";
@@ -95,6 +95,55 @@ select distinct a.log_id, e.unit_code, e.unitname, f.stationname, a.instrcode, c
             {
                 uni = "(1 = 1)";
             }
+
+            string abt;
+            if (abtype != null && abtype.GetLength(0) > 0)
+            {
+                abt = "(";
+                foreach (string s in abtype)
+                {
+                    abt += "d.ab_type_name = '" + s + "' or ";
+                }
+                abt = abt.Remove(abt.Length - 3) + ")";
+                order += "x.ab_type_name,";
+            }
+            else
+            {
+                abt = "(1 = 1)";
+            }
+
+            string abt2;
+            if (abtype2 != null && abtype2.GetLength(0) > 0)
+            {
+                abt2 = "(";
+                foreach (string s in abtype2)
+                {
+                    abt2 += "h.type2_id = '" + s + "' or ";
+                }
+                abt2 = abt2.Remove(abt2.Length - 3) + ")";
+                order += "x.type2_id,";
+            }
+            else
+            {
+                abt2 = "(1 = 1)";
+            }
+
+            string sta;
+            if (stationid != null && stationid.GetLength(0) > 0)
+            {
+                sta = "(";
+                foreach (string s in stationid)
+                {
+                    sta += "a.stationid = '" + s + "' or ";
+                }
+                sta = sta.Remove(sta.Length - 3) + ")";
+                order += "x.stationid,";
+            }
+            else
+            {
+                sta = "(1 = 1)";
+            }
+
             if (order != "")
             {
                 order = "order by " + order.Remove(order.Length - 1) + " ";
@@ -130,12 +179,32 @@ select distinct a.log_id, e.unit_code, e.unitname, f.stationname, a.instrcode, c
 
             DateStrGenerator dg = new DateStrGenerator();
             string dat = dg.GetDateStr(end_no_earlier, begin_no_later, begin_no_earlier, end_no_later);
-
-            string rtn = @"select x.*, y.ab_desc, y.graph from (select distinct a.log_id, a.stationid||'x'||a.pointid as instrid, e.unit_code, e.unitname, f.stationname, a.instrcode, c.instrname, a.pointid, d.ab_type_name, b.science, a.start_date, a.end_date, a.stationid, c.bitem from qzdata.qz_abnormity_log a, qzdata.qz_abnormity_evalist b, qzdata.qz_abnormity_instrinfo c, qzdata.qz_abnormity_type d, qzdata.qz_abnormity_units e, qzdata.qz_dict_stations f where _DATE and A.AB_ID >= 2 and a.ab_id <= 7 and a.stationid = b.stationid and a.pointid = b.pointid and b.science != '辅助' and A.INSTRCODE = C.INSTRCODE and A.AB_ID = D.AB_ID and B.UNITCODE = E.UNIT_CODE and a.stationid = f.stationid and b.ab_flag = 'Y'  and _SCIENCE and _BITEM and _UNIT and _NATION_GOOD and _AREA_GOOD and _SCI_GOOD ) x, qzdata.qz_abnormity_log y where x.log_id = y.log_id and y.ab_desc is not null and y.graph is not null _ORDER".Replace("_DATE", dat).Replace("_SCIENCE", sci).Replace("_BITEM", bi).Replace("_UNIT", uni).Replace("_NATION_GOOD", nation_g).Replace("_AREA_GOOD", area_g).Replace("_SCI_GOOD", science_g).Replace("_ORDER", order);
-
+            string rtn = null;
+            if (type == GSetSqlType.Normal)
+            {
+                rtn = @"select x.*, y.ab_desc, y.graph from (select distinct a.log_id, a.stationid||'x'||a.pointid as instrid, e.unit_code, e.unitname, f.stationname, a.instrcode, c.instrname, a.pointid, d.ab_type_name, h.type2_id, h.type2_name, b.science, a.start_date, a.end_date, a.stationid, a.bitem from qzdata.qz_abnormity_log a, qzdata.qz_abnormity_evalist b, qzdata.qz_abnormity_instrinfo c, qzdata.qz_abnormity_type d, qzdata.qz_abnormity_units e, qzdata.qz_dict_stations f, qzdata.qz_abnormity_itemlog g, qzdata.qz_abnormity_type2 h where _DATE and A.AB_ID >= 2 and a.ab_id <= 7 and a.log_id = g.log_id and g.type2_id = h.type2_id and a.stationid = b.stationid and a.pointid = b.pointid and b.science != '辅助' and A.INSTRCODE = C.INSTRCODE and A.AB_ID = D.AB_ID and B.UNITCODE = E.UNIT_CODE and a.stationid = f.stationid and b.ab_flag = 'Y'  and _SCIENCE and _BITEM and _UNIT and _NATION_GOOD and _AREA_GOOD and _SCI_GOOD and _ABTYPE and _ABTYP2 and _STATION) x, qzdata.qz_abnormity_log y where x.log_id = y.log_id and y.ab_desc is not null and y.graph is not null _ORDER".Replace("_DATE", dat).Replace("_SCIENCE", sci).Replace("_BITEM", bi).Replace("_UNIT", uni).Replace("_NATION_GOOD", nation_g).Replace("_AREA_GOOD", area_g).Replace("_SCI_GOOD", science_g).Replace("_ORDER", order).Replace("_ABTYPE", abt).Replace("_ABTYP2", abt2).Replace("_STATION", sta);
+            }
+            else if(type == GSetSqlType.CalType2Num)
+            {
+                rtn = @"select type2_id, count(type2_id) cnt from (select distinct a.log_id, h.type2_id from qzdata.qz_abnormity_log a, qzdata.qz_abnormity_evalist b, qzdata.qz_abnormity_instrinfo c, qzdata.qz_abnormity_type d, qzdata.qz_abnormity_units e, qzdata.qz_dict_stations f, qzdata.qz_abnormity_itemlog g, qzdata.qz_abnormity_type2 h where _DATE and A.AB_ID >= 2 and a.ab_id <= 7 and a.log_id = g.log_id and g.type2_id = h.type2_id and a.stationid = b.stationid and a.pointid = b.pointid and b.science != '辅助' and A.INSTRCODE = C.INSTRCODE and A.AB_ID = D.AB_ID and B.UNITCODE = E.UNIT_CODE and a.stationid = f.stationid and b.ab_flag = 'Y'  and _SCIENCE and _BITEM and _NATION_GOOD and _AREA_GOOD and _SCI_GOOD and _ABTYPE) group by type2_id ".Replace("_DATE", dat).Replace("_SCIENCE", sci).Replace("_BITEM", bi).Replace("_NATION_GOOD", nation_g).Replace("_AREA_GOOD", area_g).Replace("_SCI_GOOD", science_g).Replace("_ABTYPE", abt);
+            }
+            else if (type == GSetSqlType.CalUnitNum)
+            {
+                rtn = @"select unit_code, count(unit_code) cnt from (select distinct a.log_id, e.unit_code from qzdata.qz_abnormity_log a, qzdata.qz_abnormity_evalist b, qzdata.qz_abnormity_instrinfo c, qzdata.qz_abnormity_type d, qzdata.qz_abnormity_units e, qzdata.qz_dict_stations f, qzdata.qz_abnormity_itemlog g, qzdata.qz_abnormity_type2 h where _DATE and A.AB_ID >= 2 and a.ab_id <= 7 and a.log_id = g.log_id and g.type2_id = h.type2_id and a.stationid = b.stationid and a.pointid = b.pointid and b.science != '辅助' and A.INSTRCODE = C.INSTRCODE and A.AB_ID = D.AB_ID and B.UNITCODE = E.UNIT_CODE and a.stationid = f.stationid and b.ab_flag = 'Y'  and _SCIENCE and _BITEM and _NATION_GOOD and _AREA_GOOD and _SCI_GOOD and _ABTYPE and _ABTYP2) group by unit_code ".Replace("_DATE", dat).Replace("_SCIENCE", sci).Replace("_BITEM", bi).Replace("_NATION_GOOD", nation_g).Replace("_AREA_GOOD", area_g).Replace("_SCI_GOOD", science_g).Replace("_ABTYPE", abt).Replace("_ABTYP2", abt2);
+            }
+            else if (type == GSetSqlType.CalStationNum)
+            {
+                rtn = @"select stationid, count(stationid) cnt from (select distinct a.log_id, a.stationid from qzdata.qz_abnormity_log a, qzdata.qz_abnormity_evalist b, qzdata.qz_abnormity_instrinfo c, qzdata.qz_abnormity_type d, qzdata.qz_abnormity_units e, qzdata.qz_dict_stations f, qzdata.qz_abnormity_itemlog g, qzdata.qz_abnormity_type2 h where _DATE and A.AB_ID >= 2 and a.ab_id <= 7 and a.log_id = g.log_id and g.type2_id = h.type2_id and a.stationid = b.stationid and a.pointid = b.pointid and b.science != '辅助' and A.INSTRCODE = C.INSTRCODE and A.AB_ID = D.AB_ID and B.UNITCODE = E.UNIT_CODE and a.stationid = f.stationid and b.ab_flag = 'Y'  and _SCIENCE and _BITEM and _NATION_GOOD and _AREA_GOOD and _SCI_GOOD and _ABTYPE and _ABTYP2 and _UNIT) group by stationid ".Replace("_DATE", dat).Replace("_SCIENCE", sci).Replace("_BITEM", bi).Replace("_NATION_GOOD", nation_g).Replace("_AREA_GOOD", area_g).Replace("_SCI_GOOD", science_g).Replace("_ABTYPE", abt).Replace("_ABTYP2", abt2).Replace("_UNIT", uni);
+            }
             return rtn;
-
         }
 
+    }
+    public enum GSetSqlType
+    {
+        Normal = 1, 
+        CalType2Num = 2, 
+        CalUnitNum = 3,
+        CalStationNum = 4
     }
 }

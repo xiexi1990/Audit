@@ -128,6 +128,9 @@ namespace Audit
                 ds.Tables.Add(dt_check.Clone());
                 ds.Tables.Add(dt_units);
                 ds.Tables.Add(dt_bitem);
+                ds.Tables.Add(dt_abtype);
+                ds.Tables.Add(dt_abtype2);
+                ds.Tables.Add(dt_stations);
                 ds.WriteXml(sd.FileName, XmlWriteMode.WriteSchema);
             }
         }

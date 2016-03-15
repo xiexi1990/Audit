@@ -27,7 +27,7 @@ namespace Audit
 #else
                 if (GSET)
                 {
-                    esql = sg.GenGSetSql(null, null, null, true, true, true, DateTime.Now, DateTime.Now);
+                    esql = sg.GenGSetSql(GSetSqlType.Normal, null, null, null, new string[]{"2"}, new string[]{"2"}, null, true, true, true, DateTime.Now, DateTime.Now);
                 }
                 else
                 {
@@ -80,7 +80,7 @@ namespace Audit
                 this.dataGridView_Logs.DataSource = this.dv_dt_logs;
                 foreach (DataGridViewColumn c in dataGridView_Logs.Columns)
                 {
-                    if (c.Name == "UNITNAME" || c.Name == "STATIONNAME" || c.Name == "INSTRCODE" || c.Name == "INSTRNAME" || c.Name == "AB_TYPE_NAME" || c.Name == "SCIENCE" || c.Name == "START_DATE" || c.Name == "END_DATE" || c.Name == "LOG_ID" || c.Name == "AUDIT_TIME" || c.Name == "INSTRID" || c.Name == "SCORE_GSET")
+                    if (c.Name == "UNITNAME" || c.Name == "STATIONNAME" || c.Name == "INSTRCODE" || c.Name == "INSTRNAME" || c.Name == "AB_TYPE_NAME" || c.Name == "SCIENCE" || c.Name == "START_DATE" || c.Name == "END_DATE" || c.Name == "LOG_ID" || c.Name == "AUDIT_TIME" || c.Name == "INSTRID" || c.Name == "SCORE_GSET" || c.Name == "TYPE2_NAME")
                     {
                         c.Width = 50;
                         c.SortMode = DataGridViewColumnSortMode.Programmatic;
@@ -120,6 +120,19 @@ namespace Audit
             {
                 typename = "测项列表";
             }
+            else if (p.type == ReloadDtParamType.AbType)
+            {
+                typename = "事件类型列表";
+            }
+            else if (p.type == ReloadDtParamType.AbType2)
+            {
+                typename = "影响因素列表";
+            }
+            else if (p.type == ReloadDtParamType.Station)
+            {
+                typename = "台站列表";
+            }
+
             if (p.use_file)
             {
                 this.RefreshStatus("正在加载" + typename + "（通过文件）……");
@@ -149,6 +162,19 @@ namespace Audit
                 {
                     dt = orahlper.GetDataTable("select distinct bitem, science from qzdata.qz_abnormity_instrinfo where science != '辅助' order by science");
                 }
+                else if (p.type == ReloadDtParamType.AbType)
+                {
+                    dt = orahlper.GetDataTable("select * from qzdata.qz_abnormity_type where ab_id >= 2 and ab_id <= 7");
+                }
+                else if (p.type == ReloadDtParamType.AbType2)
+                {
+                    dt = orahlper.GetDataTable("select ab_id, type2_id, science, type2_name from qzdata.qz_abnormity_type2 where ab_id >= 2 and ab_id <= 7 ");
+                }
+                else if (p.type == ReloadDtParamType.Station)
+                {
+                    dt = orahlper.GetDataTable("select stationid, stationname, unitcode from qzdata.qz_dict_stations");
+                }
+
                 this.Invoke(new Param0Callback(() =>
                 {
                     if (p.type == ReloadDtParamType.Unit)
@@ -161,6 +187,22 @@ namespace Audit
                         this.dt_bitem = dt;
                         dt_bitem.TableName = "dt_bitem";
                     }
+                    else if(p.type == ReloadDtParamType.AbType)
+                    {
+                        dt_abtype = dt;
+                        dt_abtype.TableName = "dt_abtype";
+                    }
+                    else if (p.type == ReloadDtParamType.AbType2)
+                    {
+                        dt_abtype2 = dt;
+                        dt_abtype2.TableName = "dt_abtype2";
+                    }
+                    else if (p.type == ReloadDtParamType.Station)
+                    {
+                        dt_stations = dt;
+                        dt_stations.TableName = "dt_stations";
+                    }
+
                 }));
             }
             this.RefreshStatus("加载" + typename + "完成");
@@ -175,6 +217,9 @@ namespace Audit
                 ds.ReadXml("load.info", XmlReadMode.ReadSchema);
                 dt_units = ds.Tables["dt_units"];
                 dt_bitem = ds.Tables["dt_bitem"];
+                dt_abtype = ds.Tables["dt_abtype"];
+                dt_abtype2 = ds.Tables["dt_abtype2"];
+                dt_stations = ds.Tables["dt_stations"];
                 lock (locker_dt_logs)
                 {
                     dt_logs = ds.Tables["dt_logs"];
@@ -183,6 +228,9 @@ namespace Audit
                 RefreshStatus("读取完成");
                 new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.Unit));
                 new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.Bitem));
+                new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.AbType));
+                new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.AbType2));
+                new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.Station));
                 new Thread(new ParameterizedThreadStart(InitDtLogs)).Start(true);
             }
             else
@@ -191,6 +239,9 @@ namespace Audit
                 {
                     new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.Unit));
                     new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.Bitem));
+                    new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.AbType));
+                    new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.AbType2));
+                    new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.Station));
                     new Thread(new ParameterizedThreadStart(InitDtLogs)).Start(false);
                 }
             }

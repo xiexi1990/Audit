@@ -58,7 +58,7 @@
             this.label_Log = new System.Windows.Forms.Label();
             this.label_Graph = new System.Windows.Forms.Label();
             this.dataGridView_Logs = new System.Windows.Forms.DataGridView();
-            this.backgroundWorker_LogFetcher = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorker_DBAccessor = new System.ComponentModel.BackgroundWorker();
             this.richTextBox_Status = new System.Windows.Forms.RichTextBox();
             this.label_LogInfo = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
@@ -390,10 +390,10 @@
             this.dataGridView_Logs.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.dataGridView_Logs_SortCompare);
             this.dataGridView_Logs.Sorted += new System.EventHandler(this.dataGridView_Logs_Sorted);
             // 
-            // backgroundWorker_LogFetcher
+            // backgroundWorker_DBAccessor
             // 
-            this.backgroundWorker_LogFetcher.WorkerReportsProgress = true;
-            this.backgroundWorker_LogFetcher.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_LogFetcher_DoWork);
+            this.backgroundWorker_DBAccessor.WorkerReportsProgress = true;
+            this.backgroundWorker_DBAccessor.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DBAccessor_DoWork);
             // 
             // richTextBox_Status
             // 
@@ -536,6 +536,7 @@
             this.MenuItem_GSetCommit.Name = "MenuItem_GSetCommit";
             this.MenuItem_GSetCommit.Size = new System.Drawing.Size(160, 22);
             this.MenuItem_GSetCommit.Text = "写入数据库";
+            this.MenuItem_GSetCommit.Click += new System.EventHandler(this.MenuItem_GSetCommit_Click);
             // 
             // MenuItem_GSetRead
             // 
@@ -618,49 +619,49 @@
             // 
             // button_GSet0
             // 
-            this.button_GSet0.Location = new System.Drawing.Point(672, 85);
+            this.button_GSet0.Location = new System.Drawing.Point(560, 53);
             this.button_GSet0.Name = "button_GSet0";
-            this.button_GSet0.Size = new System.Drawing.Size(48, 30);
+            this.button_GSet0.Size = new System.Drawing.Size(84, 40);
             this.button_GSet0.TabIndex = 18;
-            this.button_GSet0.Text = "优";
+            this.button_GSet0.Text = "典型样例";
             this.button_GSet0.UseVisualStyleBackColor = true;
             this.button_GSet0.Click += new System.EventHandler(this.button_GSet0_Click);
             // 
             // button_GSet1
             // 
-            this.button_GSet1.Location = new System.Drawing.Point(726, 85);
+            this.button_GSet1.Location = new System.Drawing.Point(650, 44);
             this.button_GSet1.Name = "button_GSet1";
-            this.button_GSet1.Size = new System.Drawing.Size(48, 30);
+            this.button_GSet1.Size = new System.Drawing.Size(71, 59);
             this.button_GSet1.TabIndex = 18;
-            this.button_GSet1.Text = "良";
+            this.button_GSet1.Text = "典型样例需修改";
             this.button_GSet1.UseVisualStyleBackColor = true;
             this.button_GSet1.Click += new System.EventHandler(this.button_GSet1_Click);
             // 
             // button_GSet2
             // 
-            this.button_GSet2.Location = new System.Drawing.Point(780, 85);
+            this.button_GSet2.Location = new System.Drawing.Point(741, 37);
             this.button_GSet2.Name = "button_GSet2";
-            this.button_GSet2.Size = new System.Drawing.Size(48, 30);
+            this.button_GSet2.Size = new System.Drawing.Size(70, 66);
             this.button_GSet2.TabIndex = 18;
-            this.button_GSet2.Text = "中";
+            this.button_GSet2.Text = "事件目录\r\n（幅值、持续时间、频次）";
             this.button_GSet2.UseVisualStyleBackColor = true;
             this.button_GSet2.Click += new System.EventHandler(this.button_GSet2_Click);
             // 
             // button_GSet3
             // 
-            this.button_GSet3.Location = new System.Drawing.Point(834, 85);
+            this.button_GSet3.Location = new System.Drawing.Point(741, 131);
             this.button_GSet3.Name = "button_GSet3";
-            this.button_GSet3.Size = new System.Drawing.Size(48, 30);
+            this.button_GSet3.Size = new System.Drawing.Size(121, 79);
             this.button_GSet3.TabIndex = 18;
-            this.button_GSet3.Text = "差";
+            this.button_GSet3.Text = "不选择";
             this.button_GSet3.UseVisualStyleBackColor = true;
             this.button_GSet3.Click += new System.EventHandler(this.button_GSet3_Click);
             // 
             // button_GSet4
             // 
-            this.button_GSet4.Location = new System.Drawing.Point(888, 85);
+            this.button_GSet4.Location = new System.Drawing.Point(880, 44);
             this.button_GSet4.Name = "button_GSet4";
-            this.button_GSet4.Size = new System.Drawing.Size(48, 30);
+            this.button_GSet4.Size = new System.Drawing.Size(60, 59);
             this.button_GSet4.TabIndex = 18;
             this.button_GSet4.Text = "未定";
             this.button_GSet4.UseVisualStyleBackColor = true;
@@ -668,7 +669,7 @@
             // 
             // button_GSetClass1
             // 
-            this.button_GSetClass1.Location = new System.Drawing.Point(716, 131);
+            this.button_GSetClass1.Location = new System.Drawing.Point(682, 241);
             this.button_GSetClass1.Name = "button_GSetClass1";
             this.button_GSetClass1.Size = new System.Drawing.Size(60, 30);
             this.button_GSetClass1.TabIndex = 18;
@@ -678,7 +679,7 @@
             // 
             // button_GSetClass0
             // 
-            this.button_GSetClass0.Location = new System.Drawing.Point(795, 131);
+            this.button_GSetClass0.Location = new System.Drawing.Point(847, 227);
             this.button_GSetClass0.Name = "button_GSetClass0";
             this.button_GSetClass0.Size = new System.Drawing.Size(67, 30);
             this.button_GSetClass0.TabIndex = 18;
@@ -688,7 +689,7 @@
             // 
             // richTextBox_GSetComments
             // 
-            this.richTextBox_GSetComments.Location = new System.Drawing.Point(704, 220);
+            this.richTextBox_GSetComments.Location = new System.Drawing.Point(756, 296);
             this.richTextBox_GSetComments.MaxLength = 200;
             this.richTextBox_GSetComments.Name = "richTextBox_GSetComments";
             this.richTextBox_GSetComments.Size = new System.Drawing.Size(158, 96);
@@ -698,7 +699,7 @@
             // label_GSetComments
             // 
             this.label_GSetComments.AutoSize = true;
-            this.label_GSetComments.Location = new System.Drawing.Point(702, 198);
+            this.label_GSetComments.Location = new System.Drawing.Point(793, 248);
             this.label_GSetComments.Name = "label_GSetComments";
             this.label_GSetComments.Size = new System.Drawing.Size(29, 12);
             this.label_GSetComments.TabIndex = 20;
@@ -812,7 +813,7 @@
         private System.Windows.Forms.Label label_Log;
         private System.Windows.Forms.Label label_Graph;
         private System.Windows.Forms.DataGridView dataGridView_Logs;
-        private System.ComponentModel.BackgroundWorker backgroundWorker_LogFetcher;
+        private System.ComponentModel.BackgroundWorker backgroundWorker_DBAccessor;
         private System.Windows.Forms.RichTextBox richTextBox_Status;
         private System.Windows.Forms.Label label_LogInfo;
         private System.Windows.Forms.MenuStrip menuStrip1;

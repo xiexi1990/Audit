@@ -6,16 +6,18 @@ using System.Threading.Tasks;
 
 namespace Audit
 {
-    public class LogFetcherParam
+    public class DBAccessorParam
     {
-        public LogFetcherParamType type;
+        public DBAccessorParamType type;
         public Rule rl;
         public GSetRule gs;
     }
 
-    public enum LogFetcherParamType
+    public enum DBAccessorParamType
     {
         Rule = 1,
-        GSetRule = 2
+        GSetRule = 2,
+        GSetWriteDb = 3,
+        GSetReadDb = 4
     }
 }

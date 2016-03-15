@@ -52,7 +52,7 @@ namespace Audit
                 }
                 this.label_LogInfo.Text = string.Format("{0} {1}{2}{3}{4}[{5}]", r["SCIENCE"], r["UNITNAME"], r["STATIONNAME"], r["INSTRCODE"], r["INSTRNAME"], r["POINTID"]);
 
-                richTextBox_WholeInfo.Text = label_LogInfo.Text + "\n\n事件类别：" + richTextBox_Group.Text + "\n\n测项：" + r["BITEM"] + "\n\n起止时间：" + richTextBox_Time.Text + "\n\n事件描述：" + richTextBox_Log.Text;
+                richTextBox_WholeInfo.Text = label_LogInfo.Text + "\n\n事件类别：" + richTextBox_Group.Text + "\n\n影响因素：" + r["TYPE2_NAME"] + "\n\n测项：" + r["BITEM"] + "\n\n起止时间：" + richTextBox_Time.Text + "\n\n事件描述：" + richTextBox_Log.Text;
 
                 int start = richTextBox_WholeInfo.TextLength;
                 richTextBox_WholeInfo.AppendText(cr.wholestr[0] + "\n");

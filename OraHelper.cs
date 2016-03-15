@@ -27,6 +27,10 @@ namespace Audit
             int rtn;
             lock (this)
             {
+                if (oracon.State != ConnectionState.Open)
+                {
+                    oracon.Open();
+                }
                 OracleCommand ocmd = new OracleCommand(strsql, this.oracon);
                 rtn = ocmd.ExecuteNonQuery();
             }

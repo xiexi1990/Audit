@@ -64,8 +64,24 @@ namespace Audit
         {
             if (vb.score_gset >= 0 && vb.score_gset <= 4)
             {
-                score_gset_buttons[vb.score_gset].BackColor = SystemColors.Control;
-                score_gset_buttons[vb.score_gset].UseVisualStyleBackColor = true;
+                if (vb.score_gset == 0)
+                {
+                    score_gset_buttons[vb.score_gset].BackColor = Color.LightGreen;
+                }
+                else if(vb.score_gset == 2)
+                {
+                    score_gset_buttons[vb.score_gset].BackColor = Color.LightBlue;
+                }
+                else if (vb.score_gset == 3)
+                {
+                    score_gset_buttons[vb.score_gset].BackColor = Color.YellowGreen;
+                }
+                else
+                {
+                    score_gset_buttons[vb.score_gset].BackColor = SystemColors.Control;
+                    score_gset_buttons[vb.score_gset].UseVisualStyleBackColor = true;
+                }
+     
             }
             if (new_value == 0)
                 score_gset_buttons[new_value].BackColor = Color.Green;
@@ -142,7 +158,7 @@ namespace Audit
                             else if (sco == 2)
                                 color = Color.Yellow;
                             else if (sco == 3)
-                                color = Color.Red;
+                                color = Color.PaleVioletRed;
                             else if (sco == 4)
                                 color = Color.LightSkyBlue;
                             else

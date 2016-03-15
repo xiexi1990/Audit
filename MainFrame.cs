@@ -14,7 +14,6 @@ using System.Runtime.InteropServices;
 
 namespace Audit
 {
-
     public delegate void singleValueChanging(int new_value);
     public partial class MainFrame : Form
     {
@@ -32,9 +31,10 @@ namespace Audit
             score_gset_buttons = new Button[5], 
             score_gsetclass_buttons = new Button[2];
         private Control[] ctrl_list = new Control[45];
-        private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
-   //     private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
-        public DataTable dt_units, dt_logs, dt_units_comments, dt_param, dt_check, dt_bitem, dt_science;
+  //      private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
+  //      private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
+        private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = dxtj; password = dxtjqztw");
+        public DataTable dt_units, dt_logs, dt_units_comments, dt_param, dt_check, dt_bitem, dt_science, dt_abtype, dt_abtype2, dt_stations;
         //   public DataTable dt_units_cache_w, dt_logs_cache_w, dt_units_comments_cache_w, dt_param_cache_w, dt_check_cache_w;
         //      public DataSet ds_cache = new DataSet("ds_cache");
 
@@ -54,6 +54,9 @@ namespace Audit
         private string cur_file = null;
 
         public object[,] UNIT_NUM = { { "AH", 15 }, { "BJ", 15 }, { "ICD", 10 }, { "IGP", 10 }, { "IGL", 10 }, { "FJ", 20 }, { "GS", 20 }, { "GD", 15 }, { "GX", 15 }, { "HI", 10 }, { "HE", 20 }, { "HA", 15 }, { "HL", 15 }, { "HB", 15 }, { "HN", 15 }, { "JL", 15 }, { "JS", 15 }, { "JX", 15 }, { "LN", 20 }, { "NM", 15 }, { "NX", 20 }, { "QH", 15 }, { "SD", 20 }, { "SX", 20 }, { "SN", 20 }, { "SH", 15 }, { "SC", 20 }, { "TJ", 20 }, { "XZ", 10 }, { "XJ", 20 }, { "IES", 10 }, { "YN", 20 }, { "ZJ", 15 }, { "DPC", 0 }, { "CQ", 15 } };
+
+        public GSetRuleSav gset_sav = null;
+
         public MainFrame()
         {
             InitializeComponent();
@@ -122,10 +125,34 @@ namespace Audit
                 button_LogCheckHelp.Visible = button_GraphCheckHelp.Visible = false;
                 button_Output.Enabled = false;
                 button_Input.Visible = label_LogInfo.Visible = false;
+                button_GSet1.Visible = false;
+                for (int i = 0; i < 2; i++)
+                {
+                    score_group_buttons[i].Visible = score_time_buttons[i].Visible = false;
+                }
+                for (int i = 0; i < 3; i++)
+                {
+                    score_log_buttons[i].Visible = score_graph_buttons[i].Visible = false;
+                }
+                label_Group.Visible = label_Time.Visible = label_Log.Visible = label_Graph.Visible = false;
+
+                for (int i = 0; i < 4; i++)
+                {
+                    rtbs_check[i].Visible = false;
+                }
+                button_GSetClass0.Visible = button_GSetClass1.Visible = false;
+                button_AllGood.Visible = false;
             }
             else
             {
             }
+           
+                score_gset_buttons[0].BackColor = Color.LightGreen;
+                score_gset_buttons[2].BackColor = Color.LightBlue;
+                score_gset_buttons[3].BackColor = Color.YellowGreen;
+            
+          //  button_GSet3.Visible = false;
+            button_GSet4.Visible = false;
 
             dt_units_comments = new DataTable();
             dt_units_comments.TableName = "dt_units_comments";
@@ -206,11 +233,11 @@ namespace Audit
             }
             if (rl.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
-            LogFetcherParam lp = new LogFetcherParam();
-            lp.type = LogFetcherParamType.Rule;
+            DBAccessorParam lp = new DBAccessorParam();
+            lp.type = DBAccessorParamType.Rule;
             lp.rl = rl;
-            if (backgroundWorker_LogFetcher.IsBusy == false)
-                backgroundWorker_LogFetcher.RunWorkerAsync(lp);
+            if (backgroundWorker_DBAccessor.IsBusy == false)
+                backgroundWorker_DBAccessor.RunWorkerAsync(lp);
             else
                 MessageBox.Show("事件抽取器正忙！");
         }
@@ -377,19 +404,43 @@ namespace Audit
 
         private void MenuItem_FetchGSet_Click(object sender, EventArgs e)
         {
-            GSetRule gs = new GSetRule(dt_science, dt_bitem, dt_units);
+            if (dt_science == null || dt_bitem == null || dt_units == null || dt_abtype == null || dt_abtype2 == null || dt_stations == null)
+            {
+                MessageBox.Show("请等待加载完成");
+                return;
+            }
+            GSetRule gs;
+            //if (gset_sav == null)
+            //{
+            //    gset_sav = new GSetRuleSav();
+            //    gs = new GSetRule(gset_sav, this.orahlper, dt_science, dt_bitem, dt_units, dt_abtype, dt_abtype2, dt_stations);
+            //}
+            //else
+            //{
+            //    gs = new GSetRule(gset_sav);
+            //}
+            gs = new GSetRule(gset_sav, this.orahlper, dt_science, dt_bitem, dt_units, dt_abtype, dt_abtype2, dt_stations);
+
             if (gs.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
-            LogFetcherParam lp = new LogFetcherParam();
-            lp.type = LogFetcherParamType.GSetRule;
+            DBAccessorParam lp = new DBAccessorParam();
+            lp.type = DBAccessorParamType.GSetRule;
             lp.gs = gs;
-            if (backgroundWorker_LogFetcher.IsBusy == false)
-                backgroundWorker_LogFetcher.RunWorkerAsync(lp);
+            if (backgroundWorker_DBAccessor.IsBusy == false)
+                backgroundWorker_DBAccessor.RunWorkerAsync(lp);
             else
                 MessageBox.Show("事件抽取器正忙！");
         }
 
-        
+        private void MenuItem_GSetCommit_Click(object sender, EventArgs e)
+        {
+            DBAccessorParam lp = new DBAccessorParam();
+            lp.type = DBAccessorParamType.GSetWriteDb;
+            if (backgroundWorker_DBAccessor.IsBusy == false)
+                backgroundWorker_DBAccessor.RunWorkerAsync(lp);
+            else
+                MessageBox.Show("事件抽取器正忙！");
+        }
    
     }
 }
