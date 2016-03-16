@@ -55,11 +55,18 @@ namespace Audit
 
         public object[,] UNIT_NUM = { { "AH", 15 }, { "BJ", 15 }, { "ICD", 10 }, { "IGP", 10 }, { "IGL", 10 }, { "FJ", 20 }, { "GS", 20 }, { "GD", 15 }, { "GX", 15 }, { "HI", 10 }, { "HE", 20 }, { "HA", 15 }, { "HL", 15 }, { "HB", 15 }, { "HN", 15 }, { "JL", 15 }, { "JS", 15 }, { "JX", 15 }, { "LN", 20 }, { "NM", 15 }, { "NX", 20 }, { "QH", 15 }, { "SD", 20 }, { "SX", 20 }, { "SN", 20 }, { "SH", 15 }, { "SC", 20 }, { "TJ", 20 }, { "XZ", 10 }, { "XJ", 20 }, { "IES", 10 }, { "YN", 20 }, { "ZJ", 15 }, { "DPC", 0 }, { "CQ", 15 } };
 
-        public GSetRuleSav gset_sav = null;
+        public GSetRule the_gsetrule;
+        public TextWriterTraceListener debug_listener;
+     //   public GSetRuleSav gset_sav = null;
 
         public MainFrame()
         {
             InitializeComponent();
+            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
+            debug_listener = new TextWriterTraceListener("Audit_debug.txt");
+            Debug.Listeners.Add(debug_listener);
+            Debug.WriteLine("run at {0}", DateTime.Now);
+
             vb.SetDelegate(OnScoreGroupChanging, OnScoreTimeChanging, OnScoreGraphChanging, OnScoreLogChanging, OnScoreGSetChanging, OnScoreGSetClassChanging);
             score_group_buttons[0] = this.button_GroupGood;
             score_group_buttons[1] = this.button_GroupBad;
@@ -239,7 +246,7 @@ namespace Audit
             if (backgroundWorker_DBAccessor.IsBusy == false)
                 backgroundWorker_DBAccessor.RunWorkerAsync(lp);
             else
-                MessageBox.Show("事件抽取器正忙！");
+                MessageBox.Show("数据存取器正忙！");
         }
 
         private void dataGridView_Logs_SelectionChanged(object sender, EventArgs e)
@@ -384,6 +391,7 @@ namespace Audit
                 if (Saving(true, true) == DialogResult.Cancel)
                     e.Cancel = true;
             }
+            debug_listener.Flush();
         }
 
         private void button_ClearDTLogs_Click(object sender, EventArgs e)
@@ -409,27 +417,20 @@ namespace Audit
                 MessageBox.Show("请等待加载完成");
                 return;
             }
-            GSetRule gs;
-            //if (gset_sav == null)
-            //{
-            //    gset_sav = new GSetRuleSav();
-            //    gs = new GSetRule(gset_sav, this.orahlper, dt_science, dt_bitem, dt_units, dt_abtype, dt_abtype2, dt_stations);
-            //}
-            //else
-            //{
-            //    gs = new GSetRule(gset_sav);
-            //}
-            gs = new GSetRule(gset_sav, this.orahlper, dt_science, dt_bitem, dt_units, dt_abtype, dt_abtype2, dt_stations);
+            if (the_gsetrule == null)
+            {
+                the_gsetrule = new GSetRule(this.orahlper, dt_science, dt_bitem, dt_units, dt_abtype, dt_abtype2, dt_stations);
+            }
 
-            if (gs.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            if (the_gsetrule.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 return;
             DBAccessorParam lp = new DBAccessorParam();
             lp.type = DBAccessorParamType.GSetRule;
-            lp.gs = gs;
+            lp.gs = the_gsetrule;
             if (backgroundWorker_DBAccessor.IsBusy == false)
                 backgroundWorker_DBAccessor.RunWorkerAsync(lp);
             else
-                MessageBox.Show("事件抽取器正忙！");
+                MessageBox.Show("数据存取器正忙！");
         }
 
         private void MenuItem_GSetCommit_Click(object sender, EventArgs e)
@@ -439,7 +440,7 @@ namespace Audit
             if (backgroundWorker_DBAccessor.IsBusy == false)
                 backgroundWorker_DBAccessor.RunWorkerAsync(lp);
             else
-                MessageBox.Show("事件抽取器正忙！");
+                MessageBox.Show("数据存取器正忙！");
         }
    
     }

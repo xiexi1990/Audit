@@ -7,7 +7,7 @@ namespace Audit
     {
         private void MainFrame_Global_KeyDown(object sender, KeyEventArgs e)
         {
-            Debug.WriteLine((sender as Control).Name);
+   //         Debug.WriteLine((sender as Control).Name);
             if (true)
             {
                 if (e.KeyCode == Keys.PageUp && e.Alt && MenuItem_PageWithAlt.Checked ||

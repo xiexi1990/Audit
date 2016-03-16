@@ -131,7 +131,7 @@ namespace Audit
 
         private void CheckColor(DataGridViewRow row)
         {
-            Debug.WriteLine("checkcolor" + sta++);
+    //        Debug.WriteLine("checkcolor" + sta++);
             if (row != null && row.DataBoundItem != null)
             {
                 Color color;

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using System.Data.OracleClient;
+using System.Diagnostics;
 
 namespace Audit
 {
@@ -27,11 +28,8 @@ namespace Audit
             int rtn;
             lock (this)
             {
-                if (oracon.State != ConnectionState.Open)
-                {
-                    oracon.Open();
-                }
                 OracleCommand ocmd = new OracleCommand(strsql, this.oracon);
+                TestConnection();
                 rtn = ocmd.ExecuteNonQuery();
             }
             return rtn;
@@ -46,13 +44,13 @@ namespace Audit
         }
         public object GetSingleValue(string strsql)
         {
-            //       TestConnection();
             object rtn;
             lock (this)
             {
                 OracleCommand ocmd = new OracleCommand();
                 ocmd.Connection = oracon;
                 ocmd.CommandText = strsql;
+                TestConnection();
                 if (feedback)
                 {
                     FeedBack(strsql);
@@ -67,6 +65,7 @@ namespace Audit
             lock (this)
             {
                 OracleDataAdapter oda = new OracleDataAdapter(strsql, oracon);
+                TestConnection();
                 if (feedback)
                 {
                     FeedBack(strsql);
@@ -77,9 +76,10 @@ namespace Audit
         }
         protected void TestConnection()
         {
-            if (oracon.State != ConnectionState.Open)
+            while(oracon.State != ConnectionState.Open)
             {
-                throw new Exception("OracleHelper: oracle connection is not open");
+                Debug.WriteLine("OracleHelper: oracle connection is not open, try to open");
+                oracon.Open();
             }
         }
         protected void FeedBack(string strsql)
@@ -89,7 +89,7 @@ namespace Audit
                 fdlen = strsql.Length;
             else
                 fdlen = 50;
-            System.Console.WriteLine("doing sql: " + strsql.Substring(0, fdlen) + " ...");
+            Debug.WriteLine("doing sql: " + strsql.Substring(0, fdlen) + " ...");
         }
     }
 }

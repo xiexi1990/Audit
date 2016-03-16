@@ -478,6 +478,8 @@
             this.Controls.Add(this.dateTimePicker_Begin);
             this.Name = "GSetRule";
             this.Text = "GSetRule";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GSetRule_FormClosing);
+            this.Load += new System.EventHandler(this.GSetRule_Load);
             this.Shown += new System.EventHandler(this.GSetRule_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Bitem)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Unit)).EndInit();

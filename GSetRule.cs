@@ -12,24 +12,17 @@ namespace Audit
 {
     public partial class GSetRule : Form
     {
-        public GSetRuleSav gssav;
         public OraHelper orah;
         public DataView dv_bitem, dv_abtype2, dv_stations;
         public DataTable dt_abtype2, dt_units, dt_stations;
         public string[] science, bitem, unitcode, abtype, abtype2, stationid;
         public string sql;
-        public bool text_change_observe = false;
-        public GSetRule(GSetRuleSav gssav)
+        public bool text_change_observe = false, firstshown = true;
+ 
+
+        public GSetRule(OraHelper orah, DataTable dt_science, DataTable dt_bitem, DataTable dt_units, DataTable dt_abtype, DataTable dt_abtype2, DataTable dt_stations)
         {
             InitializeComponent();
-            this.ReadStatus(gssav);
-        }
-
-        public GSetRule(GSetRuleSav gssav, OraHelper orah, DataTable dt_science, DataTable dt_bitem, DataTable dt_units, DataTable dt_abtype, DataTable dt_abtype2, DataTable dt_stations)
-        {
-            InitializeComponent();
-
-   //         this.gssav = gssav;
             this.orah = orah;
 
             dataGridView_Science.DataSource = dt_science;
@@ -124,12 +117,17 @@ namespace Audit
 
         private void GSetRule_Shown(object sender, EventArgs e)
         {
-            dataGridView_Science.ClearSelection();
-            dataGridView_Bitem.ClearSelection();
-            dataGridView_Unit.ClearSelection();
-            dataGridView_AbType.ClearSelection();
-            dataGridView_AbType2.ClearSelection();
-            dataGridView_Station.ClearSelection();
+     //       MessageBox.Show("show");
+            if (firstshown)
+            {
+                firstshown = false;
+                dataGridView_Science.ClearSelection();
+                dataGridView_Bitem.ClearSelection();
+                dataGridView_Unit.ClearSelection();
+                dataGridView_AbType.ClearSelection();
+                dataGridView_AbType2.ClearSelection();
+                dataGridView_Station.ClearSelection();
+            }
             text_change_observe = true;
         }
 
@@ -421,161 +419,14 @@ namespace Audit
             RefreshSql();
         }
 
-        public void ReadStatus(GSetRuleSav gssav)
+        private void GSetRule_FormClosing(object sender, FormClosingEventArgs e)
         {
-            richTextBox_AbType.Text = gssav.abtype;
-            richTextBox_AbType2.Text = gssav.abtype2;
-            checkBox_AreaGood.Checked = gssav.area_good;
-            dateTimePicker_Begin.Value = gssav.begin_time;
-            checkBox_BeginTrim.Checked = gssav.begin_time_trim;
-            richTextBox_Bitem.Text = gssav.bitem;
-            label_CalType2.Text = gssav.cal_abtype2;
-            label_CalStation.Text = gssav.cal_station;
-            label_CalUnit.Text = gssav.cal_unit;
-            dateTimePicker_End.Value = gssav.end_time;
-            checkBox_EndTrim.Checked = gssav.end_time_trim;
-            checkBox_NationGood.Checked = gssav.nation_good;
-            richTextBox_Science.Text = gssav.science;
-            checkBox_ScienceGood.Checked = gssav.science_good;
-            richTextBox_Sql.Text = gssav.sql;
-            richTextBox_Station.Text = gssav.station;
-            richTextBox_Unit.Text = gssav.unit;
-
-            dataGridView_AbType.DataSource = gssav.dt_abtype;
-            dt_abtype2 = gssav.dt_abtype2;
-
-            this.dv_abtype2 = new DataView(this.dt_abtype2);
-            dataGridView_AbType2.DataSource = this.dv_abtype2;
-
-            this.dv_bitem = new DataView(gssav.dt_bitem);
-            dataGridView_Bitem.DataSource = this.dv_bitem;
-
-            dataGridView_Science.DataSource = gssav.dt_science;
-
-            dt_stations = gssav.dt_stations;
-            this.dv_stations = new DataView(this.dt_stations);
-            dataGridView_Station.DataSource = this.dv_stations;
-
-            dt_units = gssav.dt_units;
-            dataGridView_Unit.DataSource = this.dt_units;
-
-            dv_abtype2.RowFilter = gssav.dv_abtype2_rf;
-            dv_abtype2.Sort = gssav.dv_abtype2_st;
-            dv_bitem.RowFilter = gssav.dv_bitem_rf;
-            dv_bitem.Sort = gssav.dv_bitem_st;
-            dv_stations.RowFilter = gssav.dv_stations_rf;
-            dv_stations.Sort = gssav.dv_stations_st;
-
-            if (gssav.sl_science != null)
-                for (int i = 0; i < gssav.sl_science.Length; i++)
-                {
-                    dataGridView_Science.Rows[gssav.sl_science[i]].Selected = true;
-                }
-
-            if (gssav.sl_bitem != null)
-                for (int i = 0; i < gssav.sl_bitem.Length; i++)
-                {
-                    dataGridView_Bitem.Rows[gssav.sl_bitem[i]].Selected = true;
-                }
-
-            if (gssav.sl_abtype != null)
-                for (int i = 0; i < gssav.sl_abtype.Length; i++)
-                {
-                    dataGridView_AbType.Rows[gssav.sl_abtype[i]].Selected = true;
-                }
-
-            if (gssav.sl_abtype2 != null)
-                for (int i = 0; i < gssav.sl_abtype2.Length; i++)
-                {
-                    dataGridView_AbType2.Rows[gssav.sl_abtype2[i]].Selected = true;
-                }
-
-            if (gssav.sl_units != null)
-                for (int i = 0; i < gssav.sl_units.Length; i++)
-                {
-                    dataGridView_Unit.Rows[gssav.sl_units[i]].Selected = true;
-                }
-
-
-            if (gssav.sl_stations != null)
-                for (int i = 0; i < gssav.sl_stations.Length; i++)
-                {
-                    dataGridView_Station.Rows[gssav.sl_stations[i]].Selected = true;
-                }
-
-            text_change_observe = true;
+          //  MessageBox.Show("close");
         }
 
-        public void SaveStatus(GSetRuleSav gssav)
+        private void GSetRule_Load(object sender, EventArgs e)
         {
-            gssav.abtype = richTextBox_AbType.Text;
-            gssav.abtype2 = richTextBox_AbType2.Text;
-            gssav.area_good = checkBox_AreaGood.Checked;
-            gssav.begin_time = dateTimePicker_Begin.Value;
-            gssav.begin_time_trim = checkBox_BeginTrim.Checked;
-            gssav.bitem = richTextBox_Bitem.Text;
-            gssav.cal_abtype2 = label_CalType2.Text;
-            gssav.cal_station = label_CalStation.Text;
-            gssav.cal_unit = label_CalUnit.Text;
-
-            gssav.dt_abtype = (dataGridView_AbType.DataSource as DataTable).Copy();
-            gssav.dt_abtype2 = dt_abtype2.Copy();
-            gssav.dt_bitem = (dataGridView_Bitem.DataSource as DataView).Table.Copy();
-            gssav.dt_science = (dataGridView_Science.DataSource as DataTable).Copy();
-            gssav.dt_stations = dt_stations.Copy();
-            gssav.dt_units = dt_units.Copy();
-
-            gssav.dv_abtype2_rf = dv_abtype2.RowFilter;
-            gssav.dv_abtype2_st = dv_abtype2.Sort;
-            gssav.dv_bitem_rf = dv_bitem.RowFilter;
-            gssav.dv_bitem_st = dv_bitem.Sort;
-            gssav.dv_stations_rf = dv_stations.RowFilter;
-            gssav.dv_stations_st = dv_stations.Sort;
-            gssav.end_time = dateTimePicker_End.Value;
-            gssav.end_time_trim = checkBox_EndTrim.Checked;
-            gssav.nation_good = checkBox_NationGood.Checked;
-            gssav.science = richTextBox_Science.Text;
-            gssav.science_good = checkBox_ScienceGood.Checked;
-
-            gssav.sl_abtype = new int[dataGridView_AbType.SelectedRows.Count];
-            for (int i = 0; i < dataGridView_AbType.SelectedRows.Count; i++)
-            {
-                gssav.sl_abtype[i] = dataGridView_AbType.SelectedRows[i].Index;
-            }
-
-            gssav.sl_abtype2 = new int[dataGridView_AbType2.SelectedRows.Count];
-            for (int i = 0; i < dataGridView_AbType2.SelectedRows.Count; i++)
-            {
-                gssav.sl_abtype2[i] = dataGridView_AbType2.SelectedRows[i].Index;
-            }
-
-            gssav.sl_bitem = new int[dataGridView_Bitem.SelectedRows.Count];
-            for (int i = 0; i < dataGridView_Bitem.SelectedRows.Count; i++)
-            {
-                gssav.sl_bitem[i] = dataGridView_Bitem.SelectedRows[i].Index;
-            }
-
-            gssav.sl_science = new int[dataGridView_Science.SelectedRows.Count];
-            for (int i = 0; i < dataGridView_Science.SelectedRows.Count; i++)
-            {
-                gssav.sl_science[i] = dataGridView_Science.SelectedRows[i].Index;
-            }
-
-            gssav.sl_stations = new int[dataGridView_Station.SelectedRows.Count];
-            for (int i = 0; i < dataGridView_Station.SelectedRows.Count; i++)
-            {
-                gssav.sl_stations[i] = dataGridView_Station.SelectedRows[i].Index;
-            }
-
-            gssav.sl_units = new int[dataGridView_Unit.SelectedRows.Count];
-            for (int i = 0; i < dataGridView_Unit.SelectedRows.Count; i++)
-            {
-                gssav.sl_units[i] = dataGridView_Unit.SelectedRows[i].Index;
-            }
-
-            gssav.sql = richTextBox_Sql.Text;
-            gssav.station = richTextBox_Station.Text;
-            gssav.unit = richTextBox_Unit.Text;
+            this.text_change_observe = false;
         }
     }
 }

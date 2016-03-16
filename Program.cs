@@ -15,7 +15,6 @@ namespace Audit
         [STAThread]
         static void Main()
         {
-            Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainFrame());

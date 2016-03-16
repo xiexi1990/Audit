@@ -2,6 +2,7 @@
 using System.Data;
 using System.ComponentModel;
 using System;
+using System.Diagnostics;
 
 namespace Audit
 {
@@ -58,7 +59,7 @@ namespace Audit
             {
                 RefreshStatus("正在抽取事件……");
                 DataTable dt = orahlper.GetDataTable(lp.gs.sql);
-      //          Console.WriteLine("抽取" + dt.Rows.Count + "条");
+                Debug.WriteLine("抽取" + dt.Rows.Count + "条");
 
                 dt.Columns.Add("SCORE_GROUP", typeof(int));
                 dt.Columns.Add("SCORE_TIME", typeof(int));
