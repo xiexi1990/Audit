@@ -34,7 +34,7 @@ namespace Audit
   //      private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
   //      private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
         private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = dxtj; password = dxtjqztw");
-        public DataTable dt_units, dt_logs, dt_units_comments, dt_param, dt_check, dt_bitem, dt_science, dt_abtype, dt_abtype2, dt_stations;
+        public DataTable dt_units, dt_logs, dt_units_comments, dt_param, dt_check, dt_item, dt_science, dt_abtype, dt_abtype2, dt_stations;
         //   public DataTable dt_units_cache_w, dt_logs_cache_w, dt_units_comments_cache_w, dt_param_cache_w, dt_check_cache_w;
         //      public DataSet ds_cache = new DataSet("ds_cache");
 
@@ -153,12 +153,12 @@ namespace Audit
             else
             {
             }
-           
-                score_gset_buttons[0].BackColor = Color.LightGreen;
-                score_gset_buttons[2].BackColor = Color.LightBlue;
-                score_gset_buttons[3].BackColor = Color.YellowGreen;
-            
-          //  button_GSet3.Visible = false;
+
+            score_gset_buttons[0].BackColor = Color.LightGreen;
+            score_gset_buttons[2].BackColor = Color.LightBlue;
+            score_gset_buttons[3].BackColor = Color.YellowGreen;
+
+            //  button_GSet3.Visible = false;
             button_GSet4.Visible = false;
 
             dt_units_comments = new DataTable();
@@ -412,14 +412,14 @@ namespace Audit
 
         private void MenuItem_FetchGSet_Click(object sender, EventArgs e)
         {
-            if (dt_science == null || dt_bitem == null || dt_units == null || dt_abtype == null || dt_abtype2 == null || dt_stations == null)
+            if (dt_science == null || dt_item == null || dt_units == null || dt_abtype == null || dt_abtype2 == null || dt_stations == null)
             {
                 MessageBox.Show("请等待加载完成");
                 return;
             }
             if (the_gsetrule == null)
             {
-                the_gsetrule = new GSetRule(this.orahlper, dt_science, dt_bitem, dt_units, dt_abtype, dt_abtype2, dt_stations);
+                the_gsetrule = new GSetRule(this.orahlper, dt_science, dt_item, dt_units, dt_abtype, dt_abtype2, dt_stations);
             }
 
             if (the_gsetrule.ShowDialog() != System.Windows.Forms.DialogResult.OK)

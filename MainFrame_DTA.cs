@@ -127,7 +127,7 @@ namespace Audit
                 ds.Tables.Add(dt_logs.Clone());
                 ds.Tables.Add(dt_check.Clone());
                 ds.Tables.Add(dt_units);
-                ds.Tables.Add(dt_bitem);
+                ds.Tables.Add(dt_item);
                 ds.Tables.Add(dt_abtype);
                 ds.Tables.Add(dt_abtype2);
                 ds.Tables.Add(dt_stations);

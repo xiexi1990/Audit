@@ -27,7 +27,7 @@ namespace Audit
 #else
                 if (GSET)
                 {
-                    esql = sg.GenGSetSql(GSetSqlType.Normal, null, null, null, new string[]{"2"}, new string[]{"2"}, null, true, true, true, DateTime.Now, DateTime.Now);
+                    esql = sg.GenGSetSql(GSetSqlType.Normal, null, null, null, new string[]{"2"}, new string[]{"2"}, null, null, true, true, true, DateTime.Now, DateTime.Now);
                 }
                 else
                 {
@@ -77,6 +77,7 @@ namespace Audit
                     this.dt_check.TableName = "dt_check";
                 }
                 dv_dt_logs = new DataView(dt_logs);
+                dv_dt_logs.AllowNew = false;
                 this.dataGridView_Logs.DataSource = this.dv_dt_logs;
                 foreach (DataGridViewColumn c in dataGridView_Logs.Columns)
                 {
@@ -116,7 +117,7 @@ namespace Audit
             {
                 typename = "省局列表";
             }
-            else if (p.type == ReloadDtParamType.Bitem)
+            else if (p.type == ReloadDtParamType.Item)
             {
                 typename = "测项列表";
             }
@@ -158,9 +159,9 @@ namespace Audit
                         }
                     }
                 }
-                else if (p.type == ReloadDtParamType.Bitem)
+                else if (p.type == ReloadDtParamType.Item)
                 {
-                    dt = orahlper.GetDataTable("select distinct bitem, science from qzdata.qz_abnormity_instrinfo where science != '辅助' order by science");
+                    dt = orahlper.GetDataTable("select distinct item, science from qzdata.qz_abnormity_instrinfo where science != '辅助' order by science");
                 }
                 else if (p.type == ReloadDtParamType.AbType)
                 {
@@ -182,10 +183,10 @@ namespace Audit
                         this.dt_units = dt;
                         dt_units.TableName = "dt_units";
                     }
-                    else if (p.type == ReloadDtParamType.Bitem)
+                    else if (p.type == ReloadDtParamType.Item)
                     {
-                        this.dt_bitem = dt;
-                        dt_bitem.TableName = "dt_bitem";
+                        this.dt_item = dt;
+                        dt_item.TableName = "dt_item";
                     }
                     else if(p.type == ReloadDtParamType.AbType)
                     {
@@ -216,7 +217,7 @@ namespace Audit
                 DataSet ds = new DataSet();
                 ds.ReadXml("load.info", XmlReadMode.ReadSchema);
                 dt_units = ds.Tables["dt_units"];
-                dt_bitem = ds.Tables["dt_bitem"];
+                dt_item = ds.Tables["dt_item"];
                 dt_abtype = ds.Tables["dt_abtype"];
                 dt_abtype2 = ds.Tables["dt_abtype2"];
                 dt_stations = ds.Tables["dt_stations"];
@@ -227,7 +228,7 @@ namespace Audit
                 dt_check = ds.Tables["dt_check"];
                 RefreshStatus("读取完成");
                 new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.Unit));
-                new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.Bitem));
+                new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.Item));
                 new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.AbType));
                 new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.AbType2));
                 new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.Station));
@@ -238,7 +239,7 @@ namespace Audit
                 if (MessageBox.Show("是否通过连接数据库加载表信息？", "未能找到load.info", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
                 {
                     new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.Unit));
-                    new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.Bitem));
+                    new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.Item));
                     new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.AbType));
                     new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.AbType2));
                     new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(false, ReloadDtParamType.Station));

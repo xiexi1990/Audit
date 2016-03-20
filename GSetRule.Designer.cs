@@ -34,15 +34,15 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.checkBox_EndTrim = new System.Windows.Forms.CheckBox();
-            this.dataGridView_Bitem = new System.Windows.Forms.DataGridView();
+            this.dataGridView_Item = new System.Windows.Forms.DataGridView();
             this.dataGridView_Unit = new System.Windows.Forms.DataGridView();
             this.dataGridView_Science = new System.Windows.Forms.DataGridView();
             this.richTextBox_Science = new System.Windows.Forms.RichTextBox();
-            this.richTextBox_Bitem = new System.Windows.Forms.RichTextBox();
+            this.richTextBox_Item = new System.Windows.Forms.RichTextBox();
             this.richTextBox_Unit = new System.Windows.Forms.RichTextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
+            this.label_Science = new System.Windows.Forms.Label();
+            this.label_Item = new System.Windows.Forms.Label();
+            this.label_Unit = new System.Windows.Forms.Label();
             this.button_Do = new System.Windows.Forms.Button();
             this.richTextBox_Sql = new System.Windows.Forms.RichTextBox();
             this.checkBox_NationGood = new System.Windows.Forms.CheckBox();
@@ -50,13 +50,13 @@
             this.checkBox_ScienceGood = new System.Windows.Forms.CheckBox();
             this.dataGridView_AbType = new System.Windows.Forms.DataGridView();
             this.dataGridView_AbType2 = new System.Windows.Forms.DataGridView();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
+            this.label_AbType = new System.Windows.Forms.Label();
+            this.label_AbType2 = new System.Windows.Forms.Label();
             this.richTextBox_AbType = new System.Windows.Forms.RichTextBox();
             this.richTextBox_AbType2 = new System.Windows.Forms.RichTextBox();
             this.dataGridView_Station = new System.Windows.Forms.DataGridView();
             this.richTextBox_Station = new System.Windows.Forms.RichTextBox();
-            this.label8 = new System.Windows.Forms.Label();
+            this.label_Station = new System.Windows.Forms.Label();
             this.button_CalType2Num = new System.Windows.Forms.Button();
             this.button_CalUnitNum = new System.Windows.Forms.Button();
             this.button_CalStationNum = new System.Windows.Forms.Button();
@@ -65,12 +65,21 @@
             this.label_CalStation = new System.Windows.Forms.Label();
             this.richTextBox_Debug = new System.Windows.Forms.RichTextBox();
             this.label9 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Bitem)).BeginInit();
+            this.radioButton_ShowMain = new System.Windows.Forms.RadioButton();
+            this.radioButton_ShowTable1 = new System.Windows.Forms.RadioButton();
+            this.richTextBox_Instr = new System.Windows.Forms.RichTextBox();
+            this.button_LoadTable1 = new System.Windows.Forms.Button();
+            this.dataGridView_Table1 = new System.Windows.Forms.DataGridView();
+            this.checkBox_Day10 = new System.Windows.Forms.CheckBox();
+            this.checkBox_Freq10 = new System.Windows.Forms.CheckBox();
+            this.checkBox_Day10OrFreq10 = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Item)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Unit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Science)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_AbType)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_AbType2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Station)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Table1)).BeginInit();
             this.SuspendLayout();
             // 
             // dateTimePicker_Begin
@@ -129,17 +138,17 @@
             this.checkBox_EndTrim.UseVisualStyleBackColor = true;
             this.checkBox_EndTrim.CheckedChanged += new System.EventHandler(this.checkBox_EndTrim_CheckedChanged);
             // 
-            // dataGridView_Bitem
+            // dataGridView_Item
             // 
-            this.dataGridView_Bitem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView_Bitem.Location = new System.Drawing.Point(295, 30);
-            this.dataGridView_Bitem.Name = "dataGridView_Bitem";
-            this.dataGridView_Bitem.ReadOnly = true;
-            this.dataGridView_Bitem.RowTemplate.Height = 23;
-            this.dataGridView_Bitem.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView_Bitem.Size = new System.Drawing.Size(123, 455);
-            this.dataGridView_Bitem.TabIndex = 3;
-            this.dataGridView_Bitem.SelectionChanged += new System.EventHandler(this.dataGridView_Bitem_SelectionChanged);
+            this.dataGridView_Item.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_Item.Location = new System.Drawing.Point(295, 30);
+            this.dataGridView_Item.Name = "dataGridView_Item";
+            this.dataGridView_Item.ReadOnly = true;
+            this.dataGridView_Item.RowTemplate.Height = 23;
+            this.dataGridView_Item.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_Item.Size = new System.Drawing.Size(123, 455);
+            this.dataGridView_Item.TabIndex = 3;
+            this.dataGridView_Item.SelectionChanged += new System.EventHandler(this.dataGridView_Item_SelectionChanged);
             // 
             // dataGridView_Unit
             // 
@@ -174,14 +183,14 @@
             this.richTextBox_Science.Text = "";
             this.richTextBox_Science.TextChanged += new System.EventHandler(this.richTextBox_Science_TextChanged);
             // 
-            // richTextBox_Bitem
+            // richTextBox_Item
             // 
-            this.richTextBox_Bitem.Location = new System.Drawing.Point(295, 491);
-            this.richTextBox_Bitem.Name = "richTextBox_Bitem";
-            this.richTextBox_Bitem.Size = new System.Drawing.Size(123, 62);
-            this.richTextBox_Bitem.TabIndex = 4;
-            this.richTextBox_Bitem.Text = "";
-            this.richTextBox_Bitem.TextChanged += new System.EventHandler(this.richTextBox_Bitem_TextChanged);
+            this.richTextBox_Item.Location = new System.Drawing.Point(295, 491);
+            this.richTextBox_Item.Name = "richTextBox_Item";
+            this.richTextBox_Item.Size = new System.Drawing.Size(123, 62);
+            this.richTextBox_Item.TabIndex = 4;
+            this.richTextBox_Item.Text = "";
+            this.richTextBox_Item.TextChanged += new System.EventHandler(this.richTextBox_Item_TextChanged);
             // 
             // richTextBox_Unit
             // 
@@ -192,32 +201,32 @@
             this.richTextBox_Unit.Text = "";
             this.richTextBox_Unit.TextChanged += new System.EventHandler(this.richTextBox_Unit_TextChanged);
             // 
-            // label3
+            // label_Science
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(194, 77);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(29, 12);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "学科";
+            this.label_Science.AutoSize = true;
+            this.label_Science.Location = new System.Drawing.Point(194, 77);
+            this.label_Science.Name = "label_Science";
+            this.label_Science.Size = new System.Drawing.Size(29, 12);
+            this.label_Science.TabIndex = 5;
+            this.label_Science.Text = "学科";
             // 
-            // label4
+            // label_Item
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(293, 9);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(29, 12);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "测项";
+            this.label_Item.AutoSize = true;
+            this.label_Item.Location = new System.Drawing.Point(293, 9);
+            this.label_Item.Name = "label_Item";
+            this.label_Item.Size = new System.Drawing.Size(29, 12);
+            this.label_Item.TabIndex = 5;
+            this.label_Item.Text = "测项";
             // 
-            // label5
+            // label_Unit
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(805, 9);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(29, 12);
-            this.label5.TabIndex = 5;
-            this.label5.Text = "省局";
+            this.label_Unit.AutoSize = true;
+            this.label_Unit.Location = new System.Drawing.Point(805, 9);
+            this.label_Unit.Name = "label_Unit";
+            this.label_Unit.Size = new System.Drawing.Size(29, 12);
+            this.label_Unit.TabIndex = 5;
+            this.label_Unit.Text = "省局";
             // 
             // button_Do
             // 
@@ -294,23 +303,23 @@
             this.dataGridView_AbType2.TabIndex = 3;
             this.dataGridView_AbType2.SelectionChanged += new System.EventHandler(this.dataGridView_AbType2_SelectionChanged);
             // 
-            // label6
+            // label_AbType
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(422, 9);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(53, 12);
-            this.label6.TabIndex = 5;
-            this.label6.Text = "事件类别";
+            this.label_AbType.AutoSize = true;
+            this.label_AbType.Location = new System.Drawing.Point(422, 9);
+            this.label_AbType.Name = "label_AbType";
+            this.label_AbType.Size = new System.Drawing.Size(53, 12);
+            this.label_AbType.TabIndex = 5;
+            this.label_AbType.Text = "事件类别";
             // 
-            // label7
+            // label_AbType2
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(559, 9);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(53, 12);
-            this.label7.TabIndex = 5;
-            this.label7.Text = "影响因素";
+            this.label_AbType2.AutoSize = true;
+            this.label_AbType2.Location = new System.Drawing.Point(559, 9);
+            this.label_AbType2.Name = "label_AbType2";
+            this.label_AbType2.Size = new System.Drawing.Size(53, 12);
+            this.label_AbType2.TabIndex = 5;
+            this.label_AbType2.Text = "影响因素";
             // 
             // richTextBox_AbType
             // 
@@ -351,14 +360,14 @@
             this.richTextBox_Station.Text = "";
             this.richTextBox_Station.TextChanged += new System.EventHandler(this.richTextBox_Station_TextChanged);
             // 
-            // label8
+            // label_Station
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(1030, 9);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(29, 12);
-            this.label8.TabIndex = 5;
-            this.label8.Text = "台站";
+            this.label_Station.AutoSize = true;
+            this.label_Station.Location = new System.Drawing.Point(1030, 9);
+            this.label_Station.Name = "label_Station";
+            this.label_Station.Size = new System.Drawing.Size(29, 12);
+            this.label_Station.TabIndex = 5;
+            this.label_Station.Text = "台站";
             // 
             // button_CalType2Num
             // 
@@ -434,11 +443,107 @@
             this.label9.TabIndex = 12;
             this.label9.Text = "调试窗口";
             // 
+            // radioButton_ShowMain
+            // 
+            this.radioButton_ShowMain.AutoSize = true;
+            this.radioButton_ShowMain.Location = new System.Drawing.Point(12, 563);
+            this.radioButton_ShowMain.Name = "radioButton_ShowMain";
+            this.radioButton_ShowMain.Size = new System.Drawing.Size(83, 16);
+            this.radioButton_ShowMain.TabIndex = 13;
+            this.radioButton_ShowMain.TabStop = true;
+            this.radioButton_ShowMain.Text = "显示主界面";
+            this.radioButton_ShowMain.UseVisualStyleBackColor = true;
+            this.radioButton_ShowMain.CheckedChanged += new System.EventHandler(this.radioButton_ShowMain_CheckedChanged);
+            // 
+            // radioButton_ShowTable1
+            // 
+            this.radioButton_ShowTable1.AutoSize = true;
+            this.radioButton_ShowTable1.Location = new System.Drawing.Point(12, 585);
+            this.radioButton_ShowTable1.Name = "radioButton_ShowTable1";
+            this.radioButton_ShowTable1.Size = new System.Drawing.Size(83, 16);
+            this.radioButton_ShowTable1.TabIndex = 13;
+            this.radioButton_ShowTable1.TabStop = true;
+            this.radioButton_ShowTable1.Text = "显示统计表";
+            this.radioButton_ShowTable1.UseVisualStyleBackColor = true;
+            this.radioButton_ShowTable1.CheckedChanged += new System.EventHandler(this.radioButton_ShowTable_CheckedChanged);
+            this.radioButton_ShowTable1.Click += new System.EventHandler(this.radioButton_ShowTable1_Click);
+            // 
+            // richTextBox_Instr
+            // 
+            this.richTextBox_Instr.Location = new System.Drawing.Point(1270, 74);
+            this.richTextBox_Instr.Name = "richTextBox_Instr";
+            this.richTextBox_Instr.Size = new System.Drawing.Size(80, 140);
+            this.richTextBox_Instr.TabIndex = 14;
+            this.richTextBox_Instr.Text = "";
+            this.richTextBox_Instr.TextChanged += new System.EventHandler(this.richTextBox_Instr_TextChanged);
+            // 
+            // button_LoadTable1
+            // 
+            this.button_LoadTable1.Location = new System.Drawing.Point(1270, 30);
+            this.button_LoadTable1.Name = "button_LoadTable1";
+            this.button_LoadTable1.Size = new System.Drawing.Size(80, 31);
+            this.button_LoadTable1.TabIndex = 15;
+            this.button_LoadTable1.Text = "导入统计表";
+            this.button_LoadTable1.UseVisualStyleBackColor = true;
+            this.button_LoadTable1.Click += new System.EventHandler(this.button_LoadTable1_Click);
+            // 
+            // dataGridView_Table1
+            // 
+            this.dataGridView_Table1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_Table1.Location = new System.Drawing.Point(295, 12);
+            this.dataGridView_Table1.Name = "dataGridView_Table1";
+            this.dataGridView_Table1.ReadOnly = true;
+            this.dataGridView_Table1.RowTemplate.Height = 23;
+            this.dataGridView_Table1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView_Table1.Size = new System.Drawing.Size(959, 473);
+            this.dataGridView_Table1.TabIndex = 16;
+            this.dataGridView_Table1.SelectionChanged += new System.EventHandler(this.dataGridView_Table1_SelectionChanged);
+            // 
+            // checkBox_Day10
+            // 
+            this.checkBox_Day10.AutoSize = true;
+            this.checkBox_Day10.Location = new System.Drawing.Point(1270, 236);
+            this.checkBox_Day10.Name = "checkBox_Day10";
+            this.checkBox_Day10.Size = new System.Drawing.Size(96, 16);
+            this.checkBox_Day10.TabIndex = 17;
+            this.checkBox_Day10.Text = "累计天数≥10";
+            this.checkBox_Day10.UseVisualStyleBackColor = true;
+            this.checkBox_Day10.CheckedChanged += new System.EventHandler(this.checkBox_Day10_CheckedChanged);
+            // 
+            // checkBox_Freq10
+            // 
+            this.checkBox_Freq10.AutoSize = true;
+            this.checkBox_Freq10.Location = new System.Drawing.Point(1270, 258);
+            this.checkBox_Freq10.Name = "checkBox_Freq10";
+            this.checkBox_Freq10.Size = new System.Drawing.Size(96, 16);
+            this.checkBox_Freq10.TabIndex = 17;
+            this.checkBox_Freq10.Text = "事件次数≥10";
+            this.checkBox_Freq10.UseVisualStyleBackColor = true;
+            this.checkBox_Freq10.CheckedChanged += new System.EventHandler(this.checkBox_Freq10_CheckedChanged);
+            // 
+            // checkBox_Day10OrFreq10
+            // 
+            this.checkBox_Day10OrFreq10.AutoSize = true;
+            this.checkBox_Day10OrFreq10.Location = new System.Drawing.Point(1260, 290);
+            this.checkBox_Day10OrFreq10.Name = "checkBox_Day10OrFreq10";
+            this.checkBox_Day10OrFreq10.Size = new System.Drawing.Size(108, 28);
+            this.checkBox_Day10OrFreq10.TabIndex = 17;
+            this.checkBox_Day10OrFreq10.Text = "累计天数≥10 \r\n或事件次数≥10";
+            this.checkBox_Day10OrFreq10.UseVisualStyleBackColor = true;
+            this.checkBox_Day10OrFreq10.CheckedChanged += new System.EventHandler(this.checkBox_Day10OrFreq10_CheckedChanged);
+            // 
             // GSetRule
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1266, 619);
+            this.ClientSize = new System.Drawing.Size(1362, 619);
+            this.Controls.Add(this.checkBox_Day10OrFreq10);
+            this.Controls.Add(this.checkBox_Freq10);
+            this.Controls.Add(this.checkBox_Day10);
+            this.Controls.Add(this.button_LoadTable1);
+            this.Controls.Add(this.richTextBox_Instr);
+            this.Controls.Add(this.radioButton_ShowTable1);
+            this.Controls.Add(this.radioButton_ShowMain);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.richTextBox_Debug);
             this.Controls.Add(this.label_CalStation);
@@ -452,41 +557,43 @@
             this.Controls.Add(this.checkBox_NationGood);
             this.Controls.Add(this.richTextBox_Sql);
             this.Controls.Add(this.button_Do);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label_AbType2);
+            this.Controls.Add(this.label_AbType);
+            this.Controls.Add(this.label_Station);
+            this.Controls.Add(this.label_Unit);
+            this.Controls.Add(this.label_Item);
+            this.Controls.Add(this.label_Science);
             this.Controls.Add(this.richTextBox_AbType2);
             this.Controls.Add(this.richTextBox_AbType);
             this.Controls.Add(this.richTextBox_Station);
             this.Controls.Add(this.richTextBox_Unit);
-            this.Controls.Add(this.richTextBox_Bitem);
+            this.Controls.Add(this.richTextBox_Item);
             this.Controls.Add(this.richTextBox_Science);
             this.Controls.Add(this.dataGridView_AbType2);
             this.Controls.Add(this.dataGridView_AbType);
             this.Controls.Add(this.dataGridView_Station);
             this.Controls.Add(this.dataGridView_Unit);
             this.Controls.Add(this.dataGridView_Science);
-            this.Controls.Add(this.dataGridView_Bitem);
+            this.Controls.Add(this.dataGridView_Item);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.checkBox_EndTrim);
             this.Controls.Add(this.checkBox_BeginTrim);
             this.Controls.Add(this.dateTimePicker_End);
             this.Controls.Add(this.dateTimePicker_Begin);
+            this.Controls.Add(this.dataGridView_Table1);
             this.Name = "GSetRule";
             this.Text = "GSetRule";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GSetRule_FormClosing);
             this.Load += new System.EventHandler(this.GSetRule_Load);
             this.Shown += new System.EventHandler(this.GSetRule_Shown);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Bitem)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Item)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Unit)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Science)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_AbType)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_AbType2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Station)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Table1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -500,15 +607,15 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox checkBox_EndTrim;
-        private System.Windows.Forms.DataGridView dataGridView_Bitem;
+        private System.Windows.Forms.DataGridView dataGridView_Item;
         private System.Windows.Forms.DataGridView dataGridView_Unit;
         private System.Windows.Forms.DataGridView dataGridView_Science;
         private System.Windows.Forms.RichTextBox richTextBox_Science;
-        private System.Windows.Forms.RichTextBox richTextBox_Bitem;
+        private System.Windows.Forms.RichTextBox richTextBox_Item;
         private System.Windows.Forms.RichTextBox richTextBox_Unit;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label_Science;
+        private System.Windows.Forms.Label label_Item;
+        private System.Windows.Forms.Label label_Unit;
         private System.Windows.Forms.Button button_Do;
         private System.Windows.Forms.RichTextBox richTextBox_Sql;
         private System.Windows.Forms.CheckBox checkBox_NationGood;
@@ -516,13 +623,13 @@
         private System.Windows.Forms.CheckBox checkBox_ScienceGood;
         private System.Windows.Forms.DataGridView dataGridView_AbType;
         private System.Windows.Forms.DataGridView dataGridView_AbType2;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label_AbType;
+        private System.Windows.Forms.Label label_AbType2;
         private System.Windows.Forms.RichTextBox richTextBox_AbType;
         private System.Windows.Forms.RichTextBox richTextBox_AbType2;
         private System.Windows.Forms.DataGridView dataGridView_Station;
         private System.Windows.Forms.RichTextBox richTextBox_Station;
-        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label_Station;
         private System.Windows.Forms.Button button_CalType2Num;
         private System.Windows.Forms.Button button_CalUnitNum;
         private System.Windows.Forms.Button button_CalStationNum;
@@ -531,5 +638,13 @@
         private System.Windows.Forms.Label label_CalStation;
         private System.Windows.Forms.RichTextBox richTextBox_Debug;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.RadioButton radioButton_ShowMain;
+        private System.Windows.Forms.RadioButton radioButton_ShowTable1;
+        private System.Windows.Forms.RichTextBox richTextBox_Instr;
+        private System.Windows.Forms.Button button_LoadTable1;
+        private System.Windows.Forms.DataGridView dataGridView_Table1;
+        private System.Windows.Forms.CheckBox checkBox_Day10;
+        private System.Windows.Forms.CheckBox checkBox_Freq10;
+        private System.Windows.Forms.CheckBox checkBox_Day10OrFreq10;
     }
 }

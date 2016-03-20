@@ -143,6 +143,7 @@ namespace Audit
                         Convert.ToDateTime(r["AUDIT_TIME"]).ToString("yyyyMMdd HHmmss"), 
                         sco);
                     orahlper.ExecuteNonQuery(s);
+                    Debug.WriteLine(s);
                     i++;
                 }
                 RefreshStatus("写入数据库完毕");

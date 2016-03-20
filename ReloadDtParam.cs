@@ -16,7 +16,7 @@ namespace Audit
     public enum ReloadDtParamType
     {
         Unit = 1,
-        Bitem = 2,
+        Item = 2,
         AbType = 3,
         AbType2 = 4,
         Station = 5

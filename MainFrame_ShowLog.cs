@@ -22,14 +22,15 @@ namespace Audit
                 {
                     button_AllGood_Click(null, null);
                 }
-                if (r["LOG_ID"].ToString() == prev_logid)
-                {
-                    text_change_observe = true;
-                    return;
-                }
+                //if (r["LOG_ID"].ToString() == prev_logid)
+                //{
+                //    text_change_observe = true;
+                //    return;
+                //}
                 prev_logid = r["LOG_ID"].ToString();
                 
                 //            this.cur_log = rowid;
+      
                 this.richTextBox_Group.Text = r["AB_TYPE_NAME"].ToString();
                 this.richTextBox_Time.Text = r["START_DATE"].ToString() + " - \n" + (r["END_DATE"] is DBNull ? "未结束" : r["END_DATE"].ToString());
                 this.richTextBox_Log.Text = r["AB_DESC"].ToString().Trim() + "\n";
@@ -52,7 +53,7 @@ namespace Audit
                 }
                 this.label_LogInfo.Text = string.Format("{0} {1}{2}{3}{4}[{5}]", r["SCIENCE"], r["UNITNAME"], r["STATIONNAME"], r["INSTRCODE"], r["INSTRNAME"], r["POINTID"]);
 
-                richTextBox_WholeInfo.Text = label_LogInfo.Text + "\n\n事件类别：" + richTextBox_Group.Text + "\n\n影响因素：" + r["TYPE2_NAME"] + "\n\n测项：" + r["BITEM"] + "\n\n起止时间：" + richTextBox_Time.Text + "\n\n事件描述：" + richTextBox_Log.Text;
+                richTextBox_WholeInfo.Text = label_LogInfo.Text + "\n\n事件类别：" + richTextBox_Group.Text + "\n\n影响因素：" + r["TYPE2_NAME"] + "\n\n测项：" + r["ITEM"] + "\n\n起止时间：" + richTextBox_Time.Text + "\n\n事件描述：" + richTextBox_Log.Text;
 
                 int start = richTextBox_WholeInfo.TextLength;
                 richTextBox_WholeInfo.AppendText(cr.wholestr[0] + "\n");
@@ -65,25 +66,31 @@ namespace Audit
                 richTextBox_WholeInfo.SelectionColor = Color.Red;
                 richTextBox_WholeInfo.Select(0, 0);
 
+                if (!GSET)
+                {
+                    richTextBox_GroupCheck.Text = Convert.ToString(r["COMMENTS_GROUP"]);
+                    richTextBox_TimeCheck.Text = Convert.ToString(r["COMMENTS_TIME"]);
+                    richTextBox_LogCheck.Text = Convert.ToString(r["COMMENTS_LOG"]);
+                    richTextBox_GraphCheck.Text = Convert.ToString(r["COMMENTS_GRAPH"]);
+                }
 
-                richTextBox_GroupCheck.Text = Convert.ToString(r["COMMENTS_GROUP"]);
-                richTextBox_TimeCheck.Text = Convert.ToString(r["COMMENTS_TIME"]);
-                richTextBox_LogCheck.Text = Convert.ToString(r["COMMENTS_LOG"]);
-                richTextBox_GraphCheck.Text = Convert.ToString(r["COMMENTS_GRAPH"]);
                 richTextBox_GSetComments.Text = Convert.ToString(r["COMMENTS_GSET"]);
 
-                vb.score_group = Convert.ToInt32(r["SCORE_GROUP"]);
-                vb.score_time = Convert.ToInt32(r["SCORE_TIME"]);
-                vb.score_log = Convert.ToInt32(r["SCORE_LOG"]);
-                vb.score_graph = Convert.ToInt32(r["SCORE_GRAPH"]);
+                if (!GSET)
+                {
+                    vb.score_group = Convert.ToInt32(r["SCORE_GROUP"]);
+                    vb.score_time = Convert.ToInt32(r["SCORE_TIME"]);
+                    vb.score_log = Convert.ToInt32(r["SCORE_LOG"]);
+                    vb.score_graph = Convert.ToInt32(r["SCORE_GRAPH"]);
+
+                    vb.score_gsetclass = Convert.ToInt32(r["SCORE_GSETCLASS"]);
+                    
+                    checkBox_Postpone.Checked = r["POSTPONE"] is DBNull ? false : Convert.ToBoolean(r["POSTPONE"]);
+                }
+
                 vb.score_gset = Convert.ToInt32(r["SCORE_GSET"]);
-                vb.score_gsetclass = Convert.ToInt32(r["SCORE_GSETCLASS"]);
-
-                checkBox_Postpone.Checked = r["POSTPONE"] is DBNull ? false : Convert.ToBoolean(r["POSTPONE"]);
-
-
-                //           CheckColor(dataGridView_Logs.CurrentRow);
                 
+                //           CheckColor(dataGridView_Logs.CurrentRow);   
 
                 text_change_observe = true;
             }

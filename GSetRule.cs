@@ -7,20 +7,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using excel = Microsoft.Office.Interop.Excel;
 
 namespace Audit
 {
     public partial class GSetRule : Form
     {
         public OraHelper orah;
-        public DataView dv_bitem, dv_abtype2, dv_stations;
-        public DataTable dt_abtype2, dt_units, dt_stations;
-        public string[] science, bitem, unitcode, abtype, abtype2, stationid;
+        public DataView dv_item, dv_abtype2, dv_stations, dv_table1;
+        public DataTable dt_abtype2, dt_units, dt_stations, dt_table1;
+        public string[] science, item, unitcode, abtype, abtype2, stationid, instr;
         public string sql;
         public bool text_change_observe = false, firstshown = true;
  
 
-        public GSetRule(OraHelper orah, DataTable dt_science, DataTable dt_bitem, DataTable dt_units, DataTable dt_abtype, DataTable dt_abtype2, DataTable dt_stations)
+        public GSetRule(OraHelper orah, DataTable dt_science, DataTable dt_item, DataTable dt_units, DataTable dt_abtype, DataTable dt_abtype2, DataTable dt_stations)
         {
             InitializeComponent();
             this.orah = orah;
@@ -35,10 +36,10 @@ namespace Audit
             dataGridView_Unit.Columns["UNIT_CODE"].Visible = false;
 
             dataGridView_Unit.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dv_bitem = new DataView(dt_bitem);
-            dataGridView_Bitem.DataSource = dv_bitem;
-            dataGridView_Bitem.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dataGridView_Bitem.Columns["SCIENCE"].Visible = false;
+            dv_item = new DataView(dt_item);
+            dataGridView_Item.DataSource = dv_item;
+            dataGridView_Item.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView_Item.Columns["SCIENCE"].Visible = false;
 
             dataGridView_AbType.DataSource = dt_abtype;
             dataGridView_AbType.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
@@ -72,6 +73,7 @@ namespace Audit
       //      richTextBox_Sql.ReadOnly = true;
 
             button_CalType2Num.BackColor = button_CalUnitNum.BackColor = button_CalStationNum.BackColor = Color.PaleVioletRed;
+            radioButton_ShowMain.Checked = true;
 
         }
 
@@ -94,14 +96,14 @@ namespace Audit
             richTextBox_Science.Text = s;
         }
 
-        private void dataGridView_Bitem_SelectionChanged(object sender, EventArgs e)
+        private void dataGridView_Item_SelectionChanged(object sender, EventArgs e)
         {
             string s = "";
-            for (int i = dataGridView_Bitem.SelectedRows.Count - 1; i >= 0; i--)
+            for (int i = dataGridView_Item.SelectedRows.Count - 1; i >= 0; i--)
             {
-                s += dataGridView_Bitem.SelectedRows[i].Cells[0].Value + " ";
+                s += dataGridView_Item.SelectedRows[i].Cells[0].Value + " ";
             }
-            richTextBox_Bitem.Text = s;
+            richTextBox_Item.Text = s;
 
         }
 
@@ -122,7 +124,7 @@ namespace Audit
             {
                 firstshown = false;
                 dataGridView_Science.ClearSelection();
-                dataGridView_Bitem.ClearSelection();
+                dataGridView_Item.ClearSelection();
                 dataGridView_Unit.ClearSelection();
                 dataGridView_AbType.ClearSelection();
                 dataGridView_AbType2.ClearSelection();
@@ -134,7 +136,7 @@ namespace Audit
         private void RefreshSql()
         {
             SqlGenerator sg = new SqlGenerator();
-            richTextBox_Sql.Text = sg.GenGSetSql(GSetSqlType.Normal, science, bitem, unitcode, abtype, abtype2, stationid, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
+            richTextBox_Sql.Text = sg.GenGSetSql(GSetSqlType.Normal, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
         }
 
         private string AbTypeNameToId(string abtypename)
@@ -148,7 +150,7 @@ namespace Audit
                 case "人为干扰": return "5";
                 case "地球物理事件": return "6";
                 case "不明原因": return "7";
-                default: return "";
+                default: return "-1";
             }
         }
 
@@ -163,6 +165,66 @@ namespace Audit
                 case "流体": return "LT";
                 default: return "";
             }
+        }
+
+        private void SetTable1Filter()
+        {
+            if (dv_table1 == null)
+                return;
+            string[] f = new string[6];
+            string[] col = new string[] { "学科名称", "测项名称", "事件类型", "影响因素ID", "单位代码", "台站代码" };
+            string[][] slist = new string[][] { science, item, abtype, abtype2, unitcode, stationid };
+            for (int k = 0; k < f.Length; k++)
+            {
+                f[k] = "";
+                if (slist[k] != null)
+                {
+                    for (int i = 0; i < slist[k].GetLength(0); i++)
+                    {
+                        f[k] += col[k] + " = '" + slist[k][i] + "' or ";
+                    }
+                }
+                if (f[k] != "")
+                {
+                    f[k] = f[k].Remove(f[k].Length - 3);
+                }
+                else
+                {
+                    f[k] = "(1 = 1)";
+                }
+            }
+            string rf = "";
+            for (int k = 0; k < f.Length; k++)
+            {
+                rf += "(" + f[k] + ") and ";
+            }
+
+            if (checkBox_Day10OrFreq10.Checked)
+            {
+                rf += "( 累计天数 >= 10 or 事件次数 >= 10 ) and ";
+            }
+            else
+            {
+                if(checkBox_Day10.Checked)
+                {
+                    rf += "(累计天数 >= 10) and";
+                }
+                else
+                {
+                    rf += "(1 = 1) and";
+                }
+                if (checkBox_Freq10.Checked)
+                {
+                    rf += "(事件次数 >= 10) and";
+                }
+                else
+                {
+                    rf += "(1 = 1) and";
+                }
+            }
+            rf = rf.Remove(rf.Length - 4);
+            dv_table1.RowFilter = rf;
+            dataGridView_Table1.ClearSelection();
         }
 
         private void SetAbType2Filter()
@@ -219,22 +281,22 @@ namespace Audit
             }
             if (f != "")
             {
-                dv_bitem.RowFilter = f.Remove(f.Length - 3);
+                dv_item.RowFilter = f.Remove(f.Length - 3);
             }
             else
             {
-                dv_bitem.RowFilter = null;
+                dv_item.RowFilter = null;
             }
-            dataGridView_Bitem.ClearSelection();
+            dataGridView_Item.ClearSelection();
             SetAbType2Filter();
             RefreshSql();
         }
 
-        private void richTextBox_Bitem_TextChanged(object sender, EventArgs e)
+        private void richTextBox_Item_TextChanged(object sender, EventArgs e)
         {
             if (!text_change_observe)
                 return;
-            bitem = richTextBox_Bitem.Text.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+            item = richTextBox_Item.Text.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
             RefreshSql();
         }
 
@@ -335,8 +397,9 @@ namespace Audit
         private void button_CalType2Num_Click(object sender, EventArgs e)
         {
             label_CalType2.Text = "计算中……";
+            label_CalType2.Refresh();
             SqlGenerator sg = new SqlGenerator();
-            string csql = sg.GenGSetSql(GSetSqlType.CalType2Num, science, bitem, unitcode, abtype, abtype2, stationid, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
+            string csql = sg.GenGSetSql(GSetSqlType.CalType2Num, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
             DataTable dt = orah.GetDataTable(csql);
             int sum = 0;
             foreach (DataRow r in this.dt_abtype2.Rows)
@@ -352,14 +415,17 @@ namespace Audit
                 }
             }
             label_CalType2.Text = sum.ToString();
+       //     dv_abtype2.Sort = "num desc";
+            dataGridView_AbType2.Sort(dataGridView_AbType2.Columns["NUM"], ListSortDirection.Descending);
             richTextBox_Debug.Text += csql + "\n";
         }
 
         private void button_CalUnitNum_Click(object sender, EventArgs e)
         {
             label_CalUnit.Text = "计算中……";
+            label_CalUnit.Refresh();
             SqlGenerator sg = new SqlGenerator();
-            string csql = sg.GenGSetSql(GSetSqlType.CalUnitNum, science, bitem, unitcode, abtype, abtype2, stationid, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
+            string csql = sg.GenGSetSql(GSetSqlType.CalUnitNum, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
             DataTable dt = orah.GetDataTable(csql);
             int sum = 0;
             foreach (DataRow r in this.dt_units.Rows)
@@ -375,14 +441,17 @@ namespace Audit
                 }
             }
             label_CalUnit.Text = sum.ToString();
+            dataGridView_Unit.Sort(dataGridView_Unit.Columns["NUM"], ListSortDirection.Descending);
+          //  this.dv .Sort = "num desc";
             richTextBox_Debug.Text += csql + "\n";
         }
 
         private void button_CalStationNum_Click(object sender, EventArgs e)
         {
             label_CalStation.Text = "计算中……";
+            label_CalStation.Refresh();
             SqlGenerator sg = new SqlGenerator();
-            string csql = sg.GenGSetSql(GSetSqlType.CalStationNum, science, bitem, unitcode, abtype, abtype2, stationid, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
+            string csql = sg.GenGSetSql(GSetSqlType.CalStationNum, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
             DataTable dt = orah.GetDataTable(csql);
             int sum = 0;
             foreach (DataRow r in this.dt_stations.Rows)
@@ -398,6 +467,7 @@ namespace Audit
                 }
             }
             label_CalStation.Text = sum.ToString();
+            dataGridView_Station.Sort(dataGridView_Station.Columns["NUM"], ListSortDirection.Descending);
             richTextBox_Debug.Text += csql + "\n";
         }
 
@@ -428,5 +498,164 @@ namespace Audit
         {
             this.text_change_observe = false;
         }
+
+        private void radioButton_ShowMain_CheckedChanged(object sender, EventArgs e)
+        {
+            SetLayout(GSetRuleLayout.Main);
+        }
+
+        private void radioButton_ShowTable_CheckedChanged(object sender, EventArgs e)
+        {
+            SetTable1Filter();
+            SetLayout(GSetRuleLayout.Table);
+        }
+        public void SetLayout(GSetRuleLayout layout)
+        {
+            if (layout == GSetRuleLayout.Main)
+            {
+                dataGridView_Science.Visible = true;
+                dataGridView_Item.Visible = true;
+                dataGridView_AbType.Visible = true;
+                dataGridView_AbType2.Visible = true;
+                dataGridView_Unit.Visible = true;
+                dataGridView_Station.Visible = true;
+                label_AbType.Visible = true;
+                label_AbType2.Visible = true;
+                label_Item.Visible = true;
+                label_CalStation.Visible = true;
+                label_CalType2.Visible = true;
+                label_CalUnit.Visible = true;
+                label_Science.Visible = true;
+                label_Station.Visible = true;
+                label_Unit.Visible = true;
+                dataGridView_Table1.Visible = false;
+                checkBox_Day10.Visible = false;
+                checkBox_Freq10.Visible = false;
+                checkBox_Day10OrFreq10.Visible = false;
+            }
+            else if(layout == GSetRuleLayout.Table)
+            {
+                dataGridView_Science.Visible = false;
+                dataGridView_Item.Visible = false;
+                dataGridView_AbType.Visible = false;
+                dataGridView_AbType2.Visible = false;
+                dataGridView_Unit.Visible = false;
+                dataGridView_Station.Visible = false;
+                label_AbType.Visible = false;
+                label_AbType2.Visible = false;
+                label_Item.Visible = false;
+                label_CalStation.Visible = false;
+                label_CalType2.Visible = false;
+                label_CalUnit.Visible = false;
+                label_Science.Visible = false;
+                label_Station.Visible = false;
+                label_Unit.Visible = false;
+                dataGridView_Table1.Visible = true;
+                checkBox_Day10.Visible = true;
+                checkBox_Freq10.Visible = true;
+                checkBox_Day10OrFreq10.Visible = true;
+            }
+        }
+
+        private void button_LoadTable1_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog od = new OpenFileDialog();
+            od.Filter = "Excel文件|*.xlsx";
+            od.FilterIndex = 1;
+            if (od.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                excel.Application eapp = new excel.Application();
+                excel.Workbook book = eapp.Workbooks.Open(od.FileName);
+                excel.Worksheet sheet = book.Sheets[1];
+                int n;
+                for (n = 1; sheet.Cells[n, 1].Value != null; n+=1000)
+                {
+                }
+                n -= 1000;
+                for (; sheet.Cells[n, 1].Value != null; n += 100)
+                {
+                }
+                n -= 100;
+                for (; sheet.Cells[n, 1].Value != null; n += 1)
+                {
+                }
+                n--;
+                int m;
+                for (m = 1; sheet.Cells[1, m].Value != null; m++)
+                {
+                }
+                m--;
+
+                object[,] t = sheet.Range["A1", sheet.Cells[n, m]].Value;
+                book.Close();
+                eapp.Quit();
+
+                dt_table1 = new DataTable("table1");
+                for(int j = 1; j <= m; j++)
+                {
+                    dt_table1.Columns.Add(t[1, j].ToString(), t[2,j].GetType());   
+                }
+                object[] nr = new object[m];
+                for (int i = 2; i <= n; i++)
+                {
+                    for(int j = 1; j <= m; j++)
+                    {
+                        nr[j - 1] = t[i,j];
+                    }
+                    dt_table1.Rows.Add(nr);
+                }
+                dv_table1 = new DataView(dt_table1);
+                dataGridView_Table1.DataSource = dv_table1;
+                dataGridView_Table1.Columns["单位代码"].Visible = false;
+                dataGridView_Table1.Columns["台站代码"].Visible = false;
+                dataGridView_Table1.Columns["测点编码"].Visible = false;
+                dataGridView_Table1.Columns["影响因素ID"].Visible = false;
+                dv_table1.RowFilter = "学科名称 = '形变' and (1 = 1)";
+            }
+        }
+
+        private void dataGridView_Table1_SelectionChanged(object sender, EventArgs e)
+        {
+            string s = "";
+            for (int i = dataGridView_Table1.SelectedRows.Count - 1; i >= 0; i--)
+            {
+                s += dataGridView_Table1.SelectedRows[i].Cells["台站测点"].Value + " ";
+            }
+            richTextBox_Instr.Text = s;
+        }
+
+        private void richTextBox_Instr_TextChanged(object sender, EventArgs e)
+        {
+            if (!text_change_observe)
+                return;
+            instr = richTextBox_Instr.Text.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+            RefreshSql();
+        }
+
+        private void checkBox_Day10OrFreq10_CheckedChanged(object sender, EventArgs e)
+        {
+            SetTable1Filter();
+        }
+
+        private void checkBox_Freq10_CheckedChanged(object sender, EventArgs e)
+        {
+            SetTable1Filter();
+        }
+
+        private void checkBox_Day10_CheckedChanged(object sender, EventArgs e)
+        {
+            SetTable1Filter();
+        }
+
+        private void radioButton_ShowTable1_Click(object sender, EventArgs e)
+        {
+            SetTable1Filter();
+        }
+    }
+
+    public enum GSetRuleLayout
+    {
+        Main = 1,
+        Table = 2
     }
 }
