@@ -142,7 +142,7 @@ namespace Audit
                 }
                 else
                 {
-                    if (GSET)
+                    if (IS_GSET)
                     {
                         if (r["SCORE_GSET"] is DBNull)
                         {

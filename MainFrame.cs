@@ -47,7 +47,7 @@ namespace Audit
         private string prev_logid = null;
         private bool log_shown = false, text_change_observe = true, score_change_observe = true;
         private bool newsaved = false, newsaved_tmp = false;
-        bool GSET = true;
+        bool IS_GSET = false;
         private RichTextBox rtb_active = null;
         private RichTextBox[] rtbs_check = new RichTextBox[5];
         private int rtb_text_end = -1;
@@ -125,13 +125,17 @@ namespace Audit
             }
             this.MouseClick += new MouseEventHandler(Global_MainFrame_Click);
      //       this.KeyDown += new KeyEventHandler(MainFrame_Global_KeyDown);
-            if (GSET)
+            if (true)
             {
-                checkBox_Postpone.Visible = false;
                 richTextBox_Group.Visible = richTextBox_Time.Visible = richTextBox_Log.Visible = false;
                 button_LogCheckHelp.Visible = button_GraphCheckHelp.Visible = false;
+                label_LogInfo.Visible = false;
+            }
+            if (IS_GSET)
+            {
+                checkBox_Postpone.Visible = false;
                 button_Output.Enabled = false;
-                button_Input.Visible = label_LogInfo.Visible = false;
+                button_Input.Visible = false;
                 button_GSet1.Visible = false;
                 for (int i = 0; i < 2; i++)
                 {
@@ -152,6 +156,16 @@ namespace Audit
             }
             else
             {
+                for (int i = 0; i < 5; i++)
+                {
+                    score_gset_buttons[i].Visible = false;
+                }
+                for(int i = 0; i < 2; i++)
+                {
+                    score_gsetclass_buttons[i].Visible = false;
+                }
+                richTextBox_GSetComments.Visible = false;
+                label_GSetComments.Visible = false;
             }
 
             score_gset_buttons[0].BackColor = Color.LightGreen;
@@ -269,7 +283,7 @@ namespace Audit
 
         private void dataGridView_Logs_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (!GSET)
+            if (!IS_GSET)
             {
                 if (dataGridView_Logs.Columns[e.ColumnIndex].Name == "UNITNAME")
                 {
@@ -329,10 +343,11 @@ namespace Audit
                     return;
                 }
                 double l, t, w, h;
-                l = rtb_active.Right;
-                t = rtb_active.Top - rtb_active.Height * 0.3;
-                w = Math.Min(rtb_active.Width, 300);
-                h = rtb_active.Height * 2;
+                w = Math.Min(rtb_active.Width*1.5, 500);
+                h = rtb_active.Height * 2.5;
+                l = rtb_active.Left - w - 2;
+                t = rtb_active.Top - rtb_active.Height * 0.5;
+                
                 if (t + h > this.Bottom*0.96)
                 {
                     t = this.Bottom*0.96 - h;

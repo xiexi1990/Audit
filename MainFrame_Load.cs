@@ -25,7 +25,7 @@ namespace Audit
 #if LOGTEST
             DataTable dt = this.orahlper.GetDataTable(sg.GenExtractionSql(1, "HB", 2014, 1, 1, false));
 #else
-                if (GSET)
+                if (IS_GSET)
                 {
                     esql = sg.GenGSetSql(GSetSqlType.Normal, null, null, null, new string[]{"2"}, new string[]{"2"}, null, null, true, true, true, DateTime.Now, DateTime.Now);
                 }
@@ -48,6 +48,7 @@ namespace Audit
 #if LOGTEST
             dt.Rows[0]["ROWID"] = 1;
 #endif
+
                 dt.Columns.Add("SCORE_GROUP", typeof(int));
                 dt.Columns.Add("SCORE_TIME", typeof(int));
                 dt.Columns.Add("SCORE_LOG", typeof(int));
@@ -56,13 +57,17 @@ namespace Audit
                 dt.Columns.Add("COMMENTS_TIME", typeof(string));
                 dt.Columns.Add("COMMENTS_LOG", typeof(string));
                 dt.Columns.Add("COMMENTS_GRAPH", typeof(string));
-                dt.Columns.Add("SCORE_GSET", typeof(int));
-                dt.Columns["SCORE_GSET"].SetOrdinal(1);
-                dt.Columns.Add("SCORE_GSETCLASS", typeof(int));
-                dt.Columns.Add("COMMENTS_GSET", typeof(string));
-                dt.Columns.Add("SET_ID", typeof(string));
-                dt.Columns.Add("SET_NAME", typeof(string));
-                dt.Columns.Add("SPAN", typeof(decimal));
+
+                if (IS_GSET)
+                {
+                    dt.Columns.Add("SCORE_GSET", typeof(int));
+                    dt.Columns["SCORE_GSET"].SetOrdinal(1);
+                    dt.Columns.Add("SCORE_GSETCLASS", typeof(int));
+                    dt.Columns.Add("COMMENTS_GSET", typeof(string));
+                    dt.Columns.Add("SET_ID", typeof(string));
+                    dt.Columns.Add("SET_NAME", typeof(string));
+                    dt.Columns.Add("SPAN", typeof(decimal));
+                }
             }
             this.Invoke(new Param0Callback(() =>
             {
