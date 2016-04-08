@@ -11,7 +11,7 @@ namespace Audit
             double[] v = new double[10] { 0.01, 0.21, 0.22, 0.27, 0.28, 0.45, 0.46, 0.51, 0.53, 0.98 };
             double[] h = new double[16] { 0.02, 0.04, 0.09, 0.11, 0.19, 0.21, 0.27, 0.29, 0.37, 0.39, 0.68, 0.7, 0.82, 0.83, 0.92, 0.98 };
 
-            Rectangle[] rl = new Rectangle[45];
+            Rectangle[] rl = new Rectangle[46];
             RectHelper rh = new RectHelper();
             rh.lefttop = lefttop;
             rh.siz = siz;
@@ -27,7 +27,8 @@ namespace Audit
             rl[1] = rh.GetRectByProp(v[0], h[3], v[1], 0.74);
             rl[2] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(v[0], h[0], v[1], h[2]), 0.5, 0, 1, 1), sizsysbtn);
 
-            rl[34] = rh.GetCenterRect(rh.GetRectByProp(v[0], 0.76, v[1], 0.8), sizsysbtn);
+            rl[45] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(v[0], 0.76, v[1], 0.8), 0, 0, 0.5, 1), sizsysbtn);
+            rl[34] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(v[0], 0.76, v[1], 0.8), 0.5, 0, 1, 1), sizsysbtn);
 
             rl[3] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[1], v[3], h[4]), sizbtn, RectHelper._ALIGNTOP);
             rl[4] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[3], v[3], h[4]), sizlabel, RectHelper._ALIGNRIGHT);
@@ -200,6 +201,7 @@ namespace Audit
             ctrl_list[42] = button_GSetClass0;
             ctrl_list[43] = richTextBox_GSetComments;
             ctrl_list[44] = label_GSetComments;
+            ctrl_list[45] = label_Finished;
 
         }
         private void Form1_Resize(object sender, EventArgs e)

@@ -76,7 +76,15 @@ namespace Audit
             DataTable output = new DataTable();
             output.Columns.Add("单位名称");
             output.Columns.Add("序号");
-            output.Columns.Add("事件记录关键信息");
+            output.Columns.Add("事件ID");
+            output.Columns.Add("台站ID");
+            output.Columns.Add("测点");
+            output.Columns.Add("仪器编码");
+            output.Columns.Add("仪器名称");
+            output.Columns.Add("起始时间", typeof(DateTime));
+            output.Columns.Add("结束时间", typeof(DateTime));
+            output.Columns.Add("事件类型");
+
             output.Columns.Add("事件分类");
             output.Columns.Add("事件分类说明");
             output.Columns.Add("事件分类得分");
@@ -125,7 +133,15 @@ namespace Audit
                 {
                     DataRow r = output.NewRow();
                     r["序号"] = i + 1;
-                    r["事件记录关键信息"] = dv_log[i]["LOG_ID"];
+                    r["事件ID"] = "'" + dv_log[i]["LOG_ID"];
+                    r["台站ID"] = "'" + dv_log[i]["STATIONID"];
+                    r["测点"] = "'" + dv_log[i]["POINTID"];
+                    r["仪器编码"] = "'" + dv_log[i]["INSTRCODE"];
+                    r["仪器名称"] = dv_log[i]["INSTRNAME"];
+                    r["起始时间"] = dv_log[i]["START_DATE"];
+                    r["结束时间"] = dv_log[i]["END_DATE"];
+                    r["事件类型"] = dv_log[i]["AB_TYPE_NAME"];
+
                     int s_group = Convert.ToInt32(dv_log[i]["SCORE_GROUP"]);
                     r["事件分类"] = s_group == 0 ? "正确" : "错误";
                     r["事件分类说明"] = dv_log[i]["COMMENTS_GROUP"];
@@ -208,6 +224,17 @@ namespace Audit
             excel.Worksheet sheet = book.Worksheets[1];
 
             sheet.Range["A1", sheet.Cells[t.GetLength(0) , t.GetLength(1) ]].Value = t;
+
+            if (t.GetLength(0) > 1)
+            {
+                for (int j = 0; j < t.GetLength(1); j++)
+                {
+                    if (dt.Columns[j].DataType == typeof(DateTime))
+                    {
+                        sheet.Range[sheet.Cells[2, j + 1], sheet.Cells[t.GetLength(0), j + 1]].NumberFormat = "yyyy/m/d h:mm";
+                    }
+                }
+            }
             //for (int i = 0; i < dt.Rows.Count; i++)
             //{
             //    for (int j = 0; j < dt.Columns.Count; j++)

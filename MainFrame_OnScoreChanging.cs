@@ -185,16 +185,23 @@ namespace Audit
                 }
                 row.DefaultCellStyle.BackColor = color;
                 bool set_red = false;
+                int total = dataGridView_Logs.Rows.Count;
+                int n = 0;
                 foreach (DataGridViewRow _r in dataGridView_Logs.Rows)
                 {
-                    if (_r == null || _r.Cells["LOG_ID"].Value == null)
+                    if (_r.DefaultCellStyle.BackColor != Color.White)
+                    {
+                        n++;
+                    }
+                    if (set_red || _r == null || _r.Cells["LOG_ID"].Value == null)
                         continue;
                     if (_r != row && _r.Cells["LOG_ID"].Value.ToString() == row.Cells["LOG_ID"].Value.ToString())
                     {
                         set_red = true;
-                        break;
                     }
                 }
+                label_Finished.Text = "已完成 " + n + "/" + total + "\n进度 "  + Math.Round(n*100.0/total,2) + "%";
+
                 if (set_red)
                 {
                     row.Cells["LOG_ID"].Style.BackColor = Color.Red;

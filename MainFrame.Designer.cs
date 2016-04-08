@@ -96,6 +96,7 @@
             this.richTextBox_GSetComments = new System.Windows.Forms.RichTextBox();
             this.label_GSetComments = new System.Windows.Forms.Label();
             this.richTextBox_WholeInfo = new System.Windows.Forms.RichTextBox();
+            this.label_Finished = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -714,11 +715,21 @@
             this.richTextBox_WholeInfo.TabIndex = 21;
             this.richTextBox_WholeInfo.Text = "";
             // 
+            // label_Finished
+            // 
+            this.label_Finished.AutoSize = true;
+            this.label_Finished.Location = new System.Drawing.Point(560, 566);
+            this.label_Finished.Name = "label_Finished";
+            this.label_Finished.Size = new System.Drawing.Size(29, 12);
+            this.label_Finished.TabIndex = 22;
+            this.label_Finished.Text = "进度";
+            // 
             // MainFrame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(940, 608);
+            this.Controls.Add(this.label_Finished);
             this.Controls.Add(this.listBox_Sentences);
             this.Controls.Add(this.richTextBox_WholeInfo);
             this.Controls.Add(this.label_GSetComments);
@@ -851,6 +862,7 @@
         private System.Windows.Forms.RichTextBox richTextBox_WholeInfo;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_GSetCommit;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_GSetRead;
+        private System.Windows.Forms.Label label_Finished;
     }
 }
 

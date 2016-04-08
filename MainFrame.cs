@@ -30,7 +30,7 @@ namespace Audit
             score_log_buttons = new Button[3], 
             score_gset_buttons = new Button[5], 
             score_gsetclass_buttons = new Button[2];
-        private Control[] ctrl_list = new Control[45];
+        private Control[] ctrl_list = new Control[46];
   //      private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
   //      private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
         private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = dxtj; password = dxtjqztw");
@@ -457,6 +457,32 @@ namespace Audit
             else
                 MessageBox.Show("数据存取器正忙！");
         }
+
+        private void DT_RowChanged(object sender, DataRowChangeEventArgs e)
+        {
+            DataTable dt = sender as DataTable;
+            if (dt.TableName == "dt_logs" || dt.TableName == "dt_units_comments")
+            {
+                newsaved = false;
+                newsaved_tmp = false;
+            }
+            else
+            {
+                MessageBox.Show("unexpected datatable rowchanged event!");
+            }
+            //        Debug.WriteLine("rowchanged" + sta++);
+        }
+        //private void RefreshFinished()
+        //{
+        //    int total = dataGridView_Logs.Rows.Count;
+        //    int n = 0;
+        //    foreach (DataGridViewRow r in dataGridView_Logs.Rows)
+        //    {
+        //        if (r.DefaultCellStyle.BackColor != Color.White)
+        //            n++;
+        //    }
+        //    label_Finished.Text = n + " " + total;
+        //}
    
     }
 }

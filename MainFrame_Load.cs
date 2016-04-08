@@ -253,19 +253,5 @@ namespace Audit
             }
         }
 
-        private void DT_RowChanged(object sender, DataRowChangeEventArgs e)
-        {
-            DataTable dt = sender as DataTable;
-            if (dt.TableName == "dt_logs" || dt.TableName == "dt_units_comments")
-            {
-                newsaved = false;
-                newsaved_tmp = false;
-            }
-            else
-            {
-                MessageBox.Show("unexpected datatable rowchanged event!");
-            }
-    //        Debug.WriteLine("rowchanged" + sta++);
-        }
     }
 }
