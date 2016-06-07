@@ -40,6 +40,8 @@ namespace Audit
                 this.richTextBox_Log.Text = r["AB_DESC"].ToString().Trim() + "\n";
                 CheckResultHelper cr = new CheckResultHelper();
                 cr.Fill(dt_check, r["LOG_ID"].ToString());
+                ItemlogInfoHelper ii = new ItemlogInfoHelper();
+                ii.Fill(dt_itemloginfo, r["LOG_ID"].ToString());
 
                 if (!IS_GSET)
                 {
@@ -63,7 +65,7 @@ namespace Audit
                 }
                 else
                 {
-                    richTextBox_WholeInfo.Text = label_LogInfo.Text + "\n\n事件类别：" + richTextBox_Group.Text + "\n\n起止时间：" + richTextBox_Time.Text + "\n\n事件描述：" + richTextBox_Log.Text;
+                    richTextBox_WholeInfo.Text = label_LogInfo.Text + "\n\n事件类别：" + richTextBox_Group.Text + "  影响因素：" + ii.wholestr + "\n\n起止时间：" + richTextBox_Time.Text + "\n\n事件描述：" + richTextBox_Log.Text;
                 }
 
                 int start = richTextBox_WholeInfo.TextLength;

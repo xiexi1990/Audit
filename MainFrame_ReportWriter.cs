@@ -59,6 +59,7 @@ namespace Audit
                         p.dt_logs = this.dt_logs.Copy();
                     }
                     p.dt_check = this.dt_check.Copy();
+                    p.dt_itemloginfo = this.dt_itemloginfo.Copy();
                     p.dt_units = this.dt_units.Copy();
                     backgroundWorker_ReportWriter.RunWorkerAsync(p);
                 }
@@ -78,6 +79,7 @@ namespace Audit
             output.Columns.Add("序号");
             output.Columns.Add("事件ID");
             output.Columns.Add("台站ID");
+            output.Columns.Add("台站名称");
             output.Columns.Add("测点");
             output.Columns.Add("仪器编码");
             output.Columns.Add("仪器名称");
@@ -135,6 +137,8 @@ namespace Audit
                     r["序号"] = i + 1;
                     r["事件ID"] = "'" + dv_log[i]["LOG_ID"];
                     r["台站ID"] = "'" + dv_log[i]["STATIONID"];
+                    r["台站名称"] = "'" + dv_log[i]["STATIONNAME"];
+
                     r["测点"] = "'" + dv_log[i]["POINTID"];
                     r["仪器编码"] = "'" + dv_log[i]["INSTRCODE"];
                     r["仪器名称"] = dv_log[i]["INSTRNAME"];

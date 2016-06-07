@@ -10,6 +10,6 @@ namespace Audit
     public class ReportWriterParam
     {
         public string filename;
-        public DataTable dt_logs, dt_check, dt_units;
+        public DataTable dt_logs, dt_check, dt_units, dt_itemloginfo;
     }
 }

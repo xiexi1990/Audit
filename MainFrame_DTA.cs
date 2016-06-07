@@ -29,8 +29,12 @@ namespace Audit
                     if (ds.Tables["dt_check"] != null)
                     {
                         dt_check.Merge(ds.Tables["dt_check"]);
-                        DataView dv = new DataView(dt_check);
-                        dt_check = dv.ToTable(true);
+                        dt_check = new DataView(dt_check).ToTable(true);
+                    }
+                    if (ds.Tables["dt_itemloginfo"] != null)
+                    {
+                        dt_itemloginfo.Merge(ds.Tables["dt_check"]);
+                        dt_itemloginfo = new DataView(dt_itemloginfo).ToTable(true);
                     }
                     if (ds.Tables["dt_units_comments"] != null)
                     {
@@ -59,6 +63,7 @@ namespace Audit
                     {
                         ds.Tables.Add(dt_logs.Copy());
                         ds.Tables.Add(dt_check.Copy());
+                        ds.Tables.Add(dt_itemloginfo.Copy());
                         ds.Tables.Add(dt_units_comments.Copy());
                         ds.Tables.Add(dt_param.Copy());
                     }
@@ -126,6 +131,7 @@ namespace Audit
                 DataSet ds = new DataSet("schsave");
                 ds.Tables.Add(dt_logs.Clone());
                 ds.Tables.Add(dt_check.Clone());
+                ds.Tables.Add(dt_itemloginfo.Clone());
                 ds.Tables.Add(dt_units);
                 ds.Tables.Add(dt_item);
                 ds.Tables.Add(dt_abtype);

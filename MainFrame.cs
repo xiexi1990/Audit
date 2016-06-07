@@ -34,7 +34,7 @@ namespace Audit
   //      private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
   //      private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
         private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = dxtj; password = dxtjqztw");
-        public DataTable dt_units, dt_logs, dt_units_comments, dt_param, dt_check, dt_item, dt_science, dt_abtype, dt_abtype2, dt_stations;
+        public DataTable dt_units, dt_logs, dt_units_comments, dt_param, dt_check, dt_item, dt_science, dt_abtype, dt_abtype2, dt_stations, dt_itemloginfo;
         //   public DataTable dt_units_cache_w, dt_logs_cache_w, dt_units_comments_cache_w, dt_param_cache_w, dt_check_cache_w;
         //      public DataSet ds_cache = new DataSet("ds_cache");
 

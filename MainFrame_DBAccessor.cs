@@ -12,15 +12,25 @@ namespace Audit
         {
             DBAccessorParam lp = e.Argument as DBAccessorParam;
             //   BackgroundWorker wker = sender as BackgroundWorker;
+            bool IS_YEAR = false;
             if (lp.type == DBAccessorParamType.Rule)
             {
                 for (int i = 0; i < lp.rl.unit_num.GetLength(0); i++)
                 {
                     this.RefreshStatus("正在抽取" + lp.rl.unit_num[i, 0] + "的事件……");
                     SqlGenerator sg = new SqlGenerator();
-                    string esql = sg.GenExtractionSql(Convert.ToInt32(lp.rl.unit_num[i, 1]), lp.rl.unit_num[i, 2], lp.rl.after_date.Year, lp.rl.after_date.Month, lp.rl.after_date.Day, lp.rl.no_earlier);
+                    string esql;
+                    if (IS_YEAR)
+                    {
+                        esql = sg.GenExtractionSql(true, Convert.ToInt32(lp.rl.unit_num[i, 1]), lp.rl.unit_num[i, 2], new DateTime(2015, 11, 10, 0, 0, 0), new DateTime(2015, 12, 31, 23, 59, 59), null, null);
+                    }
+                    else
+                    {
+                        esql = sg.GenExtractionSql(Convert.ToInt32(lp.rl.unit_num[i, 1]), lp.rl.unit_num[i, 2], lp.rl.after_date.Year, lp.rl.after_date.Month, lp.rl.after_date.Day, lp.rl.no_earlier);
+                    }
                     DataTable dt = orahlper.GetDataTable(esql);
                     DataTable dt2 = orahlper.GetDataTable(sg.GenCheckSql(dt));
+                    DataTable dt3 = orahlper.GetDataTable(sg.GenItemlogInfoSql(dt));
                     this.Invoke(new Param0Callback(() =>
                     {
                         foreach (DataRow r in dt.Rows)
@@ -37,6 +47,7 @@ namespace Audit
                             }
                         }
                         dt_check.Merge(dt2);
+                        dt_itemloginfo.Merge(dt3);
                         this.RefreshStatus(lp.rl.unit_num[i, 0] + "共抽取" + dt.Rows.Count + "条");
                         if (this.log_shown == false)
                         {
@@ -48,8 +59,8 @@ namespace Audit
                 }
                 this.Invoke(new Param0Callback(() =>
                 {
-                    DataView dv = new DataView(dt_check);
-                    dt_check = dv.ToTable(true);
+                    dt_check = new DataView(dt_check).ToTable(true);
+                    dt_itemloginfo = new DataView(dt_itemloginfo).ToTable(true);
                     CheckAllColor();
                     RefreshStatus("抽取事件完成");
                 }
@@ -94,8 +105,7 @@ namespace Audit
                 SqlGenerator sg = new SqlGenerator();
                 DataTable dt2 = orahlper.GetDataTable(sg.GenCheckSql(dt));
                 dt_check.Merge(dt2);
-                DataView dv = new DataView(dt_check);
-                dt_check = dv.ToTable(true);
+                dt_check = new DataView(dt_check).ToTable(true);
                 this.Invoke(new Param0Callback(() =>
                 {
                     RefreshStatus("获取审核信息完成");

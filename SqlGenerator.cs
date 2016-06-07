@@ -9,6 +9,24 @@ namespace Audit
 {
     class SqlGenerator
     {
+        public string GenItemlogInfoSql(DataTable _dt_logs)
+        {
+            string csql = @"select distinct g.log_id, g.itemlog_id, g.type2_id, h.type2_name from qzdata.qz_abnormity_itemlog g, qzdata.qz_abnormity_type2 h where g.type2_id = h.type2_id and h.type2_name <> '其它分量受影响，本分量正常'";
+            if (_dt_logs == null || _dt_logs.Rows.Count == 0)
+            {
+                return csql + " and rownum <= 0";
+            }
+            else
+            {
+                string s = "";
+                foreach (DataRow r in _dt_logs.Rows)
+                {
+                    s += "g.log_id = '" + r["LOG_ID"] + "' or ";
+                }
+                csql += " and (" + s.Substring(0, s.Length - 3) + ")";
+                return csql;
+            }
+        }
         public string GenCheckSql(DataTable _dt_logs)
         {
             string csql = @"select distinct l.log_id, m.user_type, l.check_date, l.suggestion, l.result, l.reason, l.is_agree, l.flag_2, l.flag_3, l.flag_4, l.flag_5, l.flag_6 from  qzdata.qz_abnormity_checkview l, qzdata.qz_abnormity_userview m where l.user_id = m.user_id ";
@@ -32,15 +50,24 @@ namespace Audit
             DateTime end_no_earlier = new DateTime(audit_year, audit_month, begin_day, 0, 0, 0);
             DateTime begin_no_earlier = new DateTime(audit_year, audit_month, 1, 0, 0, 0);
             DateTime begin_no_later = begin_no_earlier.AddMonths(1).AddSeconds(-1);
-            return GenExtractionSql(num, unitcode, end_no_earlier, begin_no_later, no_earlier_than_1 == true ? (DateTime?)begin_no_earlier : null, null);
+            return GenExtractionSql(false, num, unitcode, end_no_earlier, begin_no_later, no_earlier_than_1 == true ? (DateTime?)begin_no_earlier : null, null);
         }
-        public string GenExtractionSql(int num, string unitcode, DateTime end_no_earlier, DateTime begin_no_later, DateTime? begin_no_earlier = null, DateTime? end_no_later = null)
+        public string GenExtractionSql(bool IS_YEAR, int num, string unitcode, DateTime end_no_earlier, DateTime begin_no_later, DateTime? begin_no_earlier = null, DateTime? end_no_later = null)
         {
             DateStrGenerator g = new DateStrGenerator();
-            string dstr = g.GetDateStr(end_no_earlier, begin_no_later, begin_no_earlier, end_no_later);
-            string rtn = string.Format(@"select * from (select x.*, y.ab_desc, y.graph from (
-select distinct a.log_id, e.unit_code, e.unitname, f.stationname, a.instrcode, c.instrname, a.pointid, d.ab_type_name, b.science, a.start_date, a.end_date, a.stationid from qzdata.qz_abnormity_log a, qzdata.qz_abnormity_evalist b, qzdata.qz_abnormity_instrinfo c, qzdata.qz_abnormity_type d, qzdata.qz_abnormity_units e, qzdata.qz_dict_stations f where {0} and A.AB_ID >= 2 and a.ab_id <= 7 and a.stationid = b.stationid and a.pointid = b.pointid and b.science != '辅助' and A.INSTRCODE = C.INSTRCODE and A.AB_ID = D.AB_ID and B.UNITCODE = E.UNIT_CODE and a.stationid = f.stationid and b.unitcode = '{1}' and b.ab_flag = 'Y'
-) x, qzdata.qz_abnormity_log y where x.log_id = y.log_id and y.ab_desc is not null and y.graph is not null order by row_number() over(partition by x.ab_type_name, x.science order by x.start_date), decode(x.ab_type_name, '不明原因', 1, '场地环境', 2, '自然环境', 3, '观测系统', 4, '人为干扰', 5, '地球物理事件', 6), decode(x.science, '形变', 1, '重力', 2, '流体', 3, '地磁', 4, '地电', 5)) where rownum <= {2}", dstr, unitcode, num);
+            string dstr, rtn, desc;
+            if (IS_YEAR)
+            {
+        //        dstr = g.GetDateStr(new DateTime(2015, 11, 10), new DateTime(2015, 12, 31), null, null);
+                desc = " desc";
+            }
+            else
+            {
+                desc = "";
+            }
+            dstr = g.GetDateStr(end_no_earlier, begin_no_later, begin_no_earlier, end_no_later);
+            rtn = string.Format(@"select * from (select x.*, y.ab_desc, y.graph from (
+select distinct a.log_id, e.unit_code, e.unitname, f.stationname, a.instrcode, c.instrname, a.pointid, d.ab_type_name, b.science, a.start_date, a.end_date, a.stationid from qzdata.qz_abnormity_log a, qzdata.qz_abnormity_evalist b, qzdata.qz_abnormity_instrinfo c, qzdata.qz_abnormity_type d, qzdata.qz_abnormity_units e, qzdata.qz_dict_stations f where {0} and A.AB_ID >= 2 and a.ab_id <= 7 and a.stationid = b.stationid and a.pointid = b.pointid and b.science != '辅助' and A.INSTRCODE = C.INSTRCODE and A.AB_ID = D.AB_ID and B.UNITCODE = E.UNIT_CODE and a.stationid = f.stationid and b.unitcode = '{1}' and b.ab_flag = 'Y') x, qzdata.qz_abnormity_log y where x.log_id = y.log_id and y.ab_desc is not null and y.graph is not null order by row_number() over(partition by x.ab_type_name, x.science order by x.start_date {3}), decode(x.ab_type_name, '不明原因', 1, '场地环境', 2, '自然环境', 3, '观测系统', 4, '人为干扰', 5, '地球物理事件', 6), decode(x.science, '形变', 1, '重力', 2, '流体', 3, '地磁', 4, '地电', 5)) where rownum <= {2}", dstr, unitcode, num, desc);
 
             return rtn;
         }

@@ -12,7 +12,7 @@ namespace Audit
     {
         public void InitDtLogs(object usefile)
         {
-            DataTable dt = null, dt2 = null;
+            DataTable dt = null, dt2 = null, dt3 = null;
             if ((bool)usefile)
             {
                 this.RefreshStatus("正在初始化事件表（通过文件）……");
@@ -35,6 +35,7 @@ namespace Audit
                 }
                 dt = orahlper.GetDataTable(esql).Clone();
                 dt2 = orahlper.GetDataTable(sg.GenCheckSql(null)).Clone();
+                dt3 = orahlper.GetDataTable(sg.GenItemlogInfoSql(null)).Clone();
 #endif
                 DataColumn dc_rowid = new DataColumn("ROWID", typeof(int));
                 dc_rowid.AutoIncrement = false;
@@ -80,13 +81,15 @@ namespace Audit
                     }
                     this.dt_check = dt2;
                     this.dt_check.TableName = "dt_check";
+                    this.dt_itemloginfo = dt3;
+                    this.dt_itemloginfo.TableName = "dt_itemloginfo";
                 }
                 dv_dt_logs = new DataView(dt_logs);
                 dv_dt_logs.AllowNew = false;
                 this.dataGridView_Logs.DataSource = this.dv_dt_logs;
                 foreach (DataGridViewColumn c in dataGridView_Logs.Columns)
                 {
-                    if (c.Name == "UNITNAME" || c.Name == "STATIONNAME" || c.Name == "INSTRCODE" || c.Name == "INSTRNAME" || c.Name == "AB_TYPE_NAME" || c.Name == "SCIENCE" || c.Name == "START_DATE" || c.Name == "END_DATE" || c.Name == "LOG_ID" || c.Name == "AUDIT_TIME" || c.Name == "INSTRID" || c.Name == "SCORE_GSET" || c.Name == "TYPE2_NAME")
+                    if (c.Name == "UNITNAME" || c.Name == "STATIONNAME" || c.Name == "INSTRCODE" || c.Name == "INSTRNAME" || c.Name == "AB_TYPE_NAME" || c.Name == "SCIENCE" || c.Name == "START_DATE" || c.Name == "END_DATE" || c.Name == "LOG_ID" || c.Name == "AUDIT_TIME" || c.Name == "INSTRID" || c.Name == "SCORE_GSET" || c.Name == "TYPE2_NAME" || c.Name == "ITEM")
                     {
                         c.Width = 50;
                         c.SortMode = DataGridViewColumnSortMode.Programmatic;
@@ -231,6 +234,7 @@ namespace Audit
                     dt_logs = ds.Tables["dt_logs"];
                 }
                 dt_check = ds.Tables["dt_check"];
+                dt_itemloginfo = ds.Tables["dt_itemloginfo"];
                 RefreshStatus("读取完成");
                 new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.Unit));
                 new Thread(new ParameterizedThreadStart(ReloadMinorDt)).Start(new ReloadDtParam(true, ReloadDtParamType.Item));
