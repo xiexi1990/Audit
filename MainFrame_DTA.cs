@@ -33,7 +33,7 @@ namespace Audit
                     }
                     if (ds.Tables["dt_itemloginfo"] != null)
                     {
-                        dt_itemloginfo.Merge(ds.Tables["dt_check"]);
+                        dt_itemloginfo.Merge(ds.Tables["dt_itemloginfo"]);
                         dt_itemloginfo = new DataView(dt_itemloginfo).ToTable(true);
                     }
                     if (ds.Tables["dt_units_comments"] != null)
@@ -111,10 +111,7 @@ namespace Audit
             {
                 if (backgroundWorker_DTAccessor.IsBusy == false)
                 {
-                    DTAccessorParam p = new DTAccessorParam();
-                    p.type = DTAccessorParamType.Save;
-                    p.filename = cur_file;
-                    backgroundWorker_DTAccessor.RunWorkerAsync(p);
+                    backgroundWorker_DTAccessor.RunWorkerAsync(new DTAccessorParam(DTAccessorParamType.Save, cur_file));
                 }
                 else
                     MessageBox.Show("文件保存器正忙！");
@@ -155,10 +152,7 @@ namespace Audit
             {
                 if (backgroundWorker_DTAccessor.IsBusy == false)
                 {
-                    DTAccessorParam p = new DTAccessorParam();
-                    p.type = DTAccessorParamType.Add;
-                    p.filename = od.FileName;
-                    backgroundWorker_DTAccessor.RunWorkerAsync(p);
+                    backgroundWorker_DTAccessor.RunWorkerAsync(new DTAccessorParam(DTAccessorParamType.Add, od.FileName));
                 }
                 else
                     MessageBox.Show("文件存取器正忙！");
@@ -198,9 +192,7 @@ namespace Audit
                 DialogResult re = sd.ShowDialog();
                 if (re == System.Windows.Forms.DialogResult.OK)
                 {
-                    DTAccessorParam p = new DTAccessorParam();
-                    p.type = DTAccessorParamType.Save;
-                    p.filename = sd.FileName;
+                    DTAccessorParam p = new DTAccessorParam(DTAccessorParamType.Save, sd.FileName);
                     if (syn)
                     {
                         DoWorkEventArgs arg = new DoWorkEventArgs(p);
@@ -249,10 +241,7 @@ namespace Audit
                     {
                         dt_logs.Clear();
                     }
-                    DTAccessorParam p = new DTAccessorParam();
-                    p.type = DTAccessorParamType.Add;
-                    p.filename = od.FileName;
-                    backgroundWorker_DTAccessor.RunWorkerAsync(p);
+                    backgroundWorker_DTAccessor.RunWorkerAsync(new DTAccessorParam(DTAccessorParamType.Add, od.FileName));
                 }
                 else
                     MessageBox.Show("文件存取器正忙！");
@@ -265,11 +254,7 @@ namespace Audit
             {
                 if (!backgroundWorker_DTAccessor.IsBusy)
                 {
-                    DTAccessorParam p = new DTAccessorParam();
-                    p.type = DTAccessorParamType.Save;
-                    p.filename = "_TMP.dt";
-                    p.save_tmp = true;
-                    backgroundWorker_DTAccessor.RunWorkerAsync(p);
+                    backgroundWorker_DTAccessor.RunWorkerAsync(new DTAccessorParam(DTAccessorParamType.Save, "_TMP.dt", true));
                 }
             }
         }

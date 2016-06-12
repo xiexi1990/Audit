@@ -472,6 +472,39 @@ namespace Audit
             }
             //        Debug.WriteLine("rowchanged" + sta++);
         }
+
+        private void MenuItem_GenCompareDt_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sd = new SaveFileDialog();
+            sd.Filter = "dt文件|*.dt";
+            sd.FilterIndex = 1;
+            if (sd.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+            DataTable dt = this.dt_logs.Clone();
+            foreach (DataGridViewRow r in dataGridView_Logs.Rows)
+            {
+                if (r == null || r.DataBoundItem == null)
+                    continue;
+                DataRow _r = (r.DataBoundItem as DataRowView).Row;
+                int re = Convert.ToInt32(_r["SCORE_GROUP"]) * 2 + Convert.ToInt32(_r["SCORE_TIME"]) * 2 + Convert.ToInt32(_r["SCORE_LOG"]) + Convert.ToInt32(_r["SCORE_GRAPH"]);
+                CheckResultHelper cr = new CheckResultHelper();
+                cr.Fill(this.dt_check, _r["LOG_ID"].ToString());
+                if (cr.wholeresult[1] != -1 && cr.wholeresult[1] != re)
+                {
+                    dt.Rows.Add(_r.ItemArray);
+                }
+            }
+            DataSet ds = new DataSet();
+            ds.Tables.Add(dt);
+            ds.Tables.Add(dt_check.Copy());
+            ds.Tables.Add(dt_itemloginfo.Copy());
+            ds.Tables.Add(dt_units_comments.Copy());
+            ds.Tables.Add(dt_param.Copy());
+            ds.WriteXml(sd.FileName, XmlWriteMode.WriteSchema);
+            MessageBox.Show("比较结果输出成功");
+        }
         //private void RefreshFinished()
         //{
         //    int total = dataGridView_Logs.Rows.Count;

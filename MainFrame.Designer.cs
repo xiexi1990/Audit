@@ -77,6 +77,8 @@
             this.MenuItem_GSetFetch = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_GSetCommit = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItem_GSetRead = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_Compare = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuItem_GenCompareDt = new System.Windows.Forms.ToolStripMenuItem();
             this.button_ClearScore = new System.Windows.Forms.Button();
             this.listBox_Sentences = new System.Windows.Forms.ListBox();
             this.button_AllGood = new System.Windows.Forms.Button();
@@ -408,7 +410,7 @@
             // label_LogInfo
             // 
             this.label_LogInfo.AutoSize = true;
-            this.label_LogInfo.Location = new System.Drawing.Point(214, 7);
+            this.label_LogInfo.Location = new System.Drawing.Point(470, 9);
             this.label_LogInfo.Name = "label_LogInfo";
             this.label_LogInfo.Size = new System.Drawing.Size(47, 12);
             this.label_LogInfo.TabIndex = 11;
@@ -420,7 +422,8 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuItem_Settings,
             this.MenuItem_File,
-            this.MenuItem_Fetch});
+            this.MenuItem_Fetch,
+            this.MenuItem_Compare});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(940, 25);
@@ -545,6 +548,21 @@
             this.MenuItem_GSetRead.Size = new System.Drawing.Size(160, 22);
             this.MenuItem_GSetRead.Text = "读取数据库内容";
             // 
+            // MenuItem_Compare
+            // 
+            this.MenuItem_Compare.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.MenuItem_GenCompareDt});
+            this.MenuItem_Compare.Name = "MenuItem_Compare";
+            this.MenuItem_Compare.Size = new System.Drawing.Size(44, 21);
+            this.MenuItem_Compare.Text = "对比";
+            // 
+            // MenuItem_GenCompareDt
+            // 
+            this.MenuItem_GenCompareDt.Name = "MenuItem_GenCompareDt";
+            this.MenuItem_GenCompareDt.Size = new System.Drawing.Size(196, 22);
+            this.MenuItem_GenCompareDt.Text = "与学科不一致比较结果";
+            this.MenuItem_GenCompareDt.Click += new System.EventHandler(this.MenuItem_GenCompareDt_Click);
+            // 
             // button_ClearScore
             // 
             this.button_ClearScore.Location = new System.Drawing.Point(433, 509);
@@ -595,7 +613,7 @@
             // checkBox_Postpone
             // 
             this.checkBox_Postpone.AutoSize = true;
-            this.checkBox_Postpone.Location = new System.Drawing.Point(300, 7);
+            this.checkBox_Postpone.Location = new System.Drawing.Point(307, 9);
             this.checkBox_Postpone.Name = "checkBox_Postpone";
             this.checkBox_Postpone.Size = new System.Drawing.Size(126, 16);
             this.checkBox_Postpone.TabIndex = 16;
@@ -863,6 +881,8 @@
         private System.Windows.Forms.ToolStripMenuItem MenuItem_GSetCommit;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_GSetRead;
         private System.Windows.Forms.Label label_Finished;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_Compare;
+        private System.Windows.Forms.ToolStripMenuItem MenuItem_GenCompareDt;
     }
 }
 

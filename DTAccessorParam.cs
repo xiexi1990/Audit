@@ -11,7 +11,12 @@ namespace Audit
         public string filename;
         public DTAccessorParamType type;
         public bool save_tmp;
-        public DTAccessorParam() { save_tmp = false; }
+        public DTAccessorParam(DTAccessorParamType type, string filename, bool save_tmp = false)
+        { 
+            this.type = type;
+            this.filename = filename;
+            this.save_tmp = save_tmp;
+        }
     }
 
     public enum DTAccessorParamType
