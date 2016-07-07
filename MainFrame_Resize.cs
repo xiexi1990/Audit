@@ -11,7 +11,7 @@ namespace Audit
             double[] v = new double[10] { 0.01, 0.21, 0.22, 0.27, 0.28, 0.45, 0.46, 0.51, 0.53, 0.98 };
             double[] h = new double[16] { 0.02, 0.04, 0.09, 0.11, 0.19, 0.21, 0.27, 0.29, 0.37, 0.39, 0.68, 0.7, 0.82, 0.83, 0.92, 0.98 };
 
-            Rectangle[] rl = new Rectangle[46];
+            Rectangle[] rl = new Rectangle[51];
             RectHelper rh = new RectHelper();
             rh.lefttop = lefttop;
             rh.siz = siz;
@@ -44,6 +44,7 @@ namespace Audit
             rl[11] = rh.GetRectByProp(v[4], h[5], v[5], h[6]);
             rl[12] = rh.GetRectByProp(v[4], h[7], v[5], h[8]);
             rl[13] = rh.GetRectByProp(v[4], h[9], v[5], h[10]);
+            
             rl[14] = rh.GetRectByProp(v[4], h[11], v[5], h[12]);
 
             rl[15] = rh.GetAlignRect(rh.GetRectByProp(v[6], h[1], v[7], h[4]), sizbtn, RectHelper._ALIGNTOP);
@@ -77,6 +78,13 @@ namespace Audit
             rl[31] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 2 / 4.0, 0, 3 / 4.0, 1), sizmidbtns, RectHelper._ALIGNCENTER);
             rl[32] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 3 / 4.0, 0, 4 / 4.0, 1), sizmidbtns, RectHelper._ALIGNCENTER);
 
+            rl[46] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 4 / 4.0, 0, 5 / 4.0, 1), sizmidbtns, RectHelper._ALIGNCENTER);
+            rl[47] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 5 / 4.0, 0, 6 / 4.0, 1), sizmidbtns, RectHelper._ALIGNCENTER);
+            rl[48] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 6 / 4.0, 0, 7 / 4.0, 1), sizmidbtns, RectHelper._ALIGNCENTER);
+            rl[49] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 7 / 4.0, 0, 8 / 4.0, 1), sizmidbtns, RectHelper._ALIGNCENTER);
+
+         
+
             if (IS_GSET)
             { 
                 rl[44] = rh.GetAlignRect(rh.GetRectByProp(v[2], 0.7, 0.4, 0.72), sizlabel, RectHelper._ALIGNLEFT);
@@ -86,6 +94,8 @@ namespace Audit
                 rl[21] = rh.GetCenterRect(rh.GetRectByProp(rightmost, 0, 1 / 4.0, 1, 2 / 4.0), sizmidbtns);
                 rl[31] = rh.GetCenterRect(rh.GetRectByProp(rightmost, 0, 2 / 4.0, 1, 3 / 4.0), sizmidbtns);
                 rl[32] = rh.GetCenterRect(rh.GetRectByProp(rightmost, 0, 3 / 4.0, 1, 4 / 4.0), sizmidbtns);
+             
+
                 Rectangle downmost = rh.GetRectByProp(v[2], h[13], 0.84, h[14]);
                 rl[36] = rh.GetAlignRect(rh.GetRectByProp(downmost, 0, 0, 2 / 8.0, 1), sizgsetbtns, RectHelper._ALIGNCENTER);
                 rl[37] = rh.GetAlignRect(rh.GetRectByProp(downmost, 1 / 8.0, 0, 2 / 8.0, 1), sizgsetbtns, RectHelper._ALIGNCENTER);
@@ -98,6 +108,7 @@ namespace Audit
             if(true)
             {
                 rl[35] = rh.GetRectByProp(v[2], h[0], 0.4, h[10]);
+                rl[50] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[11], 0.4, h[12]), sizmidbtns, RectHelper._ALIGNTOP);
                 rl[22] = rh.GetRectByProp(0.41, h[0], 0.82, h[12]);
                 {
                     Rectangle right1 = rh.GetRectByProp(0.83, 0.02, 0.98, 0.2);
@@ -202,6 +213,11 @@ namespace Audit
             ctrl_list[43] = richTextBox_GSetComments;
             ctrl_list[44] = label_GSetComments;
             ctrl_list[45] = label_Finished;
+            ctrl_list[46] = button_OveranalyGood;
+            ctrl_list[47] = button_OveranalyBad;
+            ctrl_list[48] = button_MissanalyGood;
+            ctrl_list[49] = button_MissanalyBad;
+            ctrl_list[50] = button_SaveChecklog;
 
         }
         private void Form1_Resize(object sender, EventArgs e)

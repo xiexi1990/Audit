@@ -29,8 +29,10 @@ namespace Audit
             score_graph_buttons = new Button[3],
             score_log_buttons = new Button[3], 
             score_gset_buttons = new Button[5], 
-            score_gsetclass_buttons = new Button[2];
-        private Control[] ctrl_list = new Control[46];
+            score_gsetclass_buttons = new Button[2],
+            score_overanaly_buttons = new Button[2],
+            score_missanaly_buttons = new Button[2];
+        private Control[] ctrl_list = new Control[51];
   //      private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
   //      private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
         private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = dxtj; password = dxtjqztw");
@@ -67,7 +69,7 @@ namespace Audit
             Debug.Listeners.Add(debug_listener);
             Debug.WriteLine("run at {0}", DateTime.Now);
 
-            vb.SetDelegate(OnScoreGroupChanging, OnScoreTimeChanging, OnScoreGraphChanging, OnScoreLogChanging, OnScoreGSetChanging, OnScoreGSetClassChanging);
+            vb.SetDelegate(OnScoreGroupChanging, OnScoreTimeChanging, OnScoreGraphChanging, OnScoreLogChanging, OnScoreGSetChanging, OnScoreGSetClassChanging, OnScoreOveranalyChanging, OnScoreMissanalyChanging);
             score_group_buttons[0] = this.button_GroupGood;
             score_group_buttons[1] = this.button_GroupBad;
             score_time_buttons[0] = this.button_TimeGood;
@@ -85,6 +87,11 @@ namespace Audit
             score_gset_buttons[4] = button_GSet4;
             score_gsetclass_buttons[0] = button_GSetClass0;
             score_gsetclass_buttons[1] = button_GSetClass1;
+            score_overanaly_buttons[0] = button_OveranalyGood;
+            score_overanaly_buttons[1] = button_OveranalyBad;
+            score_missanaly_buttons[0] = button_MissanalyGood;
+            score_missanaly_buttons[1] = button_MissanalyBad;
+
 
             rtbs_check[0] = richTextBox_GroupCheck;
             rtbs_check[1] = richTextBox_TimeCheck;
@@ -415,14 +422,21 @@ namespace Audit
             {
                 if (newsaved || Saving(true, true) != DialogResult.Cancel)
                 {
-                    lock (locker_dt_logs)
-                    {
-                        dt_logs.Clear();
-                    }
+                    ClearTables();
                     cur_file = null;
                     ShowLog((DataRow)null);
                 }
             }
+        }
+
+        private void ClearTables()
+        {
+            lock (locker_dt_logs)
+            {
+                this.dt_logs.Clear();
+            }
+            this.dt_itemloginfo.Clear();
+            this.dt_check.Clear();
         }
 
         private void MenuItem_FetchGSet_Click(object sender, EventArgs e)
@@ -505,6 +519,31 @@ namespace Audit
             ds.WriteXml(sd.FileName, XmlWriteMode.WriteSchema);
             MessageBox.Show("比较结果输出成功");
         }
+
+        private void button_SaveChecklog_Click(object sender, EventArgs e)
+        {
+            if (dataGridView_Logs.CurrentRow != null && dataGridView_Logs.CurrentRow.DataBoundItem != null)
+            {
+                DataRow r = (dataGridView_Logs.CurrentRow.DataBoundItem as DataRowView).Row;
+                if (!(r["CHECK_LOG"] is DBNull))
+                {
+                    SaveFileDialog sd = new SaveFileDialog();
+                    sd.Filter = "doc文件|*.doc";
+                    sd.FilterIndex = 1;
+                    sd.FileName = string.Format("{0}-{1}[{2}]{3}[{4}]{5}{6}[{7}]异常核实报告（{8}~{9}）.doc", r["ab_type_name"], r["unitname"], r["unit_code"], r["stationname"], r["stationid"], r["instrcode"], r["instrname"], r["pointid"], Convert.ToDateTime(r["start_date"]).ToString("yyyy-MM-dd"), r["end_date"] is DBNull ? "未结束" : Convert.ToDateTime(r["end_date"]).ToString("yyyy-MM-dd"));
+                    if (sd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        FileStream fs = new FileStream(sd.FileName, FileMode.Create);
+                        fs.Write((byte[])r["check_log"], 0, ((byte[])r["check_log"]).Length);
+                        fs.Close();
+                    }
+                    
+                    
+                }
+            }
+        }
+
+     
         //private void RefreshFinished()
         //{
         //    int total = dataGridView_Logs.Rows.Count;

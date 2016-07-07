@@ -7,7 +7,7 @@ using System.Data;
 
 namespace Audit
 {
-    class SqlGenerator
+    public class SqlGenerator
     {
         public string GenItemlogInfoSql(DataTable _dt_logs)
         {
@@ -66,13 +66,13 @@ namespace Audit
                 desc = "";
             }
             dstr = g.GetDateStr(end_no_earlier, begin_no_later, begin_no_earlier, end_no_later);
-            rtn = string.Format(@"select * from (select x.*, y.ab_desc, y.graph from (
+            rtn = string.Format(@"select * from (select x.*, y.ab_desc, y.graph, y.check_log from (
 select distinct a.log_id, e.unit_code, e.unitname, f.stationname, a.instrcode, c.instrname, a.pointid, d.ab_type_name, b.science, a.start_date, a.end_date, a.stationid from qzdata.qz_abnormity_log a, qzdata.qz_abnormity_evalist b, qzdata.qz_abnormity_instrinfo c, qzdata.qz_abnormity_type d, qzdata.qz_abnormity_units e, qzdata.qz_dict_stations f where {0} and A.AB_ID >= 2 and a.ab_id <= 7 and a.stationid = b.stationid and a.pointid = b.pointid and b.science != '辅助' and A.INSTRCODE = C.INSTRCODE and A.AB_ID = D.AB_ID and B.UNITCODE = E.UNIT_CODE and a.stationid = f.stationid and b.unitcode = '{1}' and b.ab_flag = 'Y') x, qzdata.qz_abnormity_log y where x.log_id = y.log_id and y.ab_desc is not null and y.graph is not null order by row_number() over(partition by x.ab_type_name, x.science order by x.start_date {3}), decode(x.ab_type_name, '不明原因', 1, '场地环境', 2, '自然环境', 3, '观测系统', 4, '人为干扰', 5, '地球物理事件', 6), decode(x.science, '形变', 1, '重力', 2, '流体', 3, '地磁', 4, '地电', 5)) where rownum <= {2}", dstr, unitcode, num, desc);
 
             return rtn;
         }
 
-        public string GenGSetSql(GSetSqlType type, string[] science, string[] item, string[] unitcode, string[] abtype, string[] abtype2, string[] stationid, string[] instr, bool nation_good, bool area_good, bool science_good, DateTime end_no_earlier, DateTime begin_no_later, DateTime? begin_no_earlier = null, DateTime? end_no_later = null)
+        public string GenGSetSql(GSetSqlType type, string[] science, string[] item, string[] unitcode, string[] abtype, string[] abtype2, string[] stationid, string[] instr, bool nation_good, bool area_good, bool science_good, DateTime end_no_earlier, DateTime begin_no_later, DateTime? begin_no_earlier = null, DateTime? end_no_later = null, string span = " >= 0")
         {
             string order = "";
             DataTable f = new DataTable();
@@ -142,8 +142,9 @@ select distinct a.log_id, e.unit_code, e.unitname, f.stationname, a.instrcode, c
             string rtn = null;
             if (type == GSetSqlType.Normal)
             {
-                rtn = @"select x.*, y.ab_desc, y.graph from (select distinct a.log_id, a.stationid||'x'||a.pointid as instrid, e.unit_code, e.unitname, f.stationname, a.instrcode, c.instrname, a.pointid, d.ab_type_name, h.type2_id, h.type2_name, b.science, a.start_date, a.end_date, a.stationid, decode(substr(g.itemid,0,3), '411','水位','431','水温', c.item) as item from qzdata.qz_abnormity_log a, qzdata.qz_abnormity_evalist b, qzdata.qz_abnormity_instrinfo c, qzdata.qz_abnormity_type d, qzdata.qz_abnormity_units e, qzdata.qz_dict_stations f, qzdata.qz_abnormity_itemlog g, qzdata.qz_abnormity_type2 h where _DATE and a.ab_id >= 2 and a.ab_id <= 7 and a.log_id = g.log_id and g.type2_id = h.type2_id and a.stationid = b.stationid and a.pointid = b.pointid and b.science != '辅助' and a.instrcode = c.instrcode and a.ab_id = d.ab_id and b.unitcode = e.unit_code and a.stationid = f.stationid and b.ab_flag = 'Y' and _NATION_GOOD and _AREA_GOOD and _SCI_GOOD ) x, qzdata.qz_abnormity_log y where x.log_id = y.log_id and y.ab_desc is not null and y.graph is not null and _SCIENCE and _ITEM and _UNIT and _ABTYPE and _ABTYP2 and _STATION and _INSTR  _ORDER"
+                rtn = @"select x.*, y.ab_desc, y.graph from (select distinct a.log_id, a.stationid||'x'||a.pointid as instrid, e.unit_code, e.unitname, f.stationname, a.instrcode, c.instrname, a.pointid, d.ab_type_name, h.type2_id, h.type2_name, b.science, a.start_date, a.end_date, a.stationid, decode(substr(g.itemid,0,3), '411','水位','431','水温', c.item) as item from qzdata.qz_abnormity_log a, qzdata.qz_abnormity_evalist b, qzdata.qz_abnormity_instrinfo c, qzdata.qz_abnormity_type d, qzdata.qz_abnormity_units e, qzdata.qz_dict_stations f, qzdata.qz_abnormity_itemlog g, qzdata.qz_abnormity_type2 h where _DATE and (a.end_date - a.start_date _SPAN) and a.ab_id >= 2 and a.ab_id <= 7 and a.log_id = g.log_id and g.type2_id = h.type2_id and a.stationid = b.stationid and a.pointid = b.pointid and b.science != '辅助' and a.instrcode = c.instrcode and a.ab_id = d.ab_id and b.unitcode = e.unit_code and a.stationid = f.stationid and b.ab_flag = 'Y' and _NATION_GOOD and _AREA_GOOD and _SCI_GOOD ) x, qzdata.qz_abnormity_log y where x.log_id = y.log_id and y.ab_desc is not null and y.graph is not null and _SCIENCE and _ITEM and _UNIT and _ABTYPE and _ABTYP2 and _STATION and _INSTR  _ORDER"
                     .Replace("_DATE", dat)
+                    .Replace("_SPAN", span)
                     .Replace("_SCIENCE", (string)f.Rows.Find("science")["filter"])
                     .Replace("_ITEM", (string)f.Rows.Find("item")["filter"])
                     .Replace("_UNIT", (string)f.Rows.Find("unit_code")["filter"])

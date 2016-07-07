@@ -8,6 +8,30 @@ namespace Audit
 {
     public partial class MainFrame : Form
     {
+        private void OnScoreOveranalyChanging(int new_value)
+        {
+            if (vb.score_overanaly >= 0 && vb.score_overanaly <= 1)
+            {
+                score_overanaly_buttons[vb.score_overanaly].BackColor = SystemColors.Control;
+                score_overanaly_buttons[vb.score_overanaly].UseVisualStyleBackColor = true;
+            }
+            if (new_value == 0)
+                score_overanaly_buttons[new_value].BackColor = Color.Green;
+            else if (new_value == 1)
+                score_overanaly_buttons[new_value].BackColor = Color.Red;
+        }
+        private void OnScoreMissanalyChanging(int new_value)
+        {
+            if (vb.score_missanaly >= 0 && vb.score_missanaly <= 1)
+            {
+                score_missanaly_buttons[vb.score_missanaly].BackColor = SystemColors.Control;
+                score_missanaly_buttons[vb.score_missanaly].UseVisualStyleBackColor = true;
+            }
+            if (new_value == 0)
+                score_missanaly_buttons[new_value].BackColor = Color.Green;
+            else if (new_value == 1)
+                score_missanaly_buttons[new_value].BackColor = Color.Red;
+        }
         private void OnScoreGroupChanging(int new_value)
         {
             if (vb.score_group >= 0 && vb.score_group <= 1)
@@ -296,5 +320,26 @@ namespace Audit
         {
             WSTD_CC_T("SCORE_GSETCLASS", vb.score_gsetclass = 0);
         }
+
+        private void button_OveranalyGood_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt_T("SCORE_OVERANALY", vb.score_overanaly = 0);
+        }
+
+        private void button_OveranalyBad_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt_T("SCORE_OVERANALY", vb.score_overanaly = 1);
+        }
+
+        private void button_MissanalyGood_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt_T("SCORE_MISSANALY", vb.score_missanaly = 0);
+        }
+
+        private void button_MissanalyBad_Click(object sender, EventArgs e)
+        {
+            WriteScoreToDt_T("SCORE_MISSANALY", vb.score_missanaly = 1);
+        }
+
     }
 }

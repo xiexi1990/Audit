@@ -59,6 +59,9 @@ namespace Audit
                 dt.Columns.Add("COMMENTS_LOG", typeof(string));
                 dt.Columns.Add("COMMENTS_GRAPH", typeof(string));
 
+                dt.Columns.Add("SCORE_OVERANALY", typeof(int));
+                dt.Columns.Add("SCORE_MISSANALY", typeof(int));
+
                 if (IS_GSET)
                 {
                     dt.Columns.Add("SCORE_GSET", typeof(int));
@@ -89,7 +92,7 @@ namespace Audit
                 this.dataGridView_Logs.DataSource = this.dv_dt_logs;
                 foreach (DataGridViewColumn c in dataGridView_Logs.Columns)
                 {
-                    if (c.Name == "UNITNAME" || c.Name == "STATIONNAME" || c.Name == "INSTRCODE" || c.Name == "INSTRNAME" || c.Name == "AB_TYPE_NAME" || c.Name == "SCIENCE" || c.Name == "START_DATE" || c.Name == "END_DATE" || c.Name == "LOG_ID" || c.Name == "AUDIT_TIME" || c.Name == "INSTRID" || c.Name == "SCORE_GSET" || c.Name == "TYPE2_NAME" || c.Name == "ITEM")
+                    if (c.Name == "UNITNAME" || c.Name == "STATIONNAME" || c.Name == "INSTRCODE" || c.Name == "INSTRNAME" || c.Name == "AB_TYPE_NAME" || c.Name == "SCIENCE" || c.Name == "START_DATE" || c.Name == "END_DATE" || c.Name == "LOG_ID" || c.Name == "AUDIT_TIME" || c.Name == "INSTRID" || c.Name == "SCORE_GSET" || c.Name == "TYPE2_NAME" || c.Name == "ITEM" || c.Name == "SCORE_GROUP")
                     {
                         c.Width = 50;
                         c.SortMode = DataGridViewColumnSortMode.Programmatic;

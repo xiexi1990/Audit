@@ -136,7 +136,7 @@ namespace Audit
         private void RefreshSql()
         {
             SqlGenerator sg = new SqlGenerator();
-            richTextBox_Sql.Text = sg.GenGSetSql(GSetSqlType.Normal, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
+            richTextBox_Sql.Text = sg.GenGSetSql(GSetSqlType.Normal, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null, richTextBox_Span.Text);
         }
 
         private string AbTypeNameToId(string abtypename)
@@ -650,6 +650,11 @@ namespace Audit
         private void radioButton_ShowTable1_Click(object sender, EventArgs e)
         {
             SetTable1Filter();
+        }
+
+        private void richTextBox_Span_TextChanged(object sender, EventArgs e)
+        {
+            RefreshSql();
         }
     }
 

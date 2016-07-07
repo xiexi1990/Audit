@@ -18,10 +18,15 @@ namespace Audit
             if (r != null && r.RowState != DataRowState.Deleted)
             {
                 text_change_observe = false;
-                if (Convert.ToInt32(r["SCORE_GROUP"]) == -1 && Convert.ToInt32(r["SCORE_TIME"]) == -1 && Convert.ToInt32(r["SCORE_LOG"]) == -1 && Convert.ToInt32(r["SCORE_GRAPH"]) == -1 &&
-                    (!IS_GSET || Convert.ToInt32(r["SCORE_GSET"]) == -1)
-                    && (!IS_GSET || Convert.ToInt32(r["SCORE_GSETCLASS"]) == -1)
-                    && MenuItem_AutoGood.Checked)
+                if ((r["SCORE_GROUP"] is DBNull || Convert.ToInt32(r["SCORE_GROUP"]) == -1) && 
+                    (r["SCORE_TIME"] is DBNull || Convert.ToInt32(r["SCORE_TIME"]) == -1) && 
+                    (r["SCORE_LOG"] is DBNull || Convert.ToInt32(r["SCORE_LOG"]) == -1) && 
+                    (r["SCORE_GRAPH"] is DBNull || Convert.ToInt32(r["SCORE_GRAPH"]) == -1) &&
+                    (!IS_GSET || (r["SCORE_GSET"] is DBNull || Convert.ToInt32(r["SCORE_GSET"]) == -1))
+                    && (!IS_GSET || (r["SCORE_GSETCLASS"] is DBNull || Convert.ToInt32(r["SCORE_GSETCLASS"]) == -1)) &&
+                    (r["SCORE_OVERANALY"] is DBNull || Convert.ToInt32(r["SCORE_OVERANALY"]) == -1) &&
+                    (r["SCORE_MISSANALY"] is DBNull || Convert.ToInt32(r["SCORE_MISSANALY"]) == -1) &&
+                    MenuItem_AutoGood.Checked)
                 {
                     button_AllGood_Click(null, null);
                 }
@@ -65,7 +70,16 @@ namespace Audit
                 }
                 else
                 {
-                    richTextBox_WholeInfo.Text = label_LogInfo.Text + "\n\n事件类别：" + richTextBox_Group.Text + "  影响因素：" + ii.wholestr + "\n\n起止时间：" + richTextBox_Time.Text + "\n\n事件描述：" + richTextBox_Log.Text;
+                    richTextBox_WholeInfo.Text = label_LogInfo.Text + "\n\n事件类别：" + richTextBox_Group.Text + "  影响因素：" + ii.wholestr + "\n\n起止时间：" + richTextBox_Time.Text + "\n\n事件描述：" + richTextBox_Log.Text + "异常核实报告：" + (r["CHECK_LOG"] is DBNull ? "无\n" : "有\n");
+                }
+                if (r["CHECK_LOG"] is DBNull)
+                {
+                    button_SaveChecklog.BackColor = SystemColors.Control;
+                    button_SaveChecklog.UseVisualStyleBackColor = true;
+                }
+                else
+                {
+                    button_SaveChecklog.BackColor = Color.Yellow;
                 }
 
                 int start = richTextBox_WholeInfo.TextLength;
@@ -87,14 +101,16 @@ namespace Audit
                 }
                 else
                 {
-                    richTextBox_GroupCheck.Text = Convert.ToString(r["COMMENTS_GROUP"]);
-                    richTextBox_TimeCheck.Text = Convert.ToString(r["COMMENTS_TIME"]);
-                    richTextBox_LogCheck.Text = Convert.ToString(r["COMMENTS_LOG"]);
-                    richTextBox_GraphCheck.Text = Convert.ToString(r["COMMENTS_GRAPH"]);
-                    vb.score_group = Convert.ToInt32(r["SCORE_GROUP"]);
-                    vb.score_time = Convert.ToInt32(r["SCORE_TIME"]);
-                    vb.score_log = Convert.ToInt32(r["SCORE_LOG"]);
-                    vb.score_graph = Convert.ToInt32(r["SCORE_GRAPH"]);        
+                    richTextBox_GroupCheck.Text = r["COMMENTS_GROUP"] is DBNull ? "" : Convert.ToString(r["COMMENTS_GROUP"]);
+                    richTextBox_TimeCheck.Text = r["COMMENTS_TIME"] is DBNull ? "" : Convert.ToString(r["COMMENTS_TIME"]);
+                    richTextBox_LogCheck.Text = r["COMMENTS_LOG"] is DBNull ? "" : Convert.ToString(r["COMMENTS_LOG"]);
+                    richTextBox_GraphCheck.Text = r["COMMENTS_GRAPH"] is DBNull ? "" : Convert.ToString(r["COMMENTS_GRAPH"]);
+                    vb.score_group = r["SCORE_GROUP"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_GROUP"]);
+                    vb.score_time = r["SCORE_TIME"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_TIME"]);
+                    vb.score_log = r["SCORE_LOG"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_LOG"]);
+                    vb.score_graph = r["SCORE_GRAPH"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_GRAPH"]);
+                    vb.score_overanaly = r["SCORE_OVERANALY"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_OVERANALY"]);
+                    vb.score_missanaly = r["SCORE_MISSANALY"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_MISSANALY"]);
                     checkBox_Postpone.Checked = r["POSTPONE"] is DBNull ? false : Convert.ToBoolean(r["POSTPONE"]);
                 }
                 
@@ -123,7 +139,12 @@ namespace Audit
                 vb.score_graph = -1;
                 vb.score_gset = -1;
                 vb.score_gsetclass = -1;
+                vb.score_overanaly = -1;
+                vb.score_missanaly = -1;
                 checkBox_Postpone.Checked = false;
+                button_SaveChecklog.BackColor = SystemColors.Control;
+                button_SaveChecklog.UseVisualStyleBackColor = true;
+
                 text_change_observe = true;
             }
         }

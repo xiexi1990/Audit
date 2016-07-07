@@ -99,6 +99,11 @@
             this.label_GSetComments = new System.Windows.Forms.Label();
             this.richTextBox_WholeInfo = new System.Windows.Forms.RichTextBox();
             this.label_Finished = new System.Windows.Forms.Label();
+            this.button_OveranalyGood = new System.Windows.Forms.Button();
+            this.button_OveranalyBad = new System.Windows.Forms.Button();
+            this.button_MissanalyGood = new System.Windows.Forms.Button();
+            this.button_MissanalyBad = new System.Windows.Forms.Button();
+            this.button_SaveChecklog = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -742,11 +747,66 @@
             this.label_Finished.TabIndex = 22;
             this.label_Finished.Text = "进度";
             // 
+            // button_OveranalyGood
+            // 
+            this.button_OveranalyGood.Location = new System.Drawing.Point(510, 526);
+            this.button_OveranalyGood.Name = "button_OveranalyGood";
+            this.button_OveranalyGood.Size = new System.Drawing.Size(90, 37);
+            this.button_OveranalyGood.TabIndex = 23;
+            this.button_OveranalyGood.Text = "过度分析（否）";
+            this.button_OveranalyGood.UseVisualStyleBackColor = true;
+            this.button_OveranalyGood.Click += new System.EventHandler(this.button_OveranalyGood_Click);
+            // 
+            // button_OveranalyBad
+            // 
+            this.button_OveranalyBad.Location = new System.Drawing.Point(606, 526);
+            this.button_OveranalyBad.Name = "button_OveranalyBad";
+            this.button_OveranalyBad.Size = new System.Drawing.Size(87, 34);
+            this.button_OveranalyBad.TabIndex = 24;
+            this.button_OveranalyBad.Text = "过度分析（是）";
+            this.button_OveranalyBad.UseVisualStyleBackColor = true;
+            this.button_OveranalyBad.Click += new System.EventHandler(this.button_OveranalyBad_Click);
+            // 
+            // button_MissanalyGood
+            // 
+            this.button_MissanalyGood.Location = new System.Drawing.Point(650, 566);
+            this.button_MissanalyGood.Name = "button_MissanalyGood";
+            this.button_MissanalyGood.Size = new System.Drawing.Size(75, 23);
+            this.button_MissanalyGood.TabIndex = 25;
+            this.button_MissanalyGood.Text = "漏分析(否)";
+            this.button_MissanalyGood.UseVisualStyleBackColor = true;
+            this.button_MissanalyGood.Click += new System.EventHandler(this.button_MissanalyGood_Click);
+            // 
+            // button_MissanalyBad
+            // 
+            this.button_MissanalyBad.Location = new System.Drawing.Point(795, 561);
+            this.button_MissanalyBad.Name = "button_MissanalyBad";
+            this.button_MissanalyBad.Size = new System.Drawing.Size(75, 23);
+            this.button_MissanalyBad.TabIndex = 26;
+            this.button_MissanalyBad.Text = "漏分析(是)";
+            this.button_MissanalyBad.UseVisualStyleBackColor = true;
+            this.button_MissanalyBad.Click += new System.EventHandler(this.button_MissanalyBad_Click);
+            // 
+            // button_SaveChecklog
+            // 
+            this.button_SaveChecklog.Location = new System.Drawing.Point(460, 418);
+            this.button_SaveChecklog.Name = "button_SaveChecklog";
+            this.button_SaveChecklog.Size = new System.Drawing.Size(129, 59);
+            this.button_SaveChecklog.TabIndex = 27;
+            this.button_SaveChecklog.Text = "保存异常核实报告";
+            this.button_SaveChecklog.UseVisualStyleBackColor = true;
+            this.button_SaveChecklog.Click += new System.EventHandler(this.button_SaveChecklog_Click);
+            // 
             // MainFrame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(940, 608);
+            this.Controls.Add(this.button_SaveChecklog);
+            this.Controls.Add(this.button_MissanalyBad);
+            this.Controls.Add(this.button_MissanalyGood);
+            this.Controls.Add(this.button_OveranalyBad);
+            this.Controls.Add(this.button_OveranalyGood);
             this.Controls.Add(this.label_Finished);
             this.Controls.Add(this.listBox_Sentences);
             this.Controls.Add(this.richTextBox_WholeInfo);
@@ -883,6 +943,11 @@
         private System.Windows.Forms.Label label_Finished;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_Compare;
         private System.Windows.Forms.ToolStripMenuItem MenuItem_GenCompareDt;
+        private System.Windows.Forms.Button button_OveranalyGood;
+        private System.Windows.Forms.Button button_OveranalyBad;
+        private System.Windows.Forms.Button button_MissanalyGood;
+        private System.Windows.Forms.Button button_MissanalyBad;
+        private System.Windows.Forms.Button button_SaveChecklog;
     }
 }
 

@@ -237,10 +237,7 @@ namespace Audit
             {
                 if (backgroundWorker_DTAccessor.IsBusy == false)
                 {
-                    lock (locker_dt_logs)
-                    {
-                        dt_logs.Clear();
-                    }
+                    ClearTables();
                     backgroundWorker_DTAccessor.RunWorkerAsync(new DTAccessorParam(DTAccessorParamType.Add, od.FileName));
                 }
                 else
