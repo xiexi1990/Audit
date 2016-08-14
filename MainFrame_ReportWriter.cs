@@ -215,40 +215,12 @@ namespace Audit
             }
             RefreshStatus("生成完毕", true);
             RefreshStatus("正在写入Excel文件……");
-            DTToExcel(output, p.filename);
+            DataTableHelper dth = new DataTableHelper();
+            dth.DTToExcel(output, p.filename);
             RefreshStatus("写入完毕");
         }
 
-        public void DTToExcel(DataTable dt, string filename)
-        {
-            DataTableHelper dh = new DataTableHelper();
-            object[,] t = dh.DataTableTo2DTable(dt);
-            excel.Application eapp = new excel.Application();
-            excel.Workbook book = eapp.Workbooks.Add();
-            excel.Worksheet sheet = book.Worksheets[1];
-
-            sheet.Range["A1", sheet.Cells[t.GetLength(0) , t.GetLength(1) ]].Value = t;
-
-            if (t.GetLength(0) > 1)
-            {
-                for (int j = 0; j < t.GetLength(1); j++)
-                {
-                    if (dt.Columns[j].DataType == typeof(DateTime))
-                    {
-                        sheet.Range[sheet.Cells[2, j + 1], sheet.Cells[t.GetLength(0), j + 1]].NumberFormat = "yyyy/m/d h:mm";
-                    }
-                }
-            }
-            //for (int i = 0; i < dt.Rows.Count; i++)
-            //{
-            //    for (int j = 0; j < dt.Columns.Count; j++)
-            //    {
-            //        sheet.Cells[j + 1][i + 1] = dt.Rows[i][j];
-            //    }
-            //}
-            eapp.Visible = true;
-            book.SaveAs(filename);
-        }
+        
 
         private void backgroundWorker_ReportWriter_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {

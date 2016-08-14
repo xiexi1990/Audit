@@ -802,13 +802,13 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(940, 608);
+            this.Controls.Add(this.listBox_Sentences);
             this.Controls.Add(this.button_SaveChecklog);
             this.Controls.Add(this.button_MissanalyBad);
             this.Controls.Add(this.button_MissanalyGood);
             this.Controls.Add(this.button_OveranalyBad);
             this.Controls.Add(this.button_OveranalyGood);
             this.Controls.Add(this.label_Finished);
-            this.Controls.Add(this.listBox_Sentences);
             this.Controls.Add(this.richTextBox_WholeInfo);
             this.Controls.Add(this.label_GSetComments);
             this.Controls.Add(this.richTextBox_GSetComments);
