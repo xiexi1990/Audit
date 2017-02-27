@@ -11,7 +11,7 @@ namespace Audit
             double[] v = new double[10] { 0.01, 0.21, 0.22, 0.27, 0.28, 0.45, 0.46, 0.51, 0.53, 0.98 };
             double[] h = new double[16] { 0.02, 0.04, 0.09, 0.11, 0.19, 0.21, 0.27, 0.29, 0.37, 0.39, 0.68, 0.7, 0.82, 0.83, 0.92, 0.98 };
 
-            Rectangle[] rl = new Rectangle[51];
+            Rectangle[] rl = new Rectangle[58];
             RectHelper rh = new RectHelper();
             rh.lefttop = lefttop;
             rh.siz = siz;
@@ -30,28 +30,24 @@ namespace Audit
             rl[45] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(v[0], 0.76, v[1], 0.8), 0, 0, 0.5, 1), sizsysbtn);
             rl[34] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(v[0], 0.76, v[1], 0.8), 0.5, 0, 1, 1), sizsysbtn);
 
-            rl[3] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[1], v[3], h[4]), sizbtn, RectHelper._ALIGNTOP);
-            rl[4] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[3], v[3], h[4]), sizlabel, RectHelper._ALIGNRIGHT);
-
-            rl[5] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[5], v[3], h[8]), sizbtn, RectHelper._ALIGNTOP);
-            rl[6] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[7], v[3], h[8]), sizlabel, RectHelper._ALIGNRIGHT);
-
-            rl[7] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[9], v[3], h[12]), sizbtn, RectHelper._ALIGNCENTER);
-            rl[8] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[11], v[3], h[12]), sizlabel, RectHelper._ALIGNRIGHT);
+     //       rl[3] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[1], v[3], h[4]), sizbtn, RectHelper._ALIGNTOP);
+     //       rl[4] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[3], v[3], h[4]), sizlabel, RectHelper._ALIGNRIGHT);
+    //        rl[5] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[5], v[3], h[8]), sizbtn, RectHelper._ALIGNTOP);
+    //        rl[6] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[7], v[3], h[8]), sizlabel, RectHelper._ALIGNRIGHT);
+    //        rl[7] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[9], v[3], h[12]), sizbtn, RectHelper._ALIGNCENTER);
+    //        rl[8] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[11], v[3], h[12]), sizlabel, RectHelper._ALIGNRIGHT);
 
             rl[9] = rh.GetRectByProp(v[4], h[1], v[5], h[2]);
-            rl[10] = rh.GetRectByProp(v[4], h[3], v[5], h[4]);
+    //        rl[10] = rh.GetRectByProp(v[4], h[3], v[5], h[4]);
             rl[11] = rh.GetRectByProp(v[4], h[5], v[5], h[6]);
-            rl[12] = rh.GetRectByProp(v[4], h[7], v[5], h[8]);
+    //        rl[12] = rh.GetRectByProp(v[4], h[7], v[5], h[8]);
             rl[13] = rh.GetRectByProp(v[4], h[9], v[5], h[10]);
             
-            rl[14] = rh.GetRectByProp(v[4], h[11], v[5], h[12]);
-
-            rl[15] = rh.GetAlignRect(rh.GetRectByProp(v[6], h[1], v[7], h[4]), sizbtn, RectHelper._ALIGNTOP);
-            rl[16] = rh.GetAlignRect(rh.GetRectByProp(v[6], h[5], v[7], h[8]), sizbtn, RectHelper._ALIGNTOP);
-
-            rl[17] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[6], h[9], v[7], h[12]), 0, 0, 1, 0.45), sizbtn, RectHelper._ALIGNBOTTOM);
-            rl[18] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[6], h[9], v[7], h[12]), 0, 0.55, 1, 1), sizbtn, RectHelper._ALIGNTOP);
+    //        rl[14] = rh.GetRectByProp(v[4], h[11], v[5], h[12]);
+    //        rl[15] = rh.GetAlignRect(rh.GetRectByProp(v[6], h[1], v[7], h[4]), sizbtn, RectHelper._ALIGNTOP);
+    //        rl[16] = rh.GetAlignRect(rh.GetRectByProp(v[6], h[5], v[7], h[8]), sizbtn, RectHelper._ALIGNTOP);
+    //        rl[17] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[6], h[9], v[7], h[12]), 0, 0, 1, 0.45), sizbtn, RectHelper._ALIGNBOTTOM);
+    //        rl[18] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[6], h[9], v[7], h[12]), 0, 0.55, 1, 1), sizbtn, RectHelper._ALIGNTOP);
 
             rl[19] = rh.GetAlignRect(rh.GetRectByProp(v[2], h[11], v[3], h[12]), sizhlp, RectHelper._ALIGNBOTTOM | RectHelper._ALIGNRIGHT);
 
@@ -60,16 +56,13 @@ namespace Audit
             rl[21] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[2], h[13], v[7], h[14]), 1 / 4.0, 0, 2 / 4.0, 1), sizmidbtns, RectHelper._ALIGNCENTER);
 
 
-            rl[22] = rh.GetRectByProp(v[8], h[1], v[9], h[12]);
+    //        rl[22] = rh.GetRectByProp(v[8], h[1], v[9], h[12]);
+    //        rl[23] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0.6, 0, 1, 1), 0, 0, 1 / 3.0, 1), sizbtn);
+    //        rl[24] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0.6, 0, 1, 1), 1 / 3.0, 0, 2 / 3.0, 1), sizbtn);
+    //        rl[25] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0.6, 0, 1, 1), 2 / 3.0, 0, 1, 1), sizbtn);
+    //        rl[26] = rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 1 / 6.0, 0, 0.6, 1);
+    //        rl[27] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0, 0, 0.9 / 6.0, 1), sizlabel, RectHelper._ALIGNRIGHT);
 
-            rl[23] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0.6, 0, 1, 1), 0, 0, 1 / 3.0, 1), sizbtn);
-            rl[24] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0.6, 0, 1, 1), 1 / 3.0, 0, 2 / 3.0, 1), sizbtn);
-            rl[25] = rh.GetCenterRect(rh.GetRectByProp(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0.6, 0, 1, 1), 2 / 3.0, 0, 1, 1), sizbtn);
-
-
-
-            rl[26] = rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 1 / 6.0, 0, 0.6, 1);
-            rl[27] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0, 0, 0.9 / 6.0, 1), sizlabel, RectHelper._ALIGNRIGHT);
             rl[28] = rh.GetAlignRect(rh.GetRectByProp(rh.GetRectByProp(v[8], h[13], v[9], h[14]), 0, 0, 0.9 / 6.0, 1), sizhlp, RectHelper._ALIGNRIGHT | RectHelper._ALIGNBOTTOM);
             rl[29] = rh.GetRectByProp(v[0], h[13], v[1], h[14]);
             rl[30] = rh.GetCenterRect(rh.GetRectByProp(v[2], h[0], v[9], h[1]), new Size(200,20));
@@ -133,31 +126,54 @@ namespace Audit
                 }
 
                 {
-                    Rectangle right1 = rh.GetRectByProp(0.83, 0.42, 0.98, 0.6);
-                    Rectangle right1up = rh.GetRectByProp(right1, 0, 0, 1, 0.4);
-                    Rectangle right1down = rh.GetRectByProp(right1, 0, 0.4, 1, 1);
-                    Size rightsiz = rh.GetRectByProp(right1up, 0, 0, 0.3, 0.8).Size;
-                    rl[8] = rh.GetAlignRect(right1down, sizlabel, RectHelper._ALIGNLEFT);
-                    rl[7] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNLEFT);
-                    rl[17] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNCENTER);
-                    rl[18] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNRIGHT);
-                    rl[14] = rh.GetRectByProp(right1down, 0.3, 0, 1, 1);
+                    Rectangle right1 = rh.GetRectByProp(0.83, 0.42, 0.98, 0.63);
+             //       Rectangle right1up = rh.GetRectByProp(right1, 0, 0, 1, 0.4);
+             //       Rectangle right1down = rh.GetRectByProp(right1, 0, 0.4, 1, 1);
+             //       Size rightsiz = rh.GetRectByProp(right1up, 0, 0, 0.3, 0.8).Size;
+            //        rl[8] = rh.GetAlignRect(right1down, sizlabel, RectHelper._ALIGNLEFT);
+            //        rl[7] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNLEFT);
+            //        rl[17] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNCENTER);
+            //        rl[18] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNRIGHT);
+                    Size rightsiz = rh.GetRectByProp(right1, 0, 0, 0.18, 0.2).Size;
+                    rl[8] = rh.GetAlignRect(rh.GetRectByProp(right1, 0.6, 0.05, 1, 0.28), sizlabel, RectHelper._ALIGNCENTER);
+                    rl[14] = rh.GetRectByProp(right1, 0.6, 0.28, 1, 1);
+                    rl[51] = rh.GetAlignRect(rh.GetRectByProp(right1, 0, 0, 0.5, 0.3), sizlabel, RectHelper._ALIGNLEFT);
+                    rl[52] = rh.GetRectByProp(right1, 0.08, 0.18, 0.4, 0.24);
+                    rl[55] = rh.GetAlignRect(rh.GetRectByProp(right1, 0, 0.4, 0.5, 0.45), sizlabel, RectHelper._ALIGNLEFT);
+
+                    rl[7] = rh.GetAlignRect(rh.GetRectByProp(right1, 0, 0.45, 0.55, 0.7), rightsiz, RectHelper._ALIGNLEFT);
+                    rl[17] = rh.GetAlignRect(rh.GetRectByProp(right1, 0, 0.45, 0.55, 0.7), rightsiz, RectHelper._ALIGNCENTER);
+                    rl[18] = rh.GetAlignRect(rh.GetRectByProp(right1, 0, 0.45, 0.55, 0.7), rightsiz, RectHelper._ALIGNRIGHT);
+
+                    rl[56] = rh.GetAlignRect(rh.GetRectByProp(right1, 0, 0.75, 0.5, 0.8), sizlabel, RectHelper._ALIGNLEFT);
+
+                    rl[23] = rh.GetAlignRect(rh.GetRectByProp(right1, 0, 0.85, 0.55, 1), rightsiz, RectHelper._ALIGNLEFT);
+                    rl[24] = rh.GetAlignRect(rh.GetRectByProp(right1, 0, 0.85, 0.55, 1), rightsiz, RectHelper._ALIGNCENTER);
+                    rl[25] = rh.GetAlignRect(rh.GetRectByProp(right1, 0, 0.85, 0.55, 1), rightsiz, RectHelper._ALIGNRIGHT);
+
                 }
 
                 {
                     Rectangle right1 = rh.GetRectByProp(0.83, 0.62, 0.98, 0.8);
-                    Rectangle right1up = rh.GetRectByProp(right1, 0, 0, 1, 0.4);
+                    Rectangle right1up = rh.GetRectByProp(right1, 0, 0.08, 1, 0.48);
                     Rectangle right1down = rh.GetRectByProp(right1, 0, 0.4, 1, 1);
-                    Size rightsiz = rh.GetRectByProp(right1up, 0, 0, 0.3, 0.8).Size;
+                    Size rightsiz = rh.GetRectByProp(right1up, 0, 0, 0.3, 0.5).Size;
                     rl[27] = rh.GetAlignRect(right1down, sizlabel, RectHelper._ALIGNLEFT);
-                    rl[23] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNLEFT);
-                    rl[24] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNCENTER);
-                    rl[25] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNRIGHT);
+        //            rl[23] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNLEFT);
+        //            rl[24] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNCENTER);
+        //            rl[25] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNRIGHT);
                     rl[26] = rh.GetRectByProp(right1down, 0.3, 0, 1, 1);
+
+                    rl[53] = rh.GetAlignRect(right1up, sizlabel, RectHelper._ALIGNCENTER);
+                    rl[54] = rh.GetAlignRect(right1up, rightsiz, RectHelper._ALIGNRIGHT);
                 }
                 {
-                    Rectangle right1 = rh.GetRectByProp(0.83, 0.8, 0.98, 0.9);
+                    Rectangle right1 = rh.GetRectByProp(0.83, 0.82, 0.98, 0.86);
                     rl[33] = rh.GetCenterRect(right1, new Size(100, 20));
+                }
+                {
+                    Rectangle right1 = rh.GetRectByProp(0.83, 0.86, 0.98, 0.9);
+                    rl[57] = rh.GetCenterRect(right1, new Size(100, 20));
                 }
             }
             
@@ -219,6 +235,13 @@ namespace Audit
             ctrl_list[49] = button_MissanalyBad;
             ctrl_list[50] = button_SaveChecklog;
 
+            ctrl_list[51] = label_LogNumeric;
+            ctrl_list[52] = numeric_Log;
+            ctrl_list[53] = label_GraphNumeric;
+            ctrl_list[54] = numeric_Graph;
+            ctrl_list[55] = checkBox_Log2;
+            ctrl_list[56] = label_Log3;
+            ctrl_list[57] = label_ShowScore;
         }
         private void Form1_Resize(object sender, EventArgs e)
         {

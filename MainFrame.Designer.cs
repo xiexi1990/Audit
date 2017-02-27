@@ -104,9 +104,18 @@
             this.button_MissanalyGood = new System.Windows.Forms.Button();
             this.button_MissanalyBad = new System.Windows.Forms.Button();
             this.button_SaveChecklog = new System.Windows.Forms.Button();
+            this.numeric_Graph = new System.Windows.Forms.NumericUpDown();
+            this.numeric_Log = new System.Windows.Forms.NumericUpDown();
+            this.label_GraphNumeric = new System.Windows.Forms.Label();
+            this.label_LogNumeric = new System.Windows.Forms.Label();
+            this.label_ShowScore = new System.Windows.Forms.Label();
+            this.label_Log3 = new System.Windows.Forms.Label();
+            this.checkBox_Log2 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_Graph)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numeric_Graph)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numeric_Log)).BeginInit();
             this.SuspendLayout();
             // 
             // richTextBox_Time
@@ -198,9 +207,9 @@
             // 
             // button_GraphMiddle
             // 
-            this.button_GraphMiddle.Location = new System.Drawing.Point(728, 404);
+            this.button_GraphMiddle.Location = new System.Drawing.Point(660, 314);
             this.button_GraphMiddle.Name = "button_GraphMiddle";
-            this.button_GraphMiddle.Size = new System.Drawing.Size(60, 39);
+            this.button_GraphMiddle.Size = new System.Drawing.Size(33, 25);
             this.button_GraphMiddle.TabIndex = 12;
             this.button_GraphMiddle.Text = "中";
             this.button_GraphMiddle.UseVisualStyleBackColor = true;
@@ -208,9 +217,9 @@
             // 
             // button_GraphBad
             // 
-            this.button_GraphBad.Location = new System.Drawing.Point(835, 398);
+            this.button_GraphBad.Location = new System.Drawing.Point(694, 314);
             this.button_GraphBad.Name = "button_GraphBad";
-            this.button_GraphBad.Size = new System.Drawing.Size(59, 39);
+            this.button_GraphBad.Size = new System.Drawing.Size(27, 23);
             this.button_GraphBad.TabIndex = 13;
             this.button_GraphBad.Text = "差";
             this.button_GraphBad.UseVisualStyleBackColor = true;
@@ -338,9 +347,9 @@
             // 
             // button_GraphGood
             // 
-            this.button_GraphGood.Location = new System.Drawing.Point(615, 398);
+            this.button_GraphGood.Location = new System.Drawing.Point(637, 314);
             this.button_GraphGood.Name = "button_GraphGood";
-            this.button_GraphGood.Size = new System.Drawing.Size(49, 44);
+            this.button_GraphGood.Size = new System.Drawing.Size(20, 25);
             this.button_GraphGood.TabIndex = 11;
             this.button_GraphGood.Text = "好";
             this.button_GraphGood.UseVisualStyleBackColor = true;
@@ -384,6 +393,7 @@
             // 
             // dataGridView_Logs
             // 
+            this.dataGridView_Logs.AllowUserToOrderColumns = true;
             this.dataGridView_Logs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView_Logs.Location = new System.Drawing.Point(16, 78);
             this.dataGridView_Logs.Name = "dataGridView_Logs";
@@ -797,12 +807,95 @@
             this.button_SaveChecklog.UseVisualStyleBackColor = true;
             this.button_SaveChecklog.Click += new System.EventHandler(this.button_SaveChecklog_Click);
             // 
+            // numeric_Graph
+            // 
+            this.numeric_Graph.DecimalPlaces = 1;
+            this.numeric_Graph.Location = new System.Drawing.Point(756, 425);
+            this.numeric_Graph.Maximum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.numeric_Graph.Name = "numeric_Graph";
+            this.numeric_Graph.Size = new System.Drawing.Size(55, 21);
+            this.numeric_Graph.TabIndex = 28;
+            this.numeric_Graph.ValueChanged += new System.EventHandler(this.numeric_Graph_ValueChanged);
+            // 
+            // numeric_Log
+            // 
+            this.numeric_Log.DecimalPlaces = 1;
+            this.numeric_Log.Location = new System.Drawing.Point(727, 314);
+            this.numeric_Log.Maximum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.numeric_Log.Name = "numeric_Log";
+            this.numeric_Log.Size = new System.Drawing.Size(48, 21);
+            this.numeric_Log.TabIndex = 28;
+            this.numeric_Log.ValueChanged += new System.EventHandler(this.numeric_Log_ValueChanged);
+            // 
+            // label_GraphNumeric
+            // 
+            this.label_GraphNumeric.AutoSize = true;
+            this.label_GraphNumeric.Location = new System.Drawing.Point(651, 425);
+            this.label_GraphNumeric.Name = "label_GraphNumeric";
+            this.label_GraphNumeric.Size = new System.Drawing.Size(65, 12);
+            this.label_GraphNumeric.TabIndex = 29;
+            this.label_GraphNumeric.Text = "图件扣分点";
+            // 
+            // label_LogNumeric
+            // 
+            this.label_LogNumeric.AutoSize = true;
+            this.label_LogNumeric.Location = new System.Drawing.Point(636, 296);
+            this.label_LogNumeric.Name = "label_LogNumeric";
+            this.label_LogNumeric.Size = new System.Drawing.Size(89, 12);
+            this.label_LogNumeric.TabIndex = 29;
+            this.label_LogNumeric.Text = "信息描述扣分点";
+            // 
+            // label_ShowScore
+            // 
+            this.label_ShowScore.AutoSize = true;
+            this.label_ShowScore.Location = new System.Drawing.Point(784, 587);
+            this.label_ShowScore.Name = "label_ShowScore";
+            this.label_ShowScore.Size = new System.Drawing.Size(95, 12);
+            this.label_ShowScore.TabIndex = 29;
+            this.label_ShowScore.Text = "当前事件得分  0";
+            // 
+            // label_Log3
+            // 
+            this.label_Log3.AutoSize = true;
+            this.label_Log3.Location = new System.Drawing.Point(648, 404);
+            this.label_Log3.Name = "label_Log3";
+            this.label_Log3.Size = new System.Drawing.Size(53, 12);
+            this.label_Log3.TabIndex = 29;
+            this.label_Log3.Text = "处置措施";
+            // 
+            // checkBox_Log2
+            // 
+            this.checkBox_Log2.AutoSize = true;
+            this.checkBox_Log2.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox_Log2.Location = new System.Drawing.Point(623, 377);
+            this.checkBox_Log2.Name = "checkBox_Log2";
+            this.checkBox_Log2.Size = new System.Drawing.Size(108, 16);
+            this.checkBox_Log2.TabIndex = 30;
+            this.checkBox_Log2.Text = "调查研究  加分";
+            this.checkBox_Log2.UseVisualStyleBackColor = true;
+            this.checkBox_Log2.CheckedChanged += new System.EventHandler(this.checkBox_Log2_CheckedChanged);
+            // 
             // MainFrame
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(940, 608);
             this.Controls.Add(this.listBox_Sentences);
+            this.Controls.Add(this.checkBox_Log2);
+            this.Controls.Add(this.label_Log3);
+            this.Controls.Add(this.label_ShowScore);
+            this.Controls.Add(this.label_LogNumeric);
+            this.Controls.Add(this.label_GraphNumeric);
+            this.Controls.Add(this.numeric_Log);
+            this.Controls.Add(this.numeric_Graph);
             this.Controls.Add(this.button_SaveChecklog);
             this.Controls.Add(this.button_MissanalyBad);
             this.Controls.Add(this.button_MissanalyGood);
@@ -866,6 +959,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Logs)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numeric_Graph)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numeric_Log)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -948,6 +1043,13 @@
         private System.Windows.Forms.Button button_MissanalyGood;
         private System.Windows.Forms.Button button_MissanalyBad;
         private System.Windows.Forms.Button button_SaveChecklog;
+        private System.Windows.Forms.NumericUpDown numeric_Graph;
+        private System.Windows.Forms.NumericUpDown numeric_Log;
+        private System.Windows.Forms.Label label_GraphNumeric;
+        private System.Windows.Forms.Label label_LogNumeric;
+        private System.Windows.Forms.Label label_ShowScore;
+        private System.Windows.Forms.Label label_Log3;
+        private System.Windows.Forms.CheckBox checkBox_Log2;
     }
 }
 

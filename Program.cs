@@ -7,14 +7,16 @@ using System.Diagnostics;
 
 namespace Audit
 {
-    static class Program
+    public static class Program
     {
+        public static string orahlperparam;
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
+            orahlperparam = (args.Count() > 0 ? args : new string[] { "-p Audit.exe" })[0].Split()[0];
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainFrame());

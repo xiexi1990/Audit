@@ -10,94 +10,114 @@ namespace Audit
     {
         private void backgroundWorker_DTAccessor_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
-            DTAccessorParam p = e.Argument as DTAccessorParam;
-            if (p.type == DTAccessorParamType.Add)
+            try
             {
-                RefreshStatus("正在加载文件……");
-                DataSet ds = new DataSet();
-                ds.ReadXml(p.filename, XmlReadMode.ReadSchema);
-                int pn = dt_logs.Rows.Count;
-                this.Invoke(new Param0Callback(() =>
+                DTAccessorParam p = e.Argument as DTAccessorParam;
+                if (p.type == DTAccessorParamType.Add)
                 {
-                    if (ds.Tables["dt_logs"] != null)
+                    RefreshStatus("正在加载文件……");
+                    DataSet ds = new DataSet();
+                    ds.ReadXml(p.filename, XmlReadMode.ReadSchema);
+                    bool vali = true;
+                    try
                     {
-                        lock (locker_dt_logs)
+                        if (Convert.ToDouble(ds.DataSetName) < 1.5)
+                            vali = false;
+                    }
+                    catch
+                    {
+                        vali = false;
+                    }
+                    if (!vali)
+                        throw new Exception("版本不兼容，无法读取");
+
+                    int pn = dt_logs.Rows.Count;
+                    this.Invoke(new Param0Callback(() =>
+                    {
+                        if (ds.Tables["dt_logs"] != null)
                         {
-                            dt_logs.Merge(ds.Tables["dt_logs"]);
+                            lock (locker_dt_logs)
+                            {
+                                dt_logs.Merge(ds.Tables["dt_logs"]);
+                            }
                         }
-                    }
-                    if (ds.Tables["dt_check"] != null)
-                    {
-                        dt_check.Merge(ds.Tables["dt_check"]);
-                        dt_check = new DataView(dt_check).ToTable(true);
-                    }
-                    if (ds.Tables["dt_itemloginfo"] != null)
-                    {
-                        dt_itemloginfo.Merge(ds.Tables["dt_itemloginfo"]);
-                        dt_itemloginfo = new DataView(dt_itemloginfo).ToTable(true);
-                    }
-                    if (ds.Tables["dt_units_comments"] != null)
-                    {
-                        lock (locker_dt_units_comments)
+                        if (ds.Tables["dt_check"] != null)
                         {
-                            //                 dt_units_comments.Merge(ds.Tables["dt_units_comments"]);
+                            dt_check.Merge(ds.Tables["dt_check"]);
+                            dt_check = new DataView(dt_check).ToTable(true);
                         }
-                    }
-                    if (ds.Tables["dt_param"] != null)
-                    {
-                        lock (locker_dt_param)
+                        if (ds.Tables["dt_itemloginfo"] != null)
                         {
+                            dt_itemloginfo.Merge(ds.Tables["dt_itemloginfo"]);
+                            dt_itemloginfo = new DataView(dt_itemloginfo).ToTable(true);
                         }
-                    }
-                    RefreshStatus("文件加载成功，共加载" + (dt_logs.Rows.Count - pn) + "条");
-                    this.CheckAllColor();
-                }
-                ));
-            }
-            else if (p.type == DTAccessorParamType.Save)
-            {
-                if (!p.save_tmp)
-                    RefreshStatus("正在保存文件……");
-                DataSet ds = new DataSet();
-                this.Invoke(new Param0Callback(() =>
-                    {
-                        ds.Tables.Add(dt_logs.Copy());
-                        ds.Tables.Add(dt_check.Copy());
-                        ds.Tables.Add(dt_itemloginfo.Copy());
-                        ds.Tables.Add(dt_units_comments.Copy());
-                        ds.Tables.Add(dt_param.Copy());
+                        if (ds.Tables["dt_units_comments"] != null)
+                        {
+                            lock (locker_dt_units_comments)
+                            {
+                                //                 dt_units_comments.Merge(ds.Tables["dt_units_comments"]);
+                            }
+                        }
+                        if (ds.Tables["dt_param"] != null)
+                        {
+                            lock (locker_dt_param)
+                            {
+                            }
+                        }
+                        RefreshStatus("文件加载成功，共加载" + (dt_logs.Rows.Count - pn) + "条");
+                        this.CheckAllColor();
                     }
                     ));
-                ds.WriteXml(p.filename, XmlWriteMode.WriteSchema);
+                }
+                else if (p.type == DTAccessorParamType.Save)
+                {
+                    if (!p.save_tmp)
+                        RefreshStatus("正在保存文件……");
+                    DataSet ds = new DataSet("1.5");
+                    this.Invoke(new Param0Callback(() =>
+                        {
+                            ds.Tables.Add(dt_logs.Copy());
+                            ds.Tables.Add(dt_check.Copy());
+                            ds.Tables.Add(dt_itemloginfo.Copy());
+                            ds.Tables.Add(dt_units_comments.Copy());
+                            ds.Tables.Add(dt_param.Copy());
+                        }
+                        ));
+                    ds.WriteXml(p.filename, XmlWriteMode.WriteSchema);
+                    if (!p.save_tmp)
+                    {
+                        RefreshStatus("文件保存成功");
+                        this.Invoke(new Param0Callback(() => MessageBox.Show("保存成功！", "保存")));
+                    }
+                }
+                else
+                {
+                }
                 if (!p.save_tmp)
                 {
-                    RefreshStatus("文件保存成功");
-                    this.Invoke(new Param0Callback(() => MessageBox.Show("保存成功！", "保存")));
+                    this.Invoke(new Param0Callback(() =>
+                    {
+                        newsaved = true;
+                        this.Text = p.filename + "  保存于" + File.GetLastWriteTime(p.filename).ToString("yyyy/MM/dd HH:mm:ss");
+                        if (p.type == DTAccessorParamType.Add && dt_logs.Rows.Count > 0)
+                        {
+                            this.log_shown = true;
+                            this.ShowLog(dt_logs.Rows[0]);
+                        }
+                    }));
+                    cur_file = p.filename;
+                }
+                else
+                {
+                    this.Invoke(new Param0Callback(() =>
+                        {
+                            newsaved_tmp = true;
+                        }));
                 }
             }
-            else
+            catch (Exception exc)
             {
-            }
-            if (!p.save_tmp)
-            {
-                this.Invoke(new Param0Callback(() =>
-                {
-                    newsaved = true;
-                    this.Text = p.filename + "  保存于" + File.GetLastWriteTime(p.filename).ToString("yyyy/MM/dd HH:mm:ss");
-                    if (p.type == DTAccessorParamType.Add && dt_logs.Rows.Count > 0)
-                    {
-                        this.log_shown = true;
-                        this.ShowLog(dt_logs.Rows[0]);
-                    }
-                }));
-                cur_file = p.filename;
-            }
-            else
-            {
-                this.Invoke(new Param0Callback(() =>
-                    {
-                        newsaved_tmp = true;
-                    }));
+                RefreshStatus("DTAccessor error: \n" + exc.Message);
             }
         }
 
@@ -125,7 +145,7 @@ namespace Audit
             sd.FilterIndex = 1;
             if (sd.ShowDialog() == DialogResult.OK)
             {
-                DataSet ds = new DataSet("schsave");
+                DataSet ds = new DataSet("1.5");
                 ds.Tables.Add(dt_logs.Clone());
                 ds.Tables.Add(dt_check.Clone());
                 ds.Tables.Add(dt_itemloginfo.Clone());

@@ -75,6 +75,8 @@
             this.checkBox_Day10OrFreq10 = new System.Windows.Forms.CheckBox();
             this.richTextBox_Span = new System.Windows.Forms.RichTextBox();
             this.label_Span = new System.Windows.Forms.Label();
+            this.richTextBox_ExclType2Name = new System.Windows.Forms.RichTextBox();
+            this.label3 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Item)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Unit)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_Science)).BeginInit();
@@ -103,7 +105,7 @@
             // checkBox_BeginTrim
             // 
             this.checkBox_BeginTrim.AutoSize = true;
-            this.checkBox_BeginTrim.Location = new System.Drawing.Point(11, 77);
+            this.checkBox_BeginTrim.Location = new System.Drawing.Point(12, 66);
             this.checkBox_BeginTrim.Name = "checkBox_BeginTrim";
             this.checkBox_BeginTrim.Size = new System.Drawing.Size(96, 16);
             this.checkBox_BeginTrim.TabIndex = 1;
@@ -132,7 +134,7 @@
             // checkBox_EndTrim
             // 
             this.checkBox_EndTrim.AutoSize = true;
-            this.checkBox_EndTrim.Location = new System.Drawing.Point(11, 99);
+            this.checkBox_EndTrim.Location = new System.Drawing.Point(12, 88);
             this.checkBox_EndTrim.Name = "checkBox_EndTrim";
             this.checkBox_EndTrim.Size = new System.Drawing.Size(96, 16);
             this.checkBox_EndTrim.TabIndex = 1;
@@ -536,7 +538,7 @@
             // 
             // richTextBox_Span
             // 
-            this.richTextBox_Span.Location = new System.Drawing.Point(67, 123);
+            this.richTextBox_Span.Location = new System.Drawing.Point(68, 112);
             this.richTextBox_Span.Multiline = false;
             this.richTextBox_Span.Name = "richTextBox_Span";
             this.richTextBox_Span.Size = new System.Drawing.Size(64, 17);
@@ -547,17 +549,35 @@
             // label_Span
             // 
             this.label_Span.AutoSize = true;
-            this.label_Span.Location = new System.Drawing.Point(10, 126);
+            this.label_Span.Location = new System.Drawing.Point(11, 115);
             this.label_Span.Name = "label_Span";
             this.label_Span.Size = new System.Drawing.Size(53, 12);
             this.label_Span.TabIndex = 5;
             this.label_Span.Text = "持续时间";
+            // 
+            // richTextBox_ExclType2Name
+            // 
+            this.richTextBox_ExclType2Name.Location = new System.Drawing.Point(93, 135);
+            this.richTextBox_ExclType2Name.Name = "richTextBox_ExclType2Name";
+            this.richTextBox_ExclType2Name.Size = new System.Drawing.Size(86, 38);
+            this.richTextBox_ExclType2Name.TabIndex = 19;
+            this.richTextBox_ExclType2Name.Text = "";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(10, 138);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(77, 12);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "不计影响因素";
             // 
             // GSetRule
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1362, 619);
+            this.Controls.Add(this.richTextBox_ExclType2Name);
             this.Controls.Add(this.richTextBox_Span);
             this.Controls.Add(this.checkBox_Day10OrFreq10);
             this.Controls.Add(this.checkBox_Freq10);
@@ -584,6 +604,7 @@
             this.Controls.Add(this.label_Station);
             this.Controls.Add(this.label_Unit);
             this.Controls.Add(this.label_Item);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.label_Span);
             this.Controls.Add(this.label_Science);
             this.Controls.Add(this.richTextBox_AbType2);
@@ -671,5 +692,7 @@
         private System.Windows.Forms.CheckBox checkBox_Day10OrFreq10;
         private System.Windows.Forms.RichTextBox richTextBox_Span;
         private System.Windows.Forms.Label label_Span;
+        private System.Windows.Forms.RichTextBox richTextBox_ExclType2Name;
+        private System.Windows.Forms.Label label3;
     }
 }

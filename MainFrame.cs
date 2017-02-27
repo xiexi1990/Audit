@@ -32,10 +32,11 @@ namespace Audit
             score_gsetclass_buttons = new Button[2],
             score_overanaly_buttons = new Button[2],
             score_missanaly_buttons = new Button[2];
-        private Control[] ctrl_list = new Control[51];
+        private Control[] ctrl_list = new Control[58];
   //      private OraHelper orahlper = new OraHelper("server = 127.0.0.1/orcx; user id = qzdata; password = xie51");
   //      private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = qzdata; password = qz9401tw");
-        private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = dxtj; password = dxtjqztw");
+      //  private OraHelper orahlper = new OraHelper("server = 10.5.67.11/pdbqz; user id = dxtj; password = dxtjqztw");
+        private OraHelper orahlper = new OraHelper(Program.orahlperparam);
         public DataTable dt_units, dt_logs, dt_units_comments, dt_param, dt_check, dt_item, dt_science, dt_abtype, dt_abtype2, dt_stations, dt_itemloginfo;
         //   public DataTable dt_units_cache_w, dt_logs_cache_w, dt_units_comments_cache_w, dt_param_cache_w, dt_check_cache_w;
         //      public DataSet ds_cache = new DataSet("ds_cache");
@@ -47,7 +48,7 @@ namespace Audit
         private object locker_dt_logs = new object(), locker_dt_units_comments = new object(), locker_dt_param = new object();
         //    private int cur_log = -1;
         private string prev_logid = null;
-        private bool log_shown = false, text_change_observe = true, score_change_observe = true;
+        private bool log_shown = false, text_change_observe = true, score_change_observe = true, can_change_label_showscore = true, numeric_and_check_change_observe = true;
         private bool newsaved = false, newsaved_tmp = false;
         bool IS_GSET = false;
         private RichTextBox rtb_active = null;
@@ -63,6 +64,7 @@ namespace Audit
 
         public MainFrame()
         {
+            orahlper.Set_pdbqz_dxtj();
             InitializeComponent();
             Debug.Listeners.Add(new TextWriterTraceListener(Console.Out));
             debug_listener = new TextWriterTraceListener("Audit_debug.txt");
@@ -137,6 +139,9 @@ namespace Audit
                 richTextBox_Group.Visible = richTextBox_Time.Visible = richTextBox_Log.Visible = false;
                 button_LogCheckHelp.Visible = button_GraphCheckHelp.Visible = false;
                 label_LogInfo.Visible = false;
+
+          //      button_GraphGood.Visible = button_GraphMiddle.Visible = button_GraphBad.Visible = false;
+          //      button_LogGood.Visible = button_LogMiddle.Visible = button_LogBad.Visible = false;
             }
             if (IS_GSET)
             {
@@ -350,7 +355,7 @@ namespace Audit
                     return;
                 }
                 double l, t, w, h;
-                w = Math.Min(rtb_active.Width*1.5, 500);
+                w = Math.Min(rtb_active.Width*6, 400);
                 h = rtb_active.Height * 2.5;
                 l = rtb_active.Left - w - 2;
                 t = rtb_active.Top - rtb_active.Height * 0.5;
@@ -542,6 +547,10 @@ namespace Audit
                 }
             }
         }
+
+        
+
+        
 
      
         //private void RefreshFinished()

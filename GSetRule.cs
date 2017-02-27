@@ -64,13 +64,14 @@ namespace Audit
             dataGridView_Station.Columns["UNITCODE"].Visible = false;
             dataGridView_Station.Columns["STATIONID"].Visible = false;
 
-            dateTimePicker_Begin.Value = DateTime.Parse("2015/1/1 00:00:00");
+            dateTimePicker_Begin.Value = DateTime.Parse("2016/7/1 00:00:00");
             dateTimePicker_Begin.Format = DateTimePickerFormat.Custom;
             dateTimePicker_Begin.CustomFormat = "yyyy/MM/dd HH:mm:ss";
-            dateTimePicker_End.Value = DateTime.Parse("2015/12/31 23:59:59");
+            dateTimePicker_End.Value = DateTime.Parse("2016/7/31 23:59:59");
             dateTimePicker_End.Format = DateTimePickerFormat.Custom;
             dateTimePicker_End.CustomFormat = "yyyy/MM/dd HH:mm:ss";
       //      richTextBox_Sql.ReadOnly = true;
+            richTextBox_ExclType2Name.Text = "其它分量受影响，本分量正常";
 
             button_CalType2Num.BackColor = button_CalUnitNum.BackColor = button_CalStationNum.BackColor = Color.PaleVioletRed;
             radioButton_ShowMain.Checked = true;
@@ -136,7 +137,7 @@ namespace Audit
         private void RefreshSql()
         {
             SqlGenerator sg = new SqlGenerator();
-            richTextBox_Sql.Text = sg.GenGSetSql(GSetSqlType.Normal, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null, richTextBox_Span.Text);
+            richTextBox_Sql.Text = sg.GenGSetSql(GSetSqlType.Normal, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, richTextBox_ExclType2Name.Text, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null, richTextBox_Span.Text);
         }
 
         private string AbTypeNameToId(string abtypename)
@@ -399,7 +400,7 @@ namespace Audit
             label_CalType2.Text = "计算中……";
             label_CalType2.Refresh();
             SqlGenerator sg = new SqlGenerator();
-            string csql = sg.GenGSetSql(GSetSqlType.CalType2Num, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
+            string csql = sg.GenGSetSql(GSetSqlType.CalType2Num, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, richTextBox_ExclType2Name.Text, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
             DataTable dt = orah.GetDataTable(csql);
             int sum = 0;
             foreach (DataRow r in this.dt_abtype2.Rows)
@@ -425,7 +426,7 @@ namespace Audit
             label_CalUnit.Text = "计算中……";
             label_CalUnit.Refresh();
             SqlGenerator sg = new SqlGenerator();
-            string csql = sg.GenGSetSql(GSetSqlType.CalUnitNum, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
+            string csql = sg.GenGSetSql(GSetSqlType.CalUnitNum, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, richTextBox_ExclType2Name.Text, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
             DataTable dt = orah.GetDataTable(csql);
             int sum = 0;
             foreach (DataRow r in this.dt_units.Rows)
@@ -451,7 +452,7 @@ namespace Audit
             label_CalStation.Text = "计算中……";
             label_CalStation.Refresh();
             SqlGenerator sg = new SqlGenerator();
-            string csql = sg.GenGSetSql(GSetSqlType.CalStationNum, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
+            string csql = sg.GenGSetSql(GSetSqlType.CalStationNum, science, item, unitcode, abtype, abtype2, stationid, instr, checkBox_NationGood.Checked, checkBox_AreaGood.Checked, checkBox_ScienceGood.Checked, dateTimePicker_Begin.Value, dateTimePicker_End.Value, richTextBox_ExclType2Name.Text, checkBox_BeginTrim.Checked ? dateTimePicker_Begin.Value : (DateTime?)null, checkBox_EndTrim.Checked ? dateTimePicker_End.Value : (DateTime?)null);
             DataTable dt = orah.GetDataTable(csql);
             int sum = 0;
             foreach (DataRow r in this.dt_stations.Rows)

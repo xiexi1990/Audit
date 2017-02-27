@@ -5,11 +5,42 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using excel = Microsoft.Office.Interop.Excel;
+using System.Reflection;
+using System.IO;
 
 namespace Audit
 {
     public class DataTableHelper
     {
+        public int outcnt;
+        public DataTable DTNewTitle(DataTable dt, string[] title)
+        {
+            for (int i = 0; i < title.GetLength(0); i++)
+            {
+                dt.Columns[i].ColumnName = title[i];
+            }
+            return dt;
+        }
+
+        public DataTable QueryToDT(IQueryable query)
+        {
+            DataTable dtList = new DataTable();
+            foreach (var p in query.ElementType.GetProperties())
+            {
+                    dtList.Columns.Add(p.Name, p.PropertyType);
+            }
+            foreach (var item in query)
+            {
+                var row = dtList.NewRow();
+                foreach (var p in item.GetType().GetProperties())
+                {
+                    row[p.Name] = p.GetValue(item, null);
+                }
+                dtList.Rows.Add(row);
+            }
+            return dtList;
+        }
+
         public object[,] DupFold2DTable_HasColHeader(int dup, object[,] t)
         {
             int rowcount = t.GetLength(0) - 1, colcount = t.GetLength(1);
@@ -35,7 +66,7 @@ namespace Audit
         {
             object[,] t = new object[dt.Rows.Count + 1, dt.Columns.Count];
             for (int j = 0; j < t.GetLength(1); j++)
-                t[0, j] = dt.Columns[j].ToString();
+                t[0, j] = dt.Columns[j].ColumnName;
             for (int i = 0; i < t.GetLength(0) - 1; i++)
             {
                 for (int j = 0; j < t.GetLength(1); j++)
@@ -83,14 +114,21 @@ namespace Audit
             return Convert.ToDecimal(r);
         }
 
-        public void DTToExcel(DataTable dt, string filename)
+        public void DTToExcelSheet(DataTable dt, excel.Workbook book, string sheetname, excel.Worksheet _sheet = null)
         {
+            outcnt++;
+            excel.Worksheet sheet;
+            if(_sheet != null)
+            {
+                sheet = _sheet;
+            }
+            else
+            {
+                sheet = book.Worksheets.Add();
+                sheet.Name = sheetname;
+            }
             object[,] t = DataTableTo2DTable(dt);
-            excel.Application eapp = new excel.Application();
-            excel.Workbook book = eapp.Workbooks.Add();
-            excel.Worksheet sheet = book.Worksheets[1];
             sheet.Range["A1", sheet.Cells[t.GetLength(0), t.GetLength(1)]].Value = t;
-
             if (t.GetLength(0) > 1)
             {
                 for (int j = 0; j < t.GetLength(1); j++)
@@ -101,16 +139,60 @@ namespace Audit
                     }
                 }
             }
-            //for (int i = 0; i < dt.Rows.Count; i++)
-            //{
-            //    for (int j = 0; j < dt.Columns.Count; j++)
-            //    {
-            //        sheet.Cells[j + 1][i + 1] = dt.Rows[i][j];
-            //    }
-            //}
-            book.SaveAs(filename);
-            eapp.Visible = true;
+        }
+
+        public void DTToExcel(DataTable dt, string filename, bool show, bool overwrite)
+        {
+            outcnt++;
+            if (overwrite)
+            {
+                if (File.Exists(filename))
+                    File.Delete(filename);
+            }
             
+            excel.Application eapp = new excel.Application();
+            excel.Workbook book = eapp.Workbooks.Add();
+            excel.Worksheet sheet = book.Worksheets[1];
+            DTToExcelSheet(dt, book, null, sheet);
+            book.SaveAs(filename);
+            if (show)
+            {
+                eapp.Visible = true;
+            }
+            else
+            {
+                book.Close();
+                eapp.Quit();
+            }
+        }
+
+        public DataTable Transpose(DataTable dt)
+        {
+            DataTable dtNew = new DataTable();
+            dtNew.Columns.Add(dt.Columns[0].ColumnName);
+            foreach (DataRow r in dt.Rows)
+            {
+                dtNew.Columns.Add(r[0].ToString());
+            }
+
+            int j = 0;
+            foreach (DataColumn dc in dt.Columns)
+            {
+                if (j == 0)
+                {
+                    j++;
+                    continue;
+                }
+                DataRow drNew = dtNew.NewRow();
+                drNew[0] = dc.ColumnName;
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    drNew[i + 1] = dt.Rows[i][dc].ToString();
+                }
+                dtNew.Rows.Add(drNew);
+                j++;
+            }
+            return dtNew;
         }
     }
 }

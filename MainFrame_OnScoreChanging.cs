@@ -132,14 +132,14 @@ namespace Audit
         }
      
 
-        private void WSTD_CC_T(string col, int v)
+        private void WSTD_CC_T(string col, double v)
         {
             WriteScoreToDt_T(col, v);
             CheckColor(dataGridView_Logs.CurrentRow);
      //       RecordTime();
         }
 
-        private void WriteScoreToDt_T(string col, int v)
+        private void WriteScoreToDt_T(string col, double v)
         {
             if (!score_change_observe)
                 return;
@@ -191,15 +191,24 @@ namespace Audit
                     }
                     else
                     {
-                        if (!(r["SCORE_GROUP"] is DBNull || r["SCORE_TIME"] is DBNull || r["SCORE_LOG"] is DBNull || r["SCORE_GRAPH"] is DBNull) && Convert.ToInt32(r["SCORE_GROUP"]) != -1 && Convert.ToInt32(r["SCORE_TIME"]) != -1 && Convert.ToInt32(r["SCORE_LOG"]) != -1 && Convert.ToInt32(r["SCORE_GRAPH"]) != -1)
+                        if (!(r["SCORE_GROUP"] is DBNull || r["SCORE_TIME"] is DBNull || r["SCORE_LOG1"] is DBNull || r["SCORE_LOG2"] is DBNull || r["SCORE_LOG3"] is DBNull || r["SCORE_LOG2PLUS"] is DBNull || r["SCORE_GRAPH"] is DBNull) && r.Field<double>("SCORE_GROUP") >= 0 && r.Field<double>("SCORE_TIME") >= 0 && r.Field<double>("SCORE_LOG1") >= 0 && r.Field<double>("SCORE_LOG2") >= 0 && r.Field<double>("SCORE_LOG3") >= 0 && r.Field<double>("SCORE_LOG2PLUS") >= 0 && r.Field<double>("SCORE_GRAPH") >= 0)
                         {
-                            int re = Convert.ToInt32(r["SCORE_GROUP"]) * 2 + Convert.ToInt32(r["SCORE_TIME"]) * 2 + Convert.ToInt32(r["SCORE_LOG"]) + Convert.ToInt32(r["SCORE_GRAPH"]);
-                            if (re == 0)
+                            double vlog2 = r.Field<double>("SCORE_LOG2") + r.Field<double>("SCORE_LOG2PLUS");
+                            if (vlog2 > 9)
+                                vlog2 = 9;
+                            double re = r.Field<double>("SCORE_GROUP") + r.Field<double>("SCORE_TIME") + r.Field<double>("SCORE_LOG1") + vlog2 + r.Field<double>("SCORE_LOG3") + r.Field<double>("SCORE_GRAPH");
+                            if (re >= 28 && re <= 35)
                                 color = Color.LightGreen;
-                            else if (re == 1)
+                            else if (re >= 21 && re < 28)
                                 color = Color.Yellow;
-                            else
+                            else if(re >= 0 && re < 21)
                                 color = Color.PaleVioletRed;
+                            else
+                                color = Color.LightSkyBlue;
+                            if (can_change_label_showscore)
+                            {
+                                label_ShowScore.Text = "当前事件得分  " + Math.Round(re, 2);
+                            }
                         }
                         else
                         {
@@ -213,11 +222,13 @@ namespace Audit
                 int n = 0;
                 foreach (DataGridViewRow _r in dataGridView_Logs.Rows)
                 {
+                    if (set_red)
+                        break;
                     if (_r.DefaultCellStyle.BackColor != Color.White)
                     {
                         n++;
                     }
-                    if (set_red || _r == null || _r.Cells["LOG_ID"].Value == null)
+                    if (_r == null || _r.Cells["LOG_ID"].Value == null)
                         continue;
                     if (_r != row && _r.Cells["LOG_ID"].Value.ToString() == row.Cells["LOG_ID"].Value.ToString())
                     {
@@ -239,51 +250,63 @@ namespace Audit
 
         private void CheckAllColor()
         {
+            can_change_label_showscore = false;
             foreach (DataGridViewRow gr in dataGridView_Logs.Rows)
             {
                 CheckColor(gr);
             }
+            can_change_label_showscore = true;
         }
 
         private void button_TimeGood_Click(object sender, EventArgs e)
         {
-            WSTD_CC_T("SCORE_TIME", vb.score_time = 0);
+            vb.score_time = 0;
+            WSTD_CC_T("SCORE_TIME", 3);
         }
         private void button_TimeBad_Click(object sender, EventArgs e)
         {
-            WSTD_CC_T("SCORE_TIME", vb.score_time = 1);
+            vb.score_time = 1;
+            WSTD_CC_T("SCORE_TIME", 0);
         }
         private void button_GraphGood_Click(object sender, EventArgs e)
         {
-            WSTD_CC_T("SCORE_GRAPH", vb.score_graph = 0);
+            vb.score_graph = 0;
+            WSTD_CC_T("SCORE_LOG3", 2);
         }
         private void button_GraphMiddle_Click(object sender, EventArgs e)
         {
-            WSTD_CC_T("SCORE_GRAPH", vb.score_graph = 1);
+            vb.score_graph = 1;
+            WSTD_CC_T("SCORE_LOG3", 2*0.7);
         }
         private void button_GraphBad_Click(object sender, EventArgs e)
         {
-            WSTD_CC_T("SCORE_GRAPH", vb.score_graph = 2);
+            vb.score_graph = 2;
+            WSTD_CC_T("SCORE_LOG3", 0);
         }
         private void button_LogGood_Click(object sender, EventArgs e)
         {
-            WSTD_CC_T("SCORE_LOG", vb.score_log = 0);
+            vb.score_log = 0;
+            WSTD_CC_T("SCORE_LOG2", 9);
         }
         private void button_LogMiddle_Click(object sender, EventArgs e)
         {
-            WSTD_CC_T("SCORE_LOG", vb.score_log = 1);
+            vb.score_log = 1;
+            WSTD_CC_T("SCORE_LOG2", 9*0.8);
         }
         private void button_LogBad_Click(object sender, EventArgs e)
         {
-            WSTD_CC_T("SCORE_LOG", vb.score_log = 2);
+            vb.score_log = 2;
+            WSTD_CC_T("SCORE_LOG2", 0);
         }
         private void button_GroupGood_Click(object sender, EventArgs e)
         {
-            WSTD_CC_T("SCORE_GROUP", vb.score_group = 0);
+            vb.score_group = 0;
+            WSTD_CC_T("SCORE_GROUP", 4);
         }
         private void button_GroupBad_Click(object sender, EventArgs e)
         {
-            WSTD_CC_T("SCORE_GROUP", vb.score_group = 1);
+            vb.score_group = 1;
+            WSTD_CC_T("SCORE_GROUP", 0);
         }
 
         private void button_GSet0_Click(object sender, EventArgs e)
@@ -321,6 +344,34 @@ namespace Audit
             WSTD_CC_T("SCORE_GSETCLASS", vb.score_gsetclass = 0);
         }
 
+        private void numeric_Log_ValueChanged(object sender, EventArgs e)
+        {
+            if (!numeric_and_check_change_observe)
+                return;
+            WSTD_CC_T("SCORE_LOG1", 9 - 9.0 / 3 * Convert.ToDouble(numeric_Log.Value));
+        }
+
+        private void numeric_Graph_ValueChanged(object sender, EventArgs e)
+        {
+            if (!numeric_and_check_change_observe)
+                return;
+            WSTD_CC_T("SCORE_GRAPH", 8 - 8.0 / 3 * Convert.ToDouble(numeric_Graph.Value));
+        }
+
+        private void checkBox_Log2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!numeric_and_check_change_observe)
+                return;
+            double v;
+            if (checkBox_Log2.CheckState == CheckState.Checked)
+            {
+                v = 18;
+            }
+            else
+                v = 0;
+            WSTD_CC_T("SCORE_LOG2PLUS", v);
+        }
+
         private void button_OveranalyGood_Click(object sender, EventArgs e)
         {
             WriteScoreToDt_T("SCORE_OVERANALY", vb.score_overanaly = 0);
@@ -340,6 +391,7 @@ namespace Audit
         {
             WriteScoreToDt_T("SCORE_MISSANALY", vb.score_missanaly = 1);
         }
+
 
     }
 }

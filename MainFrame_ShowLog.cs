@@ -18,10 +18,13 @@ namespace Audit
             if (r != null && r.RowState != DataRowState.Deleted)
             {
                 text_change_observe = false;
-                if ((r["SCORE_GROUP"] is DBNull || Convert.ToInt32(r["SCORE_GROUP"]) == -1) && 
-                    (r["SCORE_TIME"] is DBNull || Convert.ToInt32(r["SCORE_TIME"]) == -1) && 
-                    (r["SCORE_LOG"] is DBNull || Convert.ToInt32(r["SCORE_LOG"]) == -1) && 
-                    (r["SCORE_GRAPH"] is DBNull || Convert.ToInt32(r["SCORE_GRAPH"]) == -1) &&
+                numeric_and_check_change_observe = false;
+                if ((r["SCORE_GROUP"] is DBNull || r.Field<double>("SCORE_GROUP") < 0) &&
+                    (r["SCORE_TIME"] is DBNull || r.Field<double>("SCORE_TIME") < 0) &&
+                    (r["SCORE_LOG1"] is DBNull || r.Field<double>("SCORE_LOG1") < 0 || r.Field<double>("SCORE_LOG1") == 9) &&
+                    (r["SCORE_LOG2"] is DBNull || r.Field<double>("SCORE_LOG2") < 0) &&
+                    (r["SCORE_LOG3"] is DBNull || r.Field<double>("SCORE_LOG3") < 0) &&
+                    (r["SCORE_GRAPH"] is DBNull || r.Field<double>("SCORE_GRAPH") < 0 || r.Field<double>("SCORE_GRAPH") == 8) &&
                     (!IS_GSET || (r["SCORE_GSET"] is DBNull || Convert.ToInt32(r["SCORE_GSET"]) == -1))
                     && (!IS_GSET || (r["SCORE_GSETCLASS"] is DBNull || Convert.ToInt32(r["SCORE_GSETCLASS"]) == -1)) &&
                     (r["SCORE_OVERANALY"] is DBNull || Convert.ToInt32(r["SCORE_OVERANALY"]) == -1) &&
@@ -62,11 +65,12 @@ namespace Audit
                 {
                     pictureBox_Graph.SizeMode = PictureBoxSizeMode.StretchImage;
                 }
+                mstream.Close();
                 this.label_LogInfo.Text = string.Format("{0} {1}{2}{3}{4}[{5}]", r["SCIENCE"], r["UNITNAME"], r["STATIONNAME"], r["INSTRCODE"], r["INSTRNAME"], r["POINTID"]);
 
                 if (IS_GSET)
                 {
-                    richTextBox_WholeInfo.Text = label_LogInfo.Text + "\n\n事件类别：" + richTextBox_Group.Text + "\n\n影响因素：" + r["TYPE2_NAME"] + "\n\n测项：" + r["ITEM"] + "\n\n起止时间：" + richTextBox_Time.Text + "\n\n事件描述：" + richTextBox_Log.Text;
+                    richTextBox_WholeInfo.Text = label_LogInfo.Text + "\n\n事件类别：" + richTextBox_Group.Text + "\n\n影响因素：" + ii.wholestr + "\n\n测项：" + r["ITEM"] + "\n\n起止时间：" + richTextBox_Time.Text + "\n\n事件描述：" + richTextBox_Log.Text;
                 }
                 else
                 {
@@ -101,14 +105,79 @@ namespace Audit
                 }
                 else
                 {
-                    richTextBox_GroupCheck.Text = r["COMMENTS_GROUP"] is DBNull ? "" : Convert.ToString(r["COMMENTS_GROUP"]);
-                    richTextBox_TimeCheck.Text = r["COMMENTS_TIME"] is DBNull ? "" : Convert.ToString(r["COMMENTS_TIME"]);
-                    richTextBox_LogCheck.Text = r["COMMENTS_LOG"] is DBNull ? "" : Convert.ToString(r["COMMENTS_LOG"]);
-                    richTextBox_GraphCheck.Text = r["COMMENTS_GRAPH"] is DBNull ? "" : Convert.ToString(r["COMMENTS_GRAPH"]);
-                    vb.score_group = r["SCORE_GROUP"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_GROUP"]);
-                    vb.score_time = r["SCORE_TIME"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_TIME"]);
-                    vb.score_log = r["SCORE_LOG"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_LOG"]);
-                    vb.score_graph = r["SCORE_GRAPH"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_GRAPH"]);
+                    richTextBox_GroupCheck.Text = r["COMMENTS_GROUP"] is DBNull ? "" : r.Field<string>("COMMENTS_GROUP");
+                    richTextBox_TimeCheck.Text = r["COMMENTS_TIME"] is DBNull ? "" : r.Field<string>("COMMENTS_TIME");
+                    richTextBox_LogCheck.Text = r["COMMENTS_LOG"] is DBNull ? "" : r.Field<string>("COMMENTS_LOG");
+                    richTextBox_GraphCheck.Text = r["COMMENTS_GRAPH"] is DBNull ? "" : r.Field<string>("COMMENTS_GRAPH");
+                    if (r["SCORE_GROUP"] is DBNull || r.Field<double>("SCORE_GROUP") < 0)
+                        vb.score_group = -1;
+                    else
+                    {
+                        if (r.Field<double>("SCORE_GROUP") == 0)
+                            vb.score_group = 1;
+                        else
+                            vb.score_group = 0;
+                    }
+
+                    if (r["SCORE_TIME"] is DBNull || r.Field<double>("SCORE_TIME") < 0)
+                        vb.score_time = -1;
+                    else
+                    {
+                        if (r.Field<double>("SCORE_TIME") == 0)
+                            vb.score_time = 1;
+                        else
+                            vb.score_time = 0;
+                    }
+
+                    if (r["SCORE_LOG2"] is DBNull || r.Field<double>("SCORE_LOG2") < 0)
+                        vb.score_log = -1;
+                    else
+                    {
+                        if (r.Field<double>("SCORE_LOG2") == 0)
+                            vb.score_log = 2;
+                        else if (r.Field<double>("SCORE_LOG2") == 9)
+                            vb.score_log = 0;
+                        else
+                            vb.score_log = 1;
+                    }
+
+                    if (r["SCORE_LOG3"] is DBNull || r.Field<double>("SCORE_LOG3") < 0)
+                        vb.score_graph = -1;
+                    else
+                    {
+                        if (r.Field<double>("SCORE_LOG3") == 0)
+                            vb.score_graph = 2;
+                        else if (r.Field<double>("SCORE_LOG3") == 2)
+                            vb.score_graph = 0;
+                        else
+                            vb.score_graph = 1;
+                    }
+                    if (r["SCORE_LOG1"] is DBNull || r.Field<double>("SCORE_LOG1") < 0)
+                        numeric_Log.Value = 0;
+                    else
+                        numeric_Log.Value = Convert.ToDecimal(Math.Round((9 - r.Field<double>("SCORE_LOG1")) / (9.0 / 3), 1));
+                    if (r["SCORE_GRAPH"] is DBNull || r.Field<double>("SCORE_GRAPH") < 0)
+                        numeric_Graph.Value = 0;
+                    else
+                        numeric_Graph.Value = Convert.ToDecimal(Math.Round((8 - r.Field<double>("SCORE_GRAPH")) / (8.0 / 3), 1));
+                    if (!(r["SCORE_LOG2PLUS"] is DBNull) && r.Field<double>("SCORE_LOG2PLUS") == 18)
+                        checkBox_Log2.Checked = true;
+                    else
+                        checkBox_Log2.Checked = false;
+
+                    if (!(r["SCORE_GROUP"] is DBNull || r.Field<double>("SCORE_GROUP") < 0) && !(r["SCORE_TIME"] is DBNull || r.Field<double>("SCORE_TIME") < 0) && !(r["SCORE_LOG1"] is DBNull || r.Field<double>("SCORE_LOG1") < 0) && !(r["SCORE_LOG2"] is DBNull || r.Field<double>("SCORE_LOG2") < 0) && !(r["SCORE_LOG2PLUS"] is DBNull || r.Field<double>("SCORE_LOG2PLUS") < 0) && !(r["SCORE_LOG3"] is DBNull || r.Field<double>("SCORE_LOG3") < 0) && !(r["SCORE_GRAPH"] is DBNull || r.Field<double>("SCORE_GRAPH") < 0))
+                    {
+                        double vlog2 = r.Field<double>("SCORE_LOG2") + r.Field<double>("SCORE_LOG2PLUS");
+                        if (vlog2 > 9)
+                            vlog2 = 9;
+                        double sum = r.Field<double>("SCORE_GROUP") + r.Field<double>("SCORE_TIME") + r.Field<double>("SCORE_LOG1") + vlog2 + r.Field<double>("SCORE_LOG3") + r.Field<double>("SCORE_GRAPH");
+                        label_ShowScore.Text = "当前事件得分  " + Math.Round(sum, 2);
+                    }
+                    else
+                    {
+                        label_ShowScore.Text = "当前事件得分  " + 0;
+                    }
+                    
                     vb.score_overanaly = r["SCORE_OVERANALY"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_OVERANALY"]);
                     vb.score_missanaly = r["SCORE_MISSANALY"] is DBNull ? -1 : Convert.ToInt32(r["SCORE_MISSANALY"]);
                     checkBox_Postpone.Checked = r["POSTPONE"] is DBNull ? false : Convert.ToBoolean(r["POSTPONE"]);
@@ -117,14 +186,17 @@ namespace Audit
                 //           CheckColor(dataGridView_Logs.CurrentRow);   
 
                 text_change_observe = true;
+                numeric_and_check_change_observe = true;
             }
             else
             {
                 text_change_observe = false;
+                numeric_and_check_change_observe = false;
+
                 prev_logid = null;
-                this.richTextBox_Group.Clear();
-                this.richTextBox_Time.Clear();
-                this.richTextBox_Log.Clear();
+                richTextBox_Group.Clear();
+                richTextBox_Time.Clear();
+                richTextBox_Log.Clear();
                 pictureBox_Graph.Image = null;
                 label_LogInfo.Text = "LogInfo";
                 richTextBox_GroupCheck.Clear();
@@ -144,8 +216,13 @@ namespace Audit
                 checkBox_Postpone.Checked = false;
                 button_SaveChecklog.BackColor = SystemColors.Control;
                 button_SaveChecklog.UseVisualStyleBackColor = true;
+                checkBox_Log2.Checked = false;
+                numeric_Graph.Value = 0;
+                numeric_Log.Value = 0;
+                label_ShowScore.Text = "当前事件得分  0";
 
                 text_change_observe = true;
+                numeric_and_check_change_observe = true;
             }
         }
         private void ShowLog(DataGridViewRow gr)
